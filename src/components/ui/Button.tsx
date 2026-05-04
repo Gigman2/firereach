@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { Text } from './Text';
 import { colors } from '../../theme/colors';
+import { useTheme } from '../../theme/ThemeContext';
 
 export interface ButtonProps extends TouchableOpacityProps {
   variant?: 'primary' | 'secondary' | 'ghost';
@@ -29,18 +30,20 @@ export const Button = ({
   disabled,
   ...props
 }: ButtonProps) => {
+  const { theme } = useTheme();
+
   const getBackgroundColor = () => {
-    if (disabled) return colors.light.border;
+    if (disabled) return theme.border;
     switch (variant) {
       case 'primary': return colors.brandPrimary;
-      case 'secondary': return colors.light.surface;
+      case 'secondary': return theme.surface;
       case 'ghost': return 'transparent';
       default: return colors.brandPrimary;
     }
   };
 
   const getTextColor = () => {
-    if (disabled) return colors.light.textTertiary;
+    if (disabled) return theme.textTertiary;
     switch (variant) {
       case 'primary': return '#FFFFFF';
       case 'secondary': return colors.brandPrimary;

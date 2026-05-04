@@ -1,7 +1,7 @@
 import React from 'react';
-import { Text as RNText, TextProps as RNTextProps, useColorScheme } from 'react-native';
+import { Text as RNText, TextProps as RNTextProps } from 'react-native';
 import { typography } from '../../theme/typography';
-import { colors } from '../../theme/colors';
+import { useTheme } from '../../theme/ThemeContext';
 
 export interface TextProps extends RNTextProps {
   variant?: keyof typeof typography.sizes;
@@ -18,9 +18,7 @@ export const Text = ({
   style,
   ...props
 }: TextProps) => {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-  const theme = isDark ? colors.dark : colors.light;
+  const { theme } = useTheme();
 
   const getFontFamily = () => {
     if (weight) return typography.fonts[weight];

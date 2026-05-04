@@ -1,18 +1,19 @@
 {
   "expo": {
-    "name": "app",
-    "slug": "app",
+    "name": "FireReach",
+    "slug": "firereach",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#CC1B1B"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.firereach.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,10 +22,24 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
+      "package": "com.firereach.app",
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-widgets",
+        {
+          "ios": {
+            "src": "./widgets/emergency",
+            "distDir": "./dist/widgets",
+            "moduleDependencies": [],
+            "useLiveActivities": false
+          }
+        }
+      ]
+    ]
   }
 }

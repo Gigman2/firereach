@@ -17,16 +17,40 @@ export const colors = {
     textTertiary: '#9CA3AF',
     border: '#E5E7EB',
     divider: '#F3F4F6',
+    // Semantic surfaces
+    warningBg: '#FFFBEB',
+    warningBorder: '#FDE68A',
+    warningText: '#92400E',
+    emergencyBg: '#FEF2F2',
+    emergencyBorder: '#FECACA',
+    emergencyText: '#7F1D1D',
+    successBadgeBg: '#DCFCE7',
+    successBadgeText: '#15803D',
+    // Tab bar
+    tabBarBg: '#FFFFFF',
   },
 
-  // Dark Theme
+  // Dark Theme — warm red-brown tint from brand primary
   dark: {
-    background: '#111827',
-    surface: '#1F2937',
-    textPrimary: '#F9FAFB',
-    textSecondary: '#D1D5DB',
-    textTertiary: '#6B7280',
-    border: '#374151',
-    divider: '#1F2937',
+    background: '#211111',       // bg-background-dark
+    surface: '#2D1515',          // primary/10 on bg
+    textPrimary: '#F1F5F9',      // slate-100
+    textSecondary: '#CBD5E1',    // slate-300
+    textTertiary: '#94A3B8',     // slate-400
+    border: '#3D1717',           // primary/20 on bg
+    divider: '#2D1515',          // primary/10 on bg
+    // Semantic surfaces
+    warningBg: '#451A03',
+    warningBorder: '#78350F',
+    warningText: '#FDE68A',
+    emergencyBg: '#3B0A0A',
+    emergencyBorder: '#991B1B',
+    emergencyText: '#FECACA',
+    successBadgeBg: '#0D2818',
+    successBadgeText: '#4ADE80',
+    // Tab bar
+    tabBarBg: '#211111',
   },
 };
+
+export type ThemeColors = typeof colors.light;
