@@ -19,25 +19,36 @@ import {
 import { Text } from "../components/ui/Text";
 import { colors } from "../theme/colors";
 import { useTheme } from "../theme/ThemeContext";
-
-const NEAREST_STATION = {
-  name: "Accra Central Fire Station",
-  region: "Greater Accra Region · Central District",
-  distance: "~2.4 km away",
-  phone: "tel:+233302773906",
-};
+import { useConnectivity } from "../hooks/useConnectivity";
+import { useNearestStation } from "../hooks/useNearestStation";
 
 const NEARBY_STATIONS = [
   { name: "Tema Station", distance: "5.1 km" },
   { name: "Madina Station", distance: "6.3 km" },
 ];
 
+function formatDistance(meters: number): string {
+  if (meters <= 0) return "Distance unavailable";
+  const km = meters / 1000;
+  return `~${km.toFixed(1)} km away`;
+}
+
+function shortName(name: string): string {
+  // "Accra Central Fire Station" -> "Accra Central"
+  return name.replace(/\s+Fire Station$/i, "").trim();
+}
+
 export const HomeScreen = () => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
+  const { isOnline } = useConnectivity();
+  const { snapshot } = useNearestStation();
+
+  const station = snapshot?.station ?? null;
 
   const handleCall = () => {
-    Linking.openURL(NEAREST_STATION.phone);
+    if (!station) return;
+    Linking.openURL(`tel:${station.phone}`);
   };
 
   return (
@@ -69,20 +80,22 @@ export const HomeScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         {/* Connectivity Alert */}
-        <View
-          style={[
-            styles.alert,
-            {
-              backgroundColor: theme.warningBg,
-              borderColor: theme.warningBorder,
-            },
-          ]}
-        >
-          <WifiSlashIcon size={20} color={colors.warning} />
-          <Text variant="caption" weight="medium" color={theme.warningText}>
-            No internet — USSD mode active
-          </Text>
-        </View>
+        {isOnline === false && (
+          <View
+            style={[
+              styles.alert,
+              {
+                backgroundColor: theme.warningBg,
+                borderColor: theme.warningBorder,
+              },
+            ]}
+          >
+            <WifiSlashIcon size={20} color={colors.warning} />
+            <Text variant="caption" weight="medium" color={theme.warningText}>
+              No internet — showing last known station
+            </Text>
+          </View>
+        )}
 
         {/* Main Station Card */}
         <View
@@ -99,19 +112,21 @@ export const HomeScreen = () => {
             </View>
             <View style={styles.distanceBadge}>
               <Text variant="label" color="#FFFFFF">
-                {NEAREST_STATION.distance}
+                {station ? formatDistance(station.distanceMeters) : "Locating…"}
               </Text>
             </View>
           </View>
           <View style={styles.stationInfo}>
-            <Text variant="heading2">{NEAREST_STATION.name}</Text>
+            <Text variant="heading2">
+              {station?.name ?? "Finding nearest station…"}
+            </Text>
             <Text
               variant="caption"
               weight="medium"
               color={theme.textSecondary}
               style={styles.stationRegion}
             >
-              {NEAREST_STATION.region}
+              {station?.region ?? ""}
             </Text>
           </View>
         </View>
@@ -124,7 +139,7 @@ export const HomeScreen = () => {
         >
           <PhoneIcon size={28} color="#FFFFFF" weight="fill" />
           <Text variant="bodyLarge" weight="bold" color="#FFFFFF">
-            Call Accra Central
+            {station ? `Call ${shortName(station.name)}` : "Call Emergency"}
           </Text>
         </TouchableOpacity>
 
