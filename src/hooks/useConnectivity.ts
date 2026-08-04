@@ -15,7 +15,7 @@ export function useConnectivity(): ConnectivityState {
       try {
         const state = await Network.getNetworkStateAsync();
         if (cancelled) return;
-        setIsOnline(Boolean(state.isInternetReachable ?? state.isConnected));
+        setIsOnline(state.isInternetReachable ?? state.isConnected ?? true);
       } catch {
         if (cancelled) return;
         setIsOnline(false);
@@ -25,7 +25,7 @@ export function useConnectivity(): ConnectivityState {
     refresh();
     const subscription = Network.addNetworkStateListener((state) => {
       if (cancelled) return;
-      setIsOnline(Boolean(state.isInternetReachable ?? state.isConnected));
+      setIsOnline(state.isInternetReachable ?? state.isConnected ?? true);
     });
 
     return () => {

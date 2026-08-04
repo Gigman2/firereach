@@ -10,5 +10,12 @@
 export const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8080";
 
+if (!process.env.EXPO_PUBLIC_API_URL && !__DEV__) {
+  console.error(
+    "[apiConfig] EXPO_PUBLIC_API_URL is unset in a production build; " +
+      "falling back to localhost, which will fail on a real device."
+  );
+}
+
 /** Emergency UX: fail fast to cached data rather than hang on a dead network. */
 export const API_TIMEOUT_MS = 8000;

@@ -143,7 +143,12 @@ export function useNearestStation(): NearestStationState {
     } catch (err) {
       console.warn("[useNearestStation] refresh failed", err);
       setHasError(true);
-      // Keep existing snapshot — stale data > no data per spec.
+      // Keep an existing snapshot — stale data beats no data. But with no cache
+      // at all, leaving snapshot null makes the call button inert, so seed the
+      // national fallback. Still never persisted: see the early-return branches.
+      if (!snapshotRef.current) {
+        applySnapshot(fallbackSnapshot());
+      }
     } finally {
       inFlight.current = false;
       setIsResolving(false);

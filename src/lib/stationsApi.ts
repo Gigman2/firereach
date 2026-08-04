@@ -20,6 +20,14 @@ export function toStation(api: ApiStation): Station {
   };
 }
 
+/**
+ * Ghana's longest dimension is roughly 670 km, so a "nearest" station beyond
+ * this is a bad GPS fix or a user outside the country — not a usable result.
+ * Deliberately generous: OSM station coverage is sparse in rural areas and a
+ * legitimate rural user must not be rejected.
+ */
+export const MAX_PLAUSIBLE_DISTANCE_METERS = 500_000;
+
 /** Nearest stations first. Returns [] when the API has no active stations. */
 export async function getNearestStations(
   lat: number,
@@ -33,5 +41,7 @@ export async function getNearestStations(
   });
 
   if (!Array.isArray(raw)) return [];
-  return raw.map(toStation);
+  return raw
+    .map(toStation)
+    .filter((s) => s.distanceMeters <= MAX_PLAUSIBLE_DISTANCE_METERS);
 }

@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Linking,
+  RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -21,11 +22,7 @@ import { colors } from "../theme/colors";
 import { useTheme } from "../theme/ThemeContext";
 import { useConnectivity } from "../hooks/useConnectivity";
 import { useNearestStation } from "../hooks/useNearestStation";
-
-const NEARBY_STATIONS = [
-  { name: "Tema Station", distance: "5.1 km" },
-  { name: "Madina Station", distance: "6.3 km" },
-];
+import { NATIONAL_EMERGENCY_PHONE } from "../lib/stationTypes";
 
 function formatDistance(meters: number): string {
   if (meters <= 0) return "Distance unavailable";
@@ -42,13 +39,21 @@ export const HomeScreen = () => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { isOnline } = useConnectivity();
-  const { snapshot } = useNearestStation();
+  const { snapshot, refresh, isResolving } = useNearestStation();
 
   const station = snapshot?.station ?? null;
 
   const handleCall = () => {
-    if (!station) return;
-    Linking.openURL(`tel:${station.phone}`);
+    const phone = station?.phone ?? NATIONAL_EMERGENCY_PHONE;
+    Linking.openURL(`tel:${phone}`).catch((err) =>
+      console.warn("[HomeScreen] dial failed", err)
+    );
+  };
+
+  const handleCallNational = () => {
+    Linking.openURL(`tel:${NATIONAL_EMERGENCY_PHONE}`).catch((err) =>
+      console.warn("[HomeScreen] dial failed", err)
+    );
   };
 
   return (
@@ -65,9 +70,17 @@ export const HomeScreen = () => {
         ]}
       >
         <View style={styles.statusLeft}>
-          <View style={styles.onlineDot} />
+          <View
+            style={[
+              styles.onlineDot,
+              {
+                backgroundColor:
+                  isOnline !== false ? colors.success : colors.warning,
+              },
+            ]}
+          />
           <Text variant="label" color={theme.textSecondary}>
-            ONLINE · GPS ACTIVE
+            {isOnline !== false ? "ONLINE · GPS ACTIVE" : "OFFLINE · LAST KNOWN"}
           </Text>
         </View>
         <TouchableOpacity>
@@ -78,6 +91,13 @@ export const HomeScreen = () => {
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isResolving}
+            onRefresh={refresh}
+            tintColor={colors.brandPrimary}
+          />
+        }
       >
         {/* Connectivity Alert */}
         {isOnline === false && (
@@ -143,40 +163,19 @@ export const HomeScreen = () => {
           </Text>
         </TouchableOpacity>
 
-        {/* Nearby Stations */}
-        <View style={styles.nearbySection}>
-          <Text
-            variant="label"
-            color={theme.textTertiary}
-            style={styles.sectionLabel}
+        {/* Secondary national fallback — only when it isn't a duplicate of
+            the primary action above. */}
+        {station && station.phone !== NATIONAL_EMERGENCY_PHONE && (
+          <TouchableOpacity
+            style={styles.secondaryCallButton}
+            activeOpacity={0.6}
+            onPress={handleCallNational}
           >
-            NEARBY SUPPORT
-          </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.chipsRow}
-          >
-            {NEARBY_STATIONS.map((station) => (
-              <TouchableOpacity
-                key={station.name}
-                style={[
-                  styles.chip,
-                  { backgroundColor: theme.surface, borderColor: theme.border },
-                ]}
-              >
-                <MapPinIcon
-                  size={18}
-                  color={colors.brandPrimary}
-                  weight="fill"
-                />
-                <Text variant="caption" weight="semiBold">
-                  {station.name} · {station.distance}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+            <Text variant="caption" weight="semiBold" color={theme.textSecondary}>
+              Call 192 instead
+            </Text>
+          </TouchableOpacity>
+        )}
 
         {/* Quick Actions Grid */}
         <View style={styles.quickActions}>
@@ -246,7 +245,6 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: colors.success,
   },
   scrollContent: {
     padding: 16,
@@ -319,24 +317,10 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
-  nearbySection: {
-    gap: 12,
-  },
-  sectionLabel: {
-    letterSpacing: 1.5,
-    paddingHorizontal: 4,
-  },
-  chipsRow: {
-    gap: 8,
-  },
-  chip: {
-    flexDirection: "row",
+  secondaryCallButton: {
     alignItems: "center",
-    gap: 8,
-    borderWidth: 1,
-    borderRadius: 100,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    justifyContent: "center",
+    paddingVertical: 8,
   },
   quickActions: {
     flexDirection: "row",
