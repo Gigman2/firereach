@@ -11,6 +11,8 @@
 ## Global Constraints
 
 - **Two separate git repositories.** `app/` and `api/` have independent histories and neither is a submodule. Every task states its working directory; never stage across both.
+- **Both repos are on branch `feature/api-wiring`.** All commits land there; `main` stays untouched in both until the branch is merged. Never commit to `main`.
+- **`psql` is not installed on the host.** Every database command routes through the compose service: `docker compose exec -T db psql -U firereach -d firereach ...`. Do not add a host `psql` dependency.
 - **Spec:** `app/docs/superpowers/specs/2026-08-04-app-api-client-design.md`. Read it before starting.
 - **API port is 8080** everywhere. `docker-compose.yml` is the only file that disagrees; Task 5 fixes it.
 - **`stations.id` is a Postgres `UUID` column**, not text. Seed rows need real UUIDs — deterministic uuid5 values derived from OSM element IDs, never invented strings like `stn_accra`.
@@ -39,9 +41,9 @@
 - [ ] **Step 1: Confirm the starting state**
 
 ```bash
-git status --short          # expect: clean
-git rev-parse --abbrev-ref HEAD   # expect: main
-git log --oneline -1        # expect: 93ca4c5 Add app-to-API wiring design spec
+git status --short                # expect: clean
+git rev-parse --abbrev-ref HEAD   # expect: feature/api-wiring
+git log --oneline -1              # expect: the plan commit, 6099c7a or later
 ```
 
 - [ ] **Step 2: Confirm the four commits are widget-free**
@@ -58,7 +60,7 @@ Expected: **no output**. If anything prints, stop — the range is not clean and
 git cherry-pick 49e1d23..2ec9ee8
 ```
 
-This replays exactly four commits: `91195f3` (station types + cache), `dd2a9a9` (useConnectivity), `af97312` (useNearestStation), `2ec9ee8` (HomeScreen wiring).
+This replays exactly four commits onto `feature/api-wiring`: `91195f3` (station types + cache), `dd2a9a9` (useConnectivity), `af97312` (useNearestStation), `2ec9ee8` (HomeScreen wiring).
 
 If a conflict appears in `package-lock.json`, resolve by taking the incoming version and running `npm install` to regenerate:
 
@@ -80,7 +82,7 @@ npm install
 npx tsc --noEmit
 ```
 
-Expected: **no output** (success). The `WidgetBridge` import does not exist on this branch, so `useNearestStation.ts` must have no unresolved imports. If TypeScript complains about a missing `../../modules/widget-bridge/src`, the wrong commit range was picked — reset with `git reset --hard 93ca4c5` and re-check Step 2.
+Expected: **no output** (success). The `WidgetBridge` import does not exist on this branch, so `useNearestStation.ts` must have no unresolved imports. If TypeScript complains about a missing `../../modules/widget-bridge/src`, the wrong commit range was picked — reset with `git reset --hard 6099c7a` and re-check Step 2.
 
 - [ ] **Step 6: Confirm the files landed**
 
@@ -837,13 +839,13 @@ Expected: the provenance header including the "NOT VERIFIED FOR EMERGENCY USE" l
 
 - [ ] **Step 4: Add the `seed` target to the Makefile**
 
-Add to `.PHONY` and append a target:
+Add to `.PHONY` and append a target. `psql` is not installed on the host, so this routes through the compose `db` service, where the `postgres:16-alpine` image already provides it. `psql` reads and executes SQL from stdin when stdin is not a terminal, and `exec -T` disables TTY allocation so the redirect passes through:
 
 ```makefile
 .PHONY: run dev build test migrate-up migrate-down generate docker-up docker-down seed
 
 seed:
-	psql "$(DATABASE_URL)" -f seeds/dev_stations.sql
+	docker compose exec -T db psql -U firereach -d firereach < seeds/dev_stations.sql
 ```
 
 - [ ] **Step 5: Commit**
@@ -1348,8 +1350,9 @@ Expected: migrations apply cleanly; the seed prints a series of `INSERT 0 1` lin
 - [ ] **Step 4: Confirm the rows landed (`api/`)**
 
 ```bash
-psql "$DATABASE_URL" -c "SELECT count(*) FROM stations;" \
-                     -c "SELECT count(*) FROM station_contacts;"
+docker compose exec -T db psql -U firereach -d firereach \
+  -c "SELECT count(*) FROM stations;" \
+  -c "SELECT count(*) FROM station_contacts;"
 ```
 
 Expected: roughly 57 stations, and about three contacts per station.
@@ -1371,7 +1374,8 @@ Expected: three objects. Assert all of these:
 - [ ] **Step 6: Verify the single-station route still works (`api/`)**
 
 ```bash
-STATION_ID=$(psql "$DATABASE_URL" -tAc "SELECT id FROM stations LIMIT 1")
+STATION_ID=$(docker compose exec -T db psql -U firereach -d firereach \
+  -tAc "SELECT id FROM stations LIMIT 1" | tr -d '\r')
 curl -s "http://localhost:8080/v1/stations/$STATION_ID" | python3 -m json.tool
 ```
 
@@ -1385,7 +1389,9 @@ npx tsc --noEmit
 
 Expected: no output.
 
-- [ ] **Step 8: Run on the simulator (`app/`)**
+> **Steps 8–11 are human-driven.** They need the iOS simulator operated by hand — granting a permission dialog, setting a custom location, force-quitting the app. Subagents execute Steps 1–7 and 12; Steps 8–11 are handed to the human partner as a checklist.
+
+- [ ] **Step 8: Run on the simulator (`app/`) — HUMAN**
 
 ```bash
 cat .env      # confirm EXPO_PUBLIC_API_URL=http://localhost:8080
@@ -1400,7 +1406,7 @@ Grant the location permission when prompted. Expected on HomeScreen:
 
 The simulator reports a Bay Area location by default, so the "nearest" station will be whichever Ghanaian station is closest to that — expected and harmless. To exercise it properly, set **Features → Location → Custom Location** to `5.5493, -0.2073` and pull to refresh.
 
-- [ ] **Step 9: Verify offline behavior (`app/`)**
+- [ ] **Step 9: Verify offline behavior (`app/`) — HUMAN**
 
 With the app running and a station displayed, stop the API:
 
@@ -1410,11 +1416,11 @@ make docker-down     # in api/
 
 Trigger a refresh in the app. Expected: the previously displayed station **stays on screen**. No crash, no blank card, no reversion to "Finding nearest station…".
 
-- [ ] **Step 10: Verify cold-start-with-cache (`app/`)**
+- [ ] **Step 10: Verify cold-start-with-cache (`app/`) — HUMAN**
 
 With the API still down, force-quit and relaunch the app. Expected: the cached station renders immediately from AsyncStorage.
 
-- [ ] **Step 11: Restore and confirm recovery (`api/`, then app)**
+- [ ] **Step 11: Restore and confirm recovery (`api/`, then app) — HUMAN**
 
 ```bash
 make docker-up
