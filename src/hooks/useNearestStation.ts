@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import * as Location from "expo-location";
+import * as Network from "expo-network";
 import {
   STATION_CACHE_VERSION,
+  NATIONAL_EMERGENCY_PHONE,
   Station,
   StationSnapshot,
 } from "../lib/stationTypes";
@@ -9,6 +11,7 @@ import {
   readStationCache,
   writeStationCache,
 } from "../lib/stationCache";
+import { getNearestStations } from "../lib/stationsApi";
 
 export type NearestStationState = {
   snapshot: StationSnapshot | null;
@@ -22,21 +25,15 @@ const FALLBACK_STATION: Station = {
   name: "National Fire Service",
   region: "Ghana",
   distanceMeters: 0,
-  phone: "192",
+  phone: NATIONAL_EMERGENCY_PHONE,
 };
 
-async function resolveNearestStation(
-  lat: number,
-  lng: number
-): Promise<Station> {
-  // TODO: replace with real API call when /stations/nearest endpoint exists.
-  // Returning hardcoded data so the pipeline works end-to-end.
+function fallbackSnapshot(): StationSnapshot {
   return {
-    id: "stn_accra_central",
-    name: "Accra Central Fire Station",
-    region: "Greater Accra Region",
-    distanceMeters: 2400,
-    phone: "+233302773906",
+    schemaVersion: STATION_CACHE_VERSION,
+    fetchedAt: new Date().toISOString(),
+    userLocation: { lat: 0, lng: 0 },
+    station: FALLBACK_STATION,
   };
 }
 
@@ -65,23 +62,32 @@ export function useNearestStation(): NearestStationState {
     setHasError(false);
 
     try {
-      const { status } =
-        await Location.getForegroundPermissionsAsync();
+      const { status } = await Location.getForegroundPermissionsAsync();
       let granted = status === "granted";
       if (!granted) {
         const ask = await Location.requestForegroundPermissionsAsync();
         granted = ask.status === "granted";
       }
       if (!granted) {
-        // Fall back to last-known cache (already in state) and the
-        // hardcoded national emergency contact if no cache.
+        // Fall back to last-known cache (already in state) and the national
+        // emergency contact if there is no cache.
         if (!snapshot) {
-          const fb: StationSnapshot = {
-            schemaVersion: STATION_CACHE_VERSION,
-            fetchedAt: new Date().toISOString(),
-            userLocation: { lat: 0, lng: 0 },
-            station: FALLBACK_STATION,
-          };
+          const fb = fallbackSnapshot();
+          setSnapshot(fb);
+          await writeStationCache(fb);
+        }
+        return;
+      }
+
+      // Offline: the cached snapshot is the best available answer, and there
+      // is no point burning the full request timeout to rediscover that.
+      const netState = await Network.getNetworkStateAsync();
+      const online = Boolean(
+        netState.isInternetReachable ?? netState.isConnected
+      );
+      if (!online) {
+        if (!snapshot) {
+          const fb = fallbackSnapshot();
           setSnapshot(fb);
           await writeStationCache(fb);
         }
@@ -95,10 +101,22 @@ export function useNearestStation(): NearestStationState {
           accuracy: Location.Accuracy.Balanced,
         }));
 
-      const station = await resolveNearestStation(
+      const stations = await getNearestStations(
         position.coords.latitude,
-        position.coords.longitude
+        position.coords.longitude,
+        3
       );
+
+      if (stations.length === 0) {
+        // The API answered, but has no active stations. Keep any cached
+        // snapshot; otherwise seed the national fallback.
+        if (!snapshot) {
+          const fb = fallbackSnapshot();
+          setSnapshot(fb);
+          await writeStationCache(fb);
+        }
+        return;
+      }
 
       const fresh: StationSnapshot = {
         schemaVersion: STATION_CACHE_VERSION,
@@ -107,7 +125,7 @@ export function useNearestStation(): NearestStationState {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
         },
-        station,
+        station: stations[0],
       };
 
       setSnapshot(fresh);
