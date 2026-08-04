@@ -43,25 +43,31 @@ export function useNearestStation(): NearestStationState {
   const [hasError, setHasError] = useState(false);
   const inFlight = useRef(false);
 
-  // Load from cache on mount
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const cached = await readStationCache();
-      if (!cancelled && cached) setSnapshot(cached);
-    })();
-    return () => {
-      cancelled = true;
-    };
+  // Mirrors `snapshot` synchronously. `refresh` reads this instead of the
+  // `snapshot` state value so its `!snapshotRef.current` guards always see
+  // the latest data — not whatever was in scope when the callback was
+  // created. That matters because the mount effect below captures `refresh`
+  // once with an empty dependency array; without the ref, that callback's
+  // closed-over `snapshot` would be frozen at its initial value (`null`)
+  // forever, making every "keep cached data" guard permanently true-as-empty.
+  const snapshotRef = useRef<StationSnapshot | null>(null);
+
+  const applySnapshot = useCallback((s: StationSnapshot) => {
+    snapshotRef.current = s;
+    setSnapshot(s);
   }, []);
 
   const refresh = useCallback(async () => {
     if (inFlight.current) return;
-    inFlight.current = true;
     setIsResolving(true);
     setHasError(false);
 
     try {
+      // Set the guard as the first thing inside `try` (not before it) so a
+      // throw from the `setState` calls above can never leave it stuck
+      // `true` without a matching `finally` to reset it.
+      inFlight.current = true;
+
       const { status } = await Location.getForegroundPermissionsAsync();
       let granted = status === "granted";
       if (!granted) {
@@ -70,26 +76,31 @@ export function useNearestStation(): NearestStationState {
       }
       if (!granted) {
         // Fall back to last-known cache (already in state) and the national
-        // emergency contact if there is no cache.
-        if (!snapshot) {
-          const fb = fallbackSnapshot();
-          setSnapshot(fb);
-          await writeStationCache(fb);
+        // emergency contact if there is no cache. State only — deliberately
+        // never persisted. Persisting it would let a fallback permanently
+        // overwrite a real cached station; if there's still no data next
+        // launch, this regenerates for free. Do not add writeStationCache
+        // here.
+        if (!snapshotRef.current) {
+          applySnapshot(fallbackSnapshot());
         }
         return;
       }
 
       // Offline: the cached snapshot is the best available answer, and there
       // is no point burning the full request timeout to rediscover that.
+      // Both fields are optional in expo-network's types; if neither is
+      // reported, fail OPEN (attempt the request, let the timeout decide)
+      // rather than closed — this app exists to hand back a phone number,
+      // and silently skipping the fetch on unknown connectivity is worse
+      // than a slow failure.
       const netState = await Network.getNetworkStateAsync();
-      const online = Boolean(
-        netState.isInternetReachable ?? netState.isConnected
-      );
+      const online =
+        netState.isInternetReachable ?? netState.isConnected ?? true;
       if (!online) {
-        if (!snapshot) {
-          const fb = fallbackSnapshot();
-          setSnapshot(fb);
-          await writeStationCache(fb);
+        // State only — never persisted. See permission-denied branch above.
+        if (!snapshotRef.current) {
+          applySnapshot(fallbackSnapshot());
         }
         return;
       }
@@ -109,11 +120,10 @@ export function useNearestStation(): NearestStationState {
 
       if (stations.length === 0) {
         // The API answered, but has no active stations. Keep any cached
-        // snapshot; otherwise seed the national fallback.
-        if (!snapshot) {
-          const fb = fallbackSnapshot();
-          setSnapshot(fb);
-          await writeStationCache(fb);
+        // snapshot; otherwise seed the national fallback in state only —
+        // never persisted. See permission-denied branch above.
+        if (!snapshotRef.current) {
+          applySnapshot(fallbackSnapshot());
         }
         return;
       }
@@ -128,7 +138,7 @@ export function useNearestStation(): NearestStationState {
         station: stations[0],
       };
 
-      setSnapshot(fresh);
+      applySnapshot(fresh);
       await writeStationCache(fresh);
     } catch (err) {
       console.warn("[useNearestStation] refresh failed", err);
@@ -138,11 +148,24 @@ export function useNearestStation(): NearestStationState {
       inFlight.current = false;
       setIsResolving(false);
     }
-  }, [snapshot]);
+  }, [applySnapshot]);
 
-  // Refresh on first mount (after cache load)
+  // Load from cache, then refresh — sequenced in one effect so the cached
+  // snapshot (if any) is applied to `snapshotRef`/state before the first
+  // `refresh` call runs. This prevents a fallback flash on cold start and
+  // ensures `refresh`'s "keep cached data" guards see real cached data
+  // immediately, not after a second, later effect fires.
   useEffect(() => {
-    refresh();
+    let cancelled = false;
+    (async () => {
+      const cached = await readStationCache();
+      if (cancelled) return;
+      if (cached) applySnapshot(cached);
+      refresh();
+    })();
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
