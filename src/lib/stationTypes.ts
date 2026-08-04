@@ -19,3 +19,25 @@ export type StationSnapshot = {
   userLocation: StationLocation;
   station: Station;
 };
+
+/** Ghana's national fire emergency number — the last-resort dial target. */
+export const NATIONAL_EMERGENCY_PHONE = "192";
+
+/** Wire shape returned by GET /v1/stations. Snake_case, mirrors the Go DTO. */
+export type ApiStationContact = {
+  phone: string;
+  response_rate: number;
+  active: boolean;
+};
+
+export type ApiStation = {
+  id: string;
+  name: string;
+  region: string;
+  district: string;
+  lat: number;
+  lng: number;
+  distance_meters: number;
+  primary_phone: string;
+  contacts: ApiStationContact[];
+};
