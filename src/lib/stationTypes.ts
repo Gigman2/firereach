@@ -38,6 +38,13 @@ export type RankedStation = CachedStation & { distanceMeters: number };
  * Station.PrimaryPhone ordering (highest responseRate, ties broken by the
  * lexicographically smallest phone) and then extends it into a full chain,
  * so "if no answer, try..." needs no extra logic.
+ *
+ * The mirroring is partial: 192 is pinned last unconditionally, regardless
+ * of its responseRate, because a guaranteed national fallback at the end of
+ * every chain matters more than exact agreement with the server. If a
+ * station's 192 contact ever carried the top responseRate, PrimaryPhone
+ * would name it first while this function still would not — no station in
+ * the shipped data is in that case today.
  */
 export function dialOrder(station: CachedStation): string[] {
   const ranked = station.contacts
