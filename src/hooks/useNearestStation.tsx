@@ -71,8 +71,14 @@ export type ResolvedPosition = { lat: number; lng: number };
  * `denied` and `unavailable` are deliberately separate. Conflating them into
  * a single "none" made the app tell a user who had *already granted*
  * permission, and whose GPS simply could not lock indoors, to "turn on
- * location" — advice that is both wrong and unactionable. Permission refused
- * is a thing the user can fix; no fix obtainable is not.
+ * location" — advice that is both wrong and unactionable. Permission not
+ * granted is a thing the user can fix; no fix obtainable is not.
+ *
+ * `denied` means "not granted", which covers both a refusal and a permission
+ * that has never been asked for — this provider checks but never prompts, so
+ * it cannot tell those apart, and does not need to. Both are answered by the
+ * same UI ("turn on location") and by the same two places that do prompt:
+ * onboarding's LocationRequestScreen and the Location row in Settings.
  */
 export type PositionSource =
   | "live"
@@ -130,14 +136,14 @@ async function resolvePosition(): Promise<{
   source: PositionSource;
 }> {
   const { status } = await Location.getForegroundPermissionsAsync();
-  let granted = status === "granted";
-  if (!granted) {
-    const ask = await Location.requestForegroundPermissionsAsync();
-    granted = ask.status === "granted";
+  if (status !== "granted") {
+    // Check only, never prompt. This provider mounts at the app root, before
+    // onboarding has had a chance to explain why location is needed, and an
+    // uncontextualised dialog that the user dismisses leaves them unable to
+    // grant permission from anywhere in the app. LocationRequestScreen is the
+    // only place a prompt may appear.
+    return { position: null, source: "denied" };
   }
-  // Permission refused — the one no-position case the user can actually act
-  // on, and the only one that should ever be presented as "turn on location".
-  if (!granted) return { position: null, source: "denied" };
 
   const last = await Location.getLastKnownPositionAsync({
     maxAge: MAX_LAST_KNOWN_AGE_MS,
@@ -286,18 +292,31 @@ export function NearestStationProvider({
       // A degraded response is a failed refresh, and a failed refresh must
       // never overwrite good cached data.
       //
-      // The floor is the *bundled* count, not the cached one. Measured
-      // against the cache it ratchets: 57 accepts 29, which then accepts 15,
-      // then 8, then 4, then 1 — each degraded response lowering the bar for
-      // the next until the guard has eroded itself away. The bundled count is
-      // a compile-time constant and cannot move.
+      // Reject a response far smaller than what we already trust. Measured
+      // against whichever is larger — the bundled table or the current cache —
+      // so the floor can neither ratchet downward as bad responses land, nor
+      // fall behind a dataset that has legitimately grown.
+      //
+      // Against the cache alone it ratcheted: 57 accepted 29, which accepted
+      // 15, then 8, then 4, then 1, each bad response lowering the bar for the
+      // next. Against the bundled count alone it would freeze: a table grown
+      // to 200 would still accept a 40-station response, because 40 clears
+      // half of 57. And 0.8 rather than 0.5 because half was never a
+      // meaningful bar — a response holding 30 of 57 stations has dropped 27,
+      // any one of which may be the caller's nearest, and accepting it also
+      // stamps `refreshedAt`, which pins the crippled table for the full
+      // 24-hour refresh interval.
       const bundledCount = bundledTable().stations.length;
-      if (fresh.length < bundledCount / 2) {
+      const cachedCount = localTable.stations.length;
+      const floor = 0.8 * Math.max(bundledCount, cachedCount);
+      if (fresh.length < floor) {
         console.warn(
           `[useNearestStation] refresh returned ${fresh.length} stations, ` +
-            `fewer than half the ${bundledCount} bundled with the app ` +
-            `(${localTable.stations.length} currently cached) — response ` +
-            `ignored as degraded`
+            `below the floor of ${floor} (80% of ${Math.max(
+              bundledCount,
+              cachedCount
+            )}: ${bundledCount} bundled with the app, ${cachedCount} ` +
+            `currently cached) — response ignored as degraded`
         );
         return;
       }

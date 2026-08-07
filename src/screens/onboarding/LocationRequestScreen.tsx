@@ -6,6 +6,7 @@ import { Text } from '../../components/ui/Text';
 import { Button } from '../../components/ui/Button';
 import { colors } from '../../theme/colors';
 import { useTheme } from '../../theme/ThemeContext';
+import { useNearestStation } from '../../hooks/useNearestStation';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -13,10 +14,24 @@ type Props = NativeStackScreenProps<RootStackParamList, 'LocationRequest'>;
 
 export const LocationRequestScreen = ({ navigation }: Props) => {
   const { theme, isDark } = useTheme();
+  const { refresh } = useNearestStation();
 
+  /**
+   * The only place in the app that may raise the system location dialog from
+   * a cold, undetermined state — which is why it is preceded by a screen that
+   * explains what location is for. The shared provider deliberately checks
+   * permission without ever requesting it, so this tap is what turns a
+   * `denied` provider state into a real position.
+   */
   const handleAllowLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status === 'granted') {
+      // Start resolving now, not when Home mounts. The provider's own mount
+      // effect already ran and settled on "denied" because permission was
+      // undetermined at app start; nothing else would re-run it until the app
+      // is next foregrounded. Deliberately not awaited — a resolution is
+      // bounded at 15 s and must never sit between a tap and a screen change.
+      void refresh();
       navigation.replace('OnboardingReady');
     } else {
       navigation.replace('LocationDenied');
