@@ -33,22 +33,32 @@ export type StationTable = {
 
 export type RankedStation = CachedStation & { distanceMeters: number };
 
+export type DialTarget = {
+  phone: string;
+  /**
+   * True only for 192. Toll-free numbers connect on any Ghanaian network with
+   * no airtime; everything else in the chain is a chargeable landline that a
+   * caller with no credit cannot reach at all.
+   */
+  tollFree: boolean;
+};
+
 /**
- * Numbers to try, best first, always ending with 192. Mirrors the server's
- * Station.PrimaryPhone ordering (highest responseRate, ties broken by the
- * lexicographically smallest phone) and then extends it into a full chain,
- * so "if no answer, try..." needs no extra logic.
+ * Numbers to offer, best first. 192 always leads and is always present.
  *
- * The mirroring is partial: 192 is pinned last unconditionally, regardless
- * of its responseRate, because a guaranteed national fallback at the end of
- * every chain matters more than exact agreement with the server. If a
- * station's 192 contact ever carried the top responseRate, PrimaryPhone
- * would name it first while this function still would not — no station in
- * the shipped data is in that case today.
+ * This is deliberately NOT ordered by which line is most likely to answer.
+ * Every station number in the dataset is a chargeable hotline — GNFS itself
+ * separates "emergency numbers (112/192)" from "hotlines" — and 192 is the
+ * only one that connects with zero credit. Leading with a hotline means a
+ * caller with no airtime taps the primary action and nothing happens.
+ *
+ * The hotlines that follow keep their source ordering, which reproduces the
+ * publication order of a 2022 page and measures nothing. They are alternatives,
+ * not a ranked likelihood of pickup.
  */
-export function dialOrder(station: CachedStation): string[] {
-  const ranked = station.contacts
-    .filter((c) => c.active)
+export function dialTargets(station: CachedStation): DialTarget[] {
+  const hotlines = station.contacts
+    .filter((c) => c.active && c.phone !== NATIONAL_EMERGENCY_PHONE)
     .slice()
     .sort((a, b) =>
       a.responseRate !== b.responseRate
@@ -57,8 +67,10 @@ export function dialOrder(station: CachedStation): string[] {
     )
     .map((c) => c.phone);
 
-  const withoutNational = ranked.filter((p) => p !== NATIONAL_EMERGENCY_PHONE);
-  return [...new Set([...withoutNational, NATIONAL_EMERGENCY_PHONE])];
+  return [
+    { phone: NATIONAL_EMERGENCY_PHONE, tollFree: true },
+    ...[...new Set(hotlines)].map((phone) => ({ phone, tollFree: false })),
+  ];
 }
 
 /** Wire shape returned by GET /v1/stations. Snake_case, mirrors the Go DTO. */
