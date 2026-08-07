@@ -22,7 +22,7 @@ import { colors } from "../theme/colors";
 import { useTheme } from "../theme/ThemeContext";
 import { useConnectivity } from "../hooks/useConnectivity";
 import { useNearestStation } from "../hooks/useNearestStation";
-import { NATIONAL_EMERGENCY_PHONE } from "../lib/stationTypes";
+import { dialOrder, NATIONAL_EMERGENCY_PHONE } from "../lib/stationTypes";
 
 function formatDistance(meters: number): string {
   if (meters <= 0) return "Distance unavailable";
@@ -39,22 +39,38 @@ export const HomeScreen = () => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { isOnline } = useConnectivity();
-  const { snapshot, refresh, isResolving } = useNearestStation();
+  const { nearest, table, positionSource, refresh, isResolving } =
+    useNearestStation();
 
-  const station = snapshot?.station ?? null;
+  const numbers = nearest ? dialOrder(nearest) : [NATIONAL_EMERGENCY_PHONE];
+  const primaryNumber = numbers[0];
+  const alternates = numbers.slice(1);
 
-  const handleCall = () => {
-    const phone = station?.phone ?? NATIONAL_EMERGENCY_PHONE;
+  const dial = (phone: string) => {
     Linking.openURL(`tel:${phone}`).catch((err) =>
       console.warn("[HomeScreen] dial failed", err)
     );
   };
 
-  const handleCallNational = () => {
-    Linking.openURL(`tel:${NATIONAL_EMERGENCY_PHONE}`).catch((err) =>
-      console.warn("[HomeScreen] dial failed", err)
-    );
-  };
+  const statusLabel =
+    positionSource === "none"
+      ? "NO LOCATION"
+      : positionSource === "implausible"
+      ? "LOCATION OUTSIDE GHANA"
+      : positionSource === "lastKnownStale"
+      ? "USING LAST KNOWN LOCATION"
+      : isOnline !== false
+      ? "ONLINE · GPS ACTIVE"
+      : "OFFLINE · SAVED LIST";
+
+  const statusColor =
+    positionSource === "none" ||
+    positionSource === "implausible" ||
+    positionSource === "lastKnownStale"
+      ? colors.warning
+      : isOnline !== false
+      ? colors.success
+      : colors.warning;
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -71,16 +87,10 @@ export const HomeScreen = () => {
       >
         <View style={styles.statusLeft}>
           <View
-            style={[
-              styles.onlineDot,
-              {
-                backgroundColor:
-                  isOnline !== false ? colors.success : colors.warning,
-              },
-            ]}
+            style={[styles.onlineDot, { backgroundColor: statusColor }]}
           />
           <Text variant="label" color={theme.textSecondary}>
-            {isOnline !== false ? "ONLINE · GPS ACTIVE" : "OFFLINE · LAST KNOWN"}
+            {statusLabel}
           </Text>
         </View>
         <TouchableOpacity>
@@ -112,7 +122,7 @@ export const HomeScreen = () => {
           >
             <WifiSlashIcon size={20} color={colors.warning} />
             <Text variant="caption" weight="medium" color={theme.warningText}>
-              No internet — showing last known station
+              No internet — using the saved station list
             </Text>
           </View>
         )}
@@ -132,13 +142,16 @@ export const HomeScreen = () => {
             </View>
             <View style={styles.distanceBadge}>
               <Text variant="label" color="#FFFFFF">
-                {station ? formatDistance(station.distanceMeters) : "Locating…"}
+                {nearest ? formatDistance(nearest.distanceMeters) : "Locating…"}
               </Text>
             </View>
           </View>
           <View style={styles.stationInfo}>
             <Text variant="heading2">
-              {station?.name ?? "Finding nearest station…"}
+              {nearest?.name ??
+                (positionSource === "implausible"
+                  ? "No station near your location"
+                  : "Turn on location to find your station")}
             </Text>
             <Text
               variant="caption"
@@ -146,36 +159,68 @@ export const HomeScreen = () => {
               color={theme.textSecondary}
               style={styles.stationRegion}
             >
-              {station?.region ?? ""}
+              {nearest ? `${nearest.district}, ${nearest.region}` : ""}
             </Text>
           </View>
         </View>
+
+        {positionSource === "lastKnownStale" && (
+          <Text
+            variant="caption"
+            color={theme.textTertiary}
+            style={styles.freshness}
+          >
+            Based on where your phone last had a location fix — if you have
+            travelled, check the station name before calling.
+          </Text>
+        )}
 
         {/* Primary Emergency CTA */}
         <TouchableOpacity
           style={styles.callButton}
           activeOpacity={0.85}
-          onPress={handleCall}
+          onPress={() => dial(primaryNumber)}
         >
           <PhoneIcon size={28} color="#FFFFFF" weight="fill" />
           <Text variant="bodyLarge" weight="bold" color="#FFFFFF">
-            {station ? `Call ${shortName(station.name)}` : "Call Emergency"}
+            {nearest ? `Call ${shortName(nearest.name)}` : "Call Emergency"}
           </Text>
         </TouchableOpacity>
 
-        {/* Secondary national fallback — only when it isn't a duplicate of
-            the primary action above. */}
-        {station && station.phone !== NATIONAL_EMERGENCY_PHONE && (
-          <TouchableOpacity
-            style={styles.secondaryCallButton}
-            activeOpacity={0.6}
-            onPress={handleCallNational}
-          >
-            <Text variant="caption" weight="semiBold" color={theme.textSecondary}>
-              Call 192 instead
+        {alternates.length > 0 && (
+          <View style={styles.alternatesRow}>
+            <Text variant="caption" color={theme.textTertiary}>
+              If no answer:
             </Text>
-          </TouchableOpacity>
+            {alternates.map((phone) => (
+              <TouchableOpacity
+                key={phone}
+                activeOpacity={0.6}
+                onPress={() => dial(phone)}
+              >
+                <Text
+                  variant="caption"
+                  weight="semiBold"
+                  color={colors.brandPrimary}
+                >
+                  {phone === NATIONAL_EMERGENCY_PHONE ? "192 (national)" : phone}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         )}
+
+        <Text
+          variant="caption"
+          color={theme.textTertiary}
+          style={styles.freshness}
+        >
+          {table.source === "bundled"
+            ? "Using the station list built into the app"
+            : `Station list updated ${new Date(
+                table.refreshedAt as string
+              ).toLocaleDateString()}`}
+        </Text>
 
         {/* Quick Actions Grid */}
         <View style={styles.quickActions}>
@@ -317,10 +362,17 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
-  secondaryCallButton: {
+  alternatesRow: {
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 8,
+    flexWrap: "wrap",
+    gap: 12,
+    marginTop: -8,
+  },
+  freshness: {
+    textAlign: "center",
+    marginTop: -8,
   },
   quickActions: {
     flexDirection: "row",
