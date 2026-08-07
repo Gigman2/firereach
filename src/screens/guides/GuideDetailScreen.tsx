@@ -162,7 +162,7 @@ export const GuideDetailScreen = ({ navigation }: Props) => {
               <WarningCircleIcon size={20} color={colors.brandPrimary} weight="fill" />
             </View>
             <Text variant="caption" weight="medium" color={theme.emergencyText} style={styles.footerText}>
-              In an active emergency, call your nearest station
+              In an active emergency, call 192 — free on any network
             </Text>
           </View>
           <TouchableOpacity
@@ -176,7 +176,7 @@ export const GuideDetailScreen = ({ navigation }: Props) => {
           >
             <PhoneIcon size={16} color="#FFFFFF" weight="fill" />
             <Text variant="caption" weight="bold" color="#FFFFFF">
-              Call Now
+              Call 192
             </Text>
           </TouchableOpacity>
         </View>

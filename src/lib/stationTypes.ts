@@ -1,6 +1,10 @@
 export const STATION_TABLE_VERSION = 2 as const;
 
-/** Ghana's national fire emergency number — the last-resort dial target. */
+/**
+ * Ghana's national fire emergency number — toll-free and fire-specific.
+ * This is the primary dial target that every chain begins with: it is the
+ * only number in the app that connects on any network with zero credit.
+ */
 export const NATIONAL_EMERGENCY_PHONE = "192";
 
 export type StationContact = {

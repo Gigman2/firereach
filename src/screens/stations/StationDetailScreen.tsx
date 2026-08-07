@@ -202,8 +202,8 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
                 color={theme.textTertiary}
                 style={styles.phoneCaption}
               >
-                Regional command lines, recorded 2022. If one does not answer,
-                try the next.
+                192 is free on any network. The numbers below are regional
+                command lines recorded in 2022 and may cost airtime.
               </Text>
             )}
           </View>

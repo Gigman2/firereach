@@ -22,6 +22,7 @@ import {
 import { Text } from "../../components/ui/Text";
 import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
+import { NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { GuidesStackParamList } from "../../navigation/types";
 
@@ -98,7 +99,7 @@ const MOCK_RESPONSES: Record<string, Omit<Message, "id">> = {
     role: "assistant",
     type: "fact",
     content: "The Ghana National Fire Service emergency number is:",
-    factLabel: "Emergency Hotline",
+    factLabel: "Fire Emergency Number",
     factValue: "192",
   },
   "My house is on fire!": {
@@ -237,7 +238,11 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
       </Text>
       <TouchableOpacity
         style={rs.emergencyCallButton}
-        onPress={() => Linking.openURL("tel:192")}
+        onPress={() =>
+          Linking.openURL(`tel:${NATIONAL_EMERGENCY_PHONE}`).catch((err) =>
+            console.warn("[GuidesChat] dial failed", err)
+          )
+        }
       >
         <PhoneIcon size={18} color="#FFFFFF" weight="fill" />
         <Text variant="bodyMedium" weight="bold" color="#FFFFFF">

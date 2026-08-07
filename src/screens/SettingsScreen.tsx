@@ -22,6 +22,7 @@ import { Text } from "../components/ui/Text";
 import { colors } from "../theme/colors";
 import { useTheme, type ThemeMode } from "../theme/ThemeContext";
 import { clearStationCache } from "../lib/stationCache";
+import { NATIONAL_EMERGENCY_PHONE } from "../lib/stationTypes";
 import appConfig from "../../app.json";
 
 type LocationPermissionStatus = "granted" | "denied" | "undetermined";
@@ -185,7 +186,11 @@ export const SettingsScreen = () => {
         <View style={[styles.card, { backgroundColor: theme.background, borderColor: theme.border }]}>
           <TouchableOpacity
             style={styles.row}
-            onPress={() => Linking.openURL("tel:192")}
+            onPress={() =>
+              Linking.openURL(`tel:${NATIONAL_EMERGENCY_PHONE}`).catch((err) =>
+                console.warn("[Settings] dial failed", err)
+              )
+            }
           >
             <View style={styles.rowLeft}>
               <PhoneIcon
@@ -198,12 +203,12 @@ export const SettingsScreen = () => {
                   Ghana Fire Service
                 </Text>
                 <Text variant="label" color={theme.textTertiary}>
-                  National Emergency Dispatch
+                  Ghana National Fire Service
                 </Text>
               </View>
             </View>
             <Text variant="heading2" color={colors.brandPrimary}>
-              192
+              {NATIONAL_EMERGENCY_PHONE}
             </Text>
           </TouchableOpacity>
         </View>

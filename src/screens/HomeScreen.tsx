@@ -43,6 +43,14 @@ export const HomeScreen = () => {
   const primary = targets[0];
   const alternates = targets.slice(1);
 
+  // Derived from the tollFree flag rather than the array position, so this
+  // stays correct even if dialTargets' shape ever changes — the detail
+  // screen already derives its cost labels the same way.
+  const primaryCostCaption = primary.tollFree
+    ? "Free on any network — no credit needed"
+    : "May cost airtime";
+  const alternatesAreTollFree = alternates.every((t) => t.tollFree);
+
   const dial = (phone: string) => {
     Linking.openURL(`tel:${phone}`).catch((err) =>
       console.warn("[HomeScreen] dial failed", err)
@@ -227,7 +235,7 @@ export const HomeScreen = () => {
               Call {primary.phone}
             </Text>
             <Text variant="caption" color="#FFFFFF">
-              Free on any network — no credit needed
+              {primaryCostCaption}
             </Text>
           </View>
         </TouchableOpacity>
@@ -243,7 +251,9 @@ export const HomeScreen = () => {
               above, chargeable hotlines — dialling one costs airtime.
             */}
             <Text variant="caption" color={theme.textTertiary}>
-              Station hotline (may cost airtime):
+              {alternatesAreTollFree
+                ? "Other numbers:"
+                : "Station hotlines (may cost airtime):"}
             </Text>
             {alternates.map((target) => (
               <TouchableOpacity
