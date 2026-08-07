@@ -90,9 +90,6 @@ export const ReportStationScreen = ({ navigation, route }: Props) => {
             <Text variant="bodyMedium" weight="bold">
               {stationName}
             </Text>
-            <Text variant="caption" color={theme.textSecondary}>
-              Downtown District, Zone 7
-            </Text>
           </View>
           <View style={styles.stationRefIcon}>
             <FireIcon size={28} color={colors.brandPrimary} weight="fill" />

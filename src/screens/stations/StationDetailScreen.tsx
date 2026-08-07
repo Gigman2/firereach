@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -11,7 +11,6 @@ import {
   ArrowLeftIcon,
   BuildingsIcon,
   CompassIcon,
-  RulerIcon,
   PhoneIcon,
   MapPinIcon,
   MapTrifoldIcon,
@@ -21,33 +20,62 @@ import { Text } from "../../components/ui/Text";
 import { Button } from "../../components/ui/Button";
 import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
+import { readStationTable } from "../../lib/stationCache";
+import { dialOrder, NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
+import type { CachedStation } from "../../lib/stationTypes";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { StationsStackParamList } from "../../navigation/types";
 
 type Props = NativeStackScreenProps<StationsStackParamList, "StationDetail">;
 
-// Mock data — in production this would come from a store/API
-const STATION = {
-  id: "1",
-  name: "Station 42 - Downtown",
-  regionBadge: "Central Metro Region",
-  district: "Central District",
-  region: "North Region",
-  distance: "~ 2.4 km",
-  phones: ["(555) 012-3456", "(555) 012-3457"],
-  coords: "40.7128° N, 74.0060° W",
-};
+function formatCoords(lat: number, lng: number): string {
+  const ns = lat >= 0 ? "N" : "S";
+  const ew = lng >= 0 ? "E" : "W";
+  return `${Math.abs(lat).toFixed(4)}° ${ns}, ${Math.abs(lng).toFixed(4)}° ${ew}`;
+}
 
-export const StationDetailScreen = ({ navigation }: Props) => {
+export const StationDetailScreen = ({ navigation, route }: Props) => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
+  const { stationId } = route.params;
 
-  const handleCall = () => {
-    Linking.openURL("tel:5550123456");
+  const [station, setStation] = useState<CachedStation | null>(null);
+  /** True only once the lookup has finished and found nothing. */
+  const [missing, setMissing] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      // Reads whatever table is on the device — network-refreshed or the one
+      // bundled with the binary — so this screen is fully offline.
+      const table = await readStationTable();
+      if (cancelled) return;
+      const found = table.stations.find((s) => s.id === stationId) ?? null;
+      setStation(found);
+      setMissing(!found);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [stationId]);
+
+  // Every number on this screen comes from the dial chain, never from a
+  // literal. While the lookup is in flight there is no station and therefore
+  // no chain, but the call button must never be dead — 192 always answers.
+  const phones = station ? dialOrder(station) : [];
+  const primaryPhone = phones[0] ?? NATIONAL_EMERGENCY_PHONE;
+
+  const dial = (phone: string) => {
+    Linking.openURL(`tel:${phone}`).catch((err) =>
+      console.warn("[StationDetail] dial failed", err)
+    );
   };
 
   const handleOpenMaps = () => {
-    Linking.openURL("https://maps.google.com/?q=40.7128,-74.0060");
+    if (!station) return;
+    Linking.openURL(
+      `https://maps.google.com/?q=${station.lat},${station.lng}`
+    ).catch((err) => console.warn("[StationDetail] open maps failed", err));
   };
 
   return (
@@ -67,13 +95,13 @@ export const StationDetailScreen = ({ navigation }: Props) => {
             style={styles.headerTitle}
             numberOfLines={1}
           >
-            {STATION.name}
+            {station?.name ?? (missing ? "Station not found" : "")}
           </Text>
         </View>
         <View style={styles.badgeRow}>
           <View style={styles.badge}>
             <Text variant="label" color="#FFFFFF">
-              {STATION.regionBadge}
+              {station?.region ?? ""}
             </Text>
           </View>
         </View>
@@ -83,6 +111,23 @@ export const StationDetailScreen = ({ navigation }: Props) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {missing && (
+          <View
+            style={[
+              styles.notice,
+              {
+                backgroundColor: theme.warningBg,
+                borderColor: theme.warningBorder,
+              },
+            ]}
+          >
+            <Text variant="caption" weight="medium" color={theme.warningText}>
+              This station is no longer in the list saved on your phone. You can
+              still reach the fire service on {NATIONAL_EMERGENCY_PHONE}.
+            </Text>
+          </View>
+        )}
+
         {/* Info Card */}
         <View style={[styles.infoCard, { backgroundColor: theme.background, borderColor: theme.border }]}>
           <View style={styles.infoRow}>
@@ -93,7 +138,7 @@ export const StationDetailScreen = ({ navigation }: Props) => {
               </Text>
             </View>
             <Text variant="bodyMedium" weight="semiBold">
-              {STATION.district}
+              {station?.district ?? ""}
             </Text>
           </View>
 
@@ -107,21 +152,7 @@ export const StationDetailScreen = ({ navigation }: Props) => {
               </Text>
             </View>
             <Text variant="bodyMedium" weight="semiBold">
-              {STATION.region}
-            </Text>
-          </View>
-
-          <View style={[styles.infoDivider, { backgroundColor: theme.divider }]} />
-
-          <View style={styles.infoRow}>
-            <View style={styles.infoLabel}>
-              <RulerIcon size={20} color={colors.brandPrimary} />
-              <Text variant="caption" color={theme.textSecondary}>
-                Distance
-              </Text>
-            </View>
-            <Text variant="bodyMedium" weight="semiBold">
-              {STATION.distance}
+              {station?.region ?? ""}
             </Text>
           </View>
 
@@ -135,18 +166,22 @@ export const StationDetailScreen = ({ navigation }: Props) => {
                 color={theme.textSecondary}
                 style={{ letterSpacing: 1 }}
               >
-                PHONE (PRIMARY/ALT)
+                PHONE — TRY IN THIS ORDER
               </Text>
             </View>
-            {STATION.phones.map((phone) => (
-              <Text
-                key={phone}
-                variant="bodyMedium"
-                weight="semiBold"
-                style={styles.phoneNumber}
-              >
-                {phone}
-              </Text>
+            {phones.map((phone) => (
+              <TouchableOpacity key={phone} onPress={() => dial(phone)}>
+                <Text
+                  variant="bodyMedium"
+                  weight="semiBold"
+                  color={colors.brandPrimary}
+                  style={styles.phoneNumber}
+                >
+                  {phone === NATIONAL_EMERGENCY_PHONE
+                    ? `${phone} (national)`
+                    : phone}
+                </Text>
+              </TouchableOpacity>
             ))}
           </View>
         </View>
@@ -156,6 +191,7 @@ export const StationDetailScreen = ({ navigation }: Props) => {
           style={styles.mapSection}
           activeOpacity={0.8}
           onPress={handleOpenMaps}
+          disabled={!station}
         >
           <View style={[styles.mapPreview, { backgroundColor: theme.surface, borderColor: theme.border }]}>
             <MapPinIcon
@@ -163,30 +199,38 @@ export const StationDetailScreen = ({ navigation }: Props) => {
               color={colors.brandPrimary}
               weight="fill"
             />
-            <View style={styles.coordsBadge}>
-              <Text
-                variant="label"
-                color="#FFFFFF"
-                style={{ fontFamily: "monospace" }}
-              >
-                {STATION.coords}
+            {station && (
+              <View style={styles.coordsBadge}>
+                <Text
+                  variant="label"
+                  color="#FFFFFF"
+                  style={{ fontFamily: "monospace" }}
+                >
+                  {formatCoords(station.lat, station.lng)}
+                </Text>
+              </View>
+            )}
+          </View>
+          {station && (
+            <View style={styles.mapLink}>
+              <MapTrifoldIcon size={18} color={colors.brandPrimary} />
+              <Text variant="caption" weight="semiBold" color={colors.brandPrimary}>
+                Tap to open in Maps
               </Text>
             </View>
-          </View>
-          <View style={styles.mapLink}>
-            <MapTrifoldIcon size={18} color={colors.brandPrimary} />
-            <Text variant="caption" weight="semiBold" color={colors.brandPrimary}>
-              Tap to open in Maps
-            </Text>
-          </View>
+          )}
         </TouchableOpacity>
 
         {/* Call CTA */}
         <View style={styles.ctaSection}>
           <Button
-            title="Call Station"
+            title={
+              missing
+                ? `Call ${NATIONAL_EMERGENCY_PHONE}`
+                : "Call Station"
+            }
             size="large"
-            onPress={handleCall}
+            onPress={() => dial(primaryPhone)}
             leftIcon={<PhoneIcon size={24} color="#FFFFFF" weight="fill" />}
           />
         </View>
@@ -194,12 +238,14 @@ export const StationDetailScreen = ({ navigation }: Props) => {
         {/* Report Link */}
         <TouchableOpacity
           style={styles.reportLink}
-          onPress={() =>
+          disabled={!station}
+          onPress={() => {
+            if (!station) return;
             navigation.navigate("ReportStation", {
-              stationId: STATION.id,
-              stationName: STATION.name,
-            })
-          }
+              stationId: station.id,
+              stationName: station.name,
+            });
+          }}
         >
           <Text variant="caption" color={theme.textTertiary}>
             Something wrong with this info? Report it
@@ -248,6 +294,12 @@ const styles = StyleSheet.create({
     padding: 16,
     gap: 16,
     paddingBottom: 40,
+  },
+  notice: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   infoCard: {
     borderRadius: 16,
