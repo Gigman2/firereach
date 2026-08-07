@@ -69,6 +69,8 @@ PODS:
     - React-Core
     - React-runtimescheduler
     - ReactCommon
+  - ExpoNetwork (55.0.13):
+    - ExpoModulesCore
   - ExpoUI (55.0.2):
     - ExpoModulesCore
     - React-RCTFabric
@@ -2039,8 +2041,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - WidgetBridge (0.1.0):
-    - ExpoModulesCore
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -2055,6 +2055,7 @@ DEPENDENCIES:
   - "ExpoLogBox (from `../node_modules/expo/node_modules/@expo/log-box`)"
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
   - ExpoModulesJSI (from `../node_modules/expo-modules-core`)
+  - ExpoNetwork (from `../node_modules/expo-network/ios`)
   - "ExpoUI (from `../node_modules/@expo/ui/ios`)"
   - ExpoWidgets (from `../node_modules/expo-widgets/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -2134,7 +2135,6 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - WidgetBridge (from `../.worktrees/feature-swift-widget/modules/widget-bridge/ios`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 EXTERNAL SOURCES:
@@ -2160,6 +2160,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-modules-core"
   ExpoModulesJSI:
     :path: "../node_modules/expo-modules-core"
+  ExpoNetwork:
+    :path: "../node_modules/expo-network/ios"
   ExpoUI:
     :path: "../node_modules/@expo/ui/ios"
   ExpoWidgets:
@@ -2317,8 +2319,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-screens"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  WidgetBridge:
-    :path: "../.worktrees/feature-swift-widget/modules/widget-bridge/ios"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -2334,6 +2334,7 @@ SPEC CHECKSUMS:
   ExpoLogBox: 89b634d5a8a64c4a6a7caad8f9985a28463c7002
   ExpoModulesCore: b40499585cec5bfd14d45ce04f0c42d3d2ec22bb
   ExpoModulesJSI: 46dab6c6d9e181bf94757367a0d569bfc7fffd99
+  ExpoNetwork: aec041c4e9cb5a30cb4da32b2e315bcca6a7c2e4
   ExpoUI: e2da27412b0e9f7215216e53064cd242b79e99ef
   ExpoWidgets: 3c060682bf7caf16b7a5fbb3731330b808bf4397
   FBLazyVector: 32e9ed0301d0fcbc1b2b341dd7fcbf291f51eb83
@@ -2412,7 +2413,6 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 3a4f5e2777dae1688b781a487923a08569e27fe4
   RNScreens: 14243fa0d9842ffa7f8bb2d00b6c3cfd3ca817e8
   RNSVG: 0bd149b873018bc6e0e3321e2f6435bdba294460
-  WidgetBridge: 5f6673dde5c37853d6b2d3db24dc7372142bb596
   Yoga: dd994d8c85dca5cc9b10f5df8c01f9ef1d0da191
 
 PODFILE CHECKSUM: 636e1a231c6a20739de9516c2499d06412b710cf
