@@ -2,60 +2,129 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import * as Location from "expo-location";
 import * as Network from "expo-network";
 import {
-  STATION_CACHE_VERSION,
-  NATIONAL_EMERGENCY_PHONE,
-  Station,
-  StationSnapshot,
+  CachedStation,
+  RankedStation,
+  STATION_TABLE_VERSION,
+  StationTable,
 } from "../lib/stationTypes";
 import {
-  readStationCache,
-  writeStationCache,
+  bundledTable,
+  readStationTable,
+  writeStationTable,
 } from "../lib/stationCache";
-import { getNearestStations } from "../lib/stationsApi";
+import { nearestStations } from "../lib/geo";
+import { fetchAllStations } from "../lib/stationsApi";
+
+/** A last-known fix older than this is not trusted to pick a station. */
+const MAX_LAST_KNOWN_AGE_MS = 10 * 60 * 1000;
+/** Metres. A coarser last-known fix is ignored in favour of a live one. */
+const MAX_LAST_KNOWN_ACCURACY_M = 5000;
+/** Cold GPS on a low-end device can never lock. Settle rather than hang. */
+const POSITION_TIMEOUT_MS = 6000;
+/** Refresh the table at most this often. Fire stations do not move. */
+const REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Ghana's longest dimension is roughly 670 km, so a "nearest" station beyond
+ * this means a bad GPS fix or a user outside the country — not a usable answer.
+ * Deliberately generous: station coverage is sparse in rural areas and a
+ * legitimate rural user must not be rejected.
+ *
+ * Ranking used to be filtered at fetch time, but filtering there would shrink
+ * the cached table itself. It belongs here instead, where it affects only what
+ * is presented. Without it, a simulator sitting in San Francisco ranks a
+ * station 11,746 km away as "nearest" and the app offers to dial it.
+ */
+const MAX_PLAUSIBLE_DISTANCE_METERS = 500_000;
+
+export type ResolvedPosition = { lat: number; lng: number };
+/** `implausible` means we have a fix, but it puts the user nowhere near Ghana. */
+export type PositionSource = "live" | "lastKnown" | "none" | "implausible";
 
 export type NearestStationState = {
-  snapshot: StationSnapshot | null;
+  nearest: RankedStation | null;
+  /** The next-nearest stations, for "other stations near you". */
+  alternatives: RankedStation[];
+  table: StationTable;
+  position: ResolvedPosition | null;
+  positionSource: PositionSource;
   isResolving: boolean;
   hasError: boolean;
   refresh: () => Promise<void>;
 };
 
-const FALLBACK_STATION: Station = {
-  id: "stn_fallback_192",
-  name: "National Fire Service",
-  region: "Ghana",
-  distanceMeters: 0,
-  phone: NATIONAL_EMERGENCY_PHONE,
-};
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(null), ms);
+    promise
+      .then((value) => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch(() => {
+        clearTimeout(timer);
+        resolve(null);
+      });
+  });
+}
 
-function fallbackSnapshot(): StationSnapshot {
-  return {
-    schemaVersion: STATION_CACHE_VERSION,
-    fetchedAt: new Date().toISOString(),
-    userLocation: { lat: 0, lng: 0 },
-    station: FALLBACK_STATION,
-  };
+/**
+ * Best available position. A bounded last-known fix is preferred because it
+ * is instant; a live fix is raced against a timeout so a device that can
+ * never lock still settles instead of hanging.
+ */
+async function resolvePosition(): Promise<{
+  position: ResolvedPosition | null;
+  source: PositionSource;
+}> {
+  const { status } = await Location.getForegroundPermissionsAsync();
+  let granted = status === "granted";
+  if (!granted) {
+    const ask = await Location.requestForegroundPermissionsAsync();
+    granted = ask.status === "granted";
+  }
+  if (!granted) return { position: null, source: "none" };
+
+  const last = await Location.getLastKnownPositionAsync({
+    maxAge: MAX_LAST_KNOWN_AGE_MS,
+    requiredAccuracy: MAX_LAST_KNOWN_ACCURACY_M,
+  });
+  if (last) {
+    return {
+      position: { lat: last.coords.latitude, lng: last.coords.longitude },
+      source: "lastKnown",
+    };
+  }
+
+  const live = await withTimeout(
+    Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
+    POSITION_TIMEOUT_MS
+  );
+  if (live) {
+    return {
+      position: { lat: live.coords.latitude, lng: live.coords.longitude },
+      source: "live",
+    };
+  }
+
+  return { position: null, source: "none" };
+}
+
+function isStale(table: StationTable): boolean {
+  if (!table.refreshedAt) return true;
+  const age = Date.now() - Date.parse(table.refreshedAt);
+  // A negative age means the device clock moved backwards. Treat it as stale
+  // rather than trusting a timestamp from the future.
+  return Number.isNaN(age) || age < 0 || age > REFRESH_INTERVAL_MS;
 }
 
 export function useNearestStation(): NearestStationState {
-  const [snapshot, setSnapshot] = useState<StationSnapshot | null>(null);
+  const [table, setTable] = useState<StationTable>(bundledTable);
+  const [position, setPosition] = useState<ResolvedPosition | null>(null);
+  const [positionSource, setPositionSource] = useState<PositionSource>("none");
   const [isResolving, setIsResolving] = useState(false);
   const [hasError, setHasError] = useState(false);
   const inFlight = useRef(false);
-
-  // Mirrors `snapshot` synchronously. `refresh` reads this instead of the
-  // `snapshot` state value so its `!snapshotRef.current` guards always see
-  // the latest data — not whatever was in scope when the callback was
-  // created. That matters because the mount effect below captures `refresh`
-  // once with an empty dependency array; without the ref, that callback's
-  // closed-over `snapshot` would be frozen at its initial value (`null`)
-  // forever, making every "keep cached data" guard permanently true-as-empty.
-  const snapshotRef = useRef<StationSnapshot | null>(null);
-
-  const applySnapshot = useCallback((s: StationSnapshot) => {
-    snapshotRef.current = s;
-    setSnapshot(s);
-  }, []);
 
   const refresh = useCallback(async () => {
     if (inFlight.current) return;
@@ -63,116 +132,76 @@ export function useNearestStation(): NearestStationState {
     setHasError(false);
 
     try {
-      // Set the guard as the first thing inside `try` (not before it) so a
-      // throw from the `setState` calls above can never leave it stuck
-      // `true` without a matching `finally` to reset it.
       inFlight.current = true;
 
-      const { status } = await Location.getForegroundPermissionsAsync();
-      let granted = status === "granted";
-      if (!granted) {
-        const ask = await Location.requestForegroundPermissionsAsync();
-        granted = ask.status === "granted";
-      }
-      if (!granted) {
-        // Fall back to last-known cache (already in state) and the national
-        // emergency contact if there is no cache. State only — deliberately
-        // never persisted. Persisting it would let a fallback permanently
-        // overwrite a real cached station; if there's still no data next
-        // launch, this regenerates for free. Do not add writeStationCache
-        // here.
-        if (!snapshotRef.current) {
-          applySnapshot(fallbackSnapshot());
-        }
-        return;
-      }
+      // 1. Local data first. This never fails and never returns empty, so a
+      //    usable answer exists before any network or GPS work is attempted.
+      const localTable = await readStationTable();
+      setTable(localTable);
 
-      // Offline: the cached snapshot is the best available answer, and there
-      // is no point burning the full request timeout to rediscover that.
-      // Both fields are optional in expo-network's types; if neither is
-      // reported, fail OPEN (attempt the request, let the timeout decide)
-      // rather than closed — this app exists to hand back a phone number,
-      // and silently skipping the fetch on unknown connectivity is worse
-      // than a slow failure.
+      // 2. Position. Ranking happens against whatever table we already have,
+      //    so being offline changes nothing about this step.
+      const resolved = await resolvePosition();
+      setPosition(resolved.position);
+      setPositionSource(resolved.source);
+
+      // 3. Network refresh, strictly an upgrade of the inputs. Never gates
+      //    the answer. Both expo-network fields are optional; if neither is
+      //    reported, fail OPEN and let the request timeout decide.
       const netState = await Network.getNetworkStateAsync();
       const online =
         netState.isInternetReachable ?? netState.isConnected ?? true;
-      if (!online) {
-        // State only — never persisted. See permission-denied branch above.
-        if (!snapshotRef.current) {
-          applySnapshot(fallbackSnapshot());
-        }
-        return;
-      }
+      if (!online || !isStale(localTable)) return;
 
-      const last = await Location.getLastKnownPositionAsync();
-      const position =
-        last ??
-        (await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Balanced,
-        }));
+      const fresh = await fetchAllStations();
+      if (fresh.length === 0) return; // Never replace real data with nothing.
 
-      const stations = await getNearestStations(
-        position.coords.latitude,
-        position.coords.longitude,
-        3
-      );
-
-      if (stations.length === 0) {
-        // The API answered, but has no active stations. Keep any cached
-        // snapshot; otherwise seed the national fallback in state only —
-        // never persisted. See permission-denied branch above.
-        if (!snapshotRef.current) {
-          applySnapshot(fallbackSnapshot());
-        }
-        return;
-      }
-
-      const fresh: StationSnapshot = {
-        schemaVersion: STATION_CACHE_VERSION,
-        fetchedAt: new Date().toISOString(),
-        userLocation: {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        },
-        station: stations[0],
+      const next: StationTable = {
+        schemaVersion: STATION_TABLE_VERSION,
+        refreshedAt: new Date().toISOString(),
+        source: "network",
+        stations: fresh,
       };
-
-      applySnapshot(fresh);
-      await writeStationCache(fresh);
+      setTable(next);
+      await writeStationTable(next);
     } catch (err) {
       console.warn("[useNearestStation] refresh failed", err);
       setHasError(true);
-      // Keep an existing snapshot — stale data beats no data. But with no cache
-      // at all, leaving snapshot null makes the call button inert, so seed the
-      // national fallback. Still never persisted: see the early-return branches.
-      if (!snapshotRef.current) {
-        applySnapshot(fallbackSnapshot());
-      }
+      // The table in state is already the best available. Nothing to undo.
     } finally {
       inFlight.current = false;
       setIsResolving(false);
     }
-  }, [applySnapshot]);
+  }, []);
 
-  // Load from cache, then refresh — sequenced in one effect so the cached
-  // snapshot (if any) is applied to `snapshotRef`/state before the first
-  // `refresh` call runs. This prevents a fallback flash on cold start and
-  // ensures `refresh`'s "keep cached data" guards see real cached data
-  // immediately, not after a second, later effect fires.
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const cached = await readStationCache();
-      if (cancelled) return;
-      if (cached) applySnapshot(cached);
-      refresh();
-    })();
-    return () => {
-      cancelled = true;
-    };
+    refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { snapshot, isResolving, hasError, refresh };
+  // Derived, never persisted — recomputed whenever the table or position
+  // changes, so a station is never "assigned" and never goes stale.
+  const allRanked: RankedStation[] = position
+    ? nearestStations<CachedStation>(table.stations, position.lat, position.lng, 3)
+    : [];
+
+  // A fix that puts the nearest station beyond Ghana's own extent is not a
+  // usable answer. Report it as implausible rather than offering to dial a
+  // station on another continent.
+  const implausible =
+    allRanked.length > 0 &&
+    allRanked[0].distanceMeters > MAX_PLAUSIBLE_DISTANCE_METERS;
+
+  const ranked = implausible ? [] : allRanked;
+
+  return {
+    nearest: ranked[0] ?? null,
+    alternatives: ranked.slice(1),
+    table,
+    position,
+    positionSource: implausible ? "implausible" : positionSource,
+    isResolving,
+    hasError,
+    refresh,
+  };
 }
