@@ -1,0 +1,1397 @@
+[
+  {
+    "id": "d5599159-1077-549b-b632-60da77e0aa90",
+    "name": "Abelemkpe Fire Station",
+    "region": "Greater Accra Region",
+    "district": "Ayawaso West Municipal District",
+    "lat": 5.6090978,
+    "lng": -0.2111861,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "efc7d1b5-dd07-5ad9-bccd-f45633507a76",
+    "name": "Accra City Fire Station",
+    "region": "Greater Accra Region",
+    "district": "Accra Metropolitan District",
+    "lat": 5.5493054,
+    "lng": -0.2073036,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "0eb0ab4d-8a8f-5ca9-b348-f9e824eaaa6e",
+    "name": "Airport Fire Station",
+    "region": "Greater Accra Region",
+    "district": "La-Dade-Kotopon Municipal District",
+    "lat": 5.6037167,
+    "lng": -0.1725827,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "dfbebb39-38ed-5a8b-ad6d-35223ef8cb09",
+    "name": "Akatsi Fire Station",
+    "region": "Volta Region",
+    "district": "Akatsi South District",
+    "lat": 6.1192567,
+    "lng": 0.8080749,
+    "contacts": [
+      {
+        "phone": "0362026679",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346042",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "47f5ca79-de8b-5cc2-ae6f-80de6f9ad4d2",
+    "name": "Amamoley Fire Station",
+    "region": "Greater Accra Region",
+    "district": "Ga North Municipal District",
+    "lat": 5.6623707,
+    "lng": -0.2971575,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "e4fd5ba6-cd50-50e6-ad9e-015fb954fabb",
+    "name": "Asante-Akim Central Fire Station",
+    "region": "Ashanti Region",
+    "district": "Asante-Akim Central Municipal District",
+    "lat": 6.6216556,
+    "lng": -1.2225636,
+    "contacts": [
+      {
+        "phone": "0322022221",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346044",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "7a65a5be-45e2-584b-8c8e-f01dfdf4675e",
+    "name": "Cape Coast Fire Service",
+    "region": "Central Region",
+    "district": "Cape Coast Metropolitan District",
+    "lat": 5.1112215,
+    "lng": -1.2481432,
+    "contacts": [
+      {
+        "phone": "0332132902",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299340499",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "5ef46b09-d045-5e8a-b6eb-5cee1d6251bf",
+    "name": "Dambai Fire Station",
+    "region": "Oti Region",
+    "district": "Krachi East District",
+    "lat": 8.0539235,
+    "lng": 0.1861614,
+    "contacts": [
+      {
+        "phone": "0362026679",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346042",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "5e897d40-540f-5f8f-a3a2-eb4c52f6ff48",
+    "name": "Dangme West Office",
+    "region": "Greater Accra Region",
+    "district": "Shai-Osudoku District",
+    "lat": 5.8840459,
+    "lng": -0.0941019,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "29b8ffe5-44f0-5fcc-8a40-f6b9969115be",
+    "name": "Denu Fire Station",
+    "region": "Volta Region",
+    "district": "Ketu South Municipal District",
+    "lat": 6.0945875,
+    "lng": 1.1402513,
+    "contacts": [
+      {
+        "phone": "0362026679",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346042",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "93852571-200d-5b24-afde-7e745548be5f",
+    "name": "District Fire Station",
+    "region": "Eastern Region",
+    "district": "Kwahu Afram Plains North District",
+    "lat": 7.0468292,
+    "lng": -0.0914016,
+    "contacts": [
+      {
+        "phone": "0302982062",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346041",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "50497487-21d7-51b3-8cf3-a099de367fe9",
+    "name": "Elmina Fire Station",
+    "region": "Central Region",
+    "district": "Komenda/Edina/Eguafo/Abirem Municipal District",
+    "lat": 5.0983098,
+    "lng": -1.3422902,
+    "contacts": [
+      {
+        "phone": "0332132902",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299340499",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "c9c871b5-7fae-5287-b80d-4bebf1cdb124",
+    "name": "Fire Brigade",
+    "region": "Eastern Region",
+    "district": "Asuogyaman District",
+    "lat": 6.2783268,
+    "lng": 0.0522497,
+    "contacts": [
+      {
+        "phone": "0302982062",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346041",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "57a4acf1-213d-5e51-ba21-2fc45ae4164d",
+    "name": "Fire Service",
+    "region": "Ashanti Region",
+    "district": "Sekyere East District",
+    "lat": 6.8520077,
+    "lng": -1.3976208,
+    "contacts": [
+      {
+        "phone": "0322022221",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346044",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "fa20afc9-8533-5b75-83aa-17e2c2872158",
+    "name": "Fire Service Department",
+    "region": "Bono Region",
+    "district": "Sunyani Municipal District",
+    "lat": 7.3329837,
+    "lng": -2.3310411,
+    "contacts": [
+      {
+        "phone": "0352027129",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299340249",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "9adf636e-d2ac-5a05-9133-2a35202775be",
+    "name": "Fire service Regional Headquarters",
+    "region": "Central Region",
+    "district": "Cape Coast Metropolitan District",
+    "lat": 5.1257637,
+    "lng": -1.269278,
+    "contacts": [
+      {
+        "phone": "0332132902",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299340499",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "a935538f-a0c1-5123-bfe8-da38b85feb84",
+    "name": "fire service station",
+    "region": "Upper East Region",
+    "district": "Pusiga District",
+    "lat": 11.0820273,
+    "lng": -0.1232131,
+    "contacts": [
+      {
+        "phone": "0382022277",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "e6aca68d-be89-51dd-8a84-e1abfb5e8dc1",
+    "name": "Fire Service Station",
+    "region": "Western North Region",
+    "district": "Bibiani Anhwiaso Bekwai Municipal District",
+    "lat": 6.4559864,
+    "lng": -2.3198482,
+    "contacts": [
+      {
+        "phone": "0312193521",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346040",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "807ecfe9-db23-5d30-a8c1-248f15f2929a",
+    "name": "Fire station",
+    "region": "Greater Accra Region",
+    "district": "Ashaiman Municipal District",
+    "lat": 5.6844494,
+    "lng": -0.0262132,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "fdecd240-f75d-582b-a935-bd6d7e05c12b",
+    "name": "Ghana Fire Service",
+    "region": "Ahafo Region",
+    "district": "Asunafo North Municipal District",
+    "lat": 6.808575,
+    "lng": -2.5159709,
+    "contacts": [
+      {
+        "phone": "0352027129",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299340249",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "8a4010c1-559e-5149-b12b-594c8b863beb",
+    "name": "Ghana Fire Service",
+    "region": "Greater Accra Region",
+    "district": "Ayawaso Central Municipal District",
+    "lat": 5.5698415,
+    "lng": -0.2143746,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "0c46c6a6-d09d-580a-9445-d1f55511f4d6",
+    "name": "Ghana Fire Service",
+    "region": "Greater Accra Region",
+    "district": "Ledzokuku Municipal District",
+    "lat": 5.6111099,
+    "lng": -0.1025317,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "088d8b60-5f1b-55fe-bbf1-fbc013b82f6b",
+    "name": "Ghana Fire Service",
+    "region": "Volta Region",
+    "district": "South Dayi District",
+    "lat": 6.5345472,
+    "lng": 0.2306607,
+    "contacts": [
+      {
+        "phone": "0362026679",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346042",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "89ade940-437a-5d1c-b8dd-ecfde9c32f56",
+    "name": "Ghana Fire Service (UW/R Head Qaurters)",
+    "region": "Upper West Region",
+    "district": "Wa Municipal District",
+    "lat": 10.0534606,
+    "lng": -2.534765,
+    "contacts": [
+      {
+        "phone": "0392022389",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "4c2e2b1c-51b1-57a6-8280-ca31a2c068b6",
+    "name": "Ghana Fire Service Ashiaman",
+    "region": "Greater Accra Region",
+    "district": "Ashaiman Municipal District",
+    "lat": 5.6918669,
+    "lng": -0.0257811,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "a1b144d3-297b-56fa-902c-a02e58ea10c0",
+    "name": "Ghana National Fire and Rescue Service",
+    "region": "Savannah Region",
+    "district": "West Gonja Municipal District",
+    "lat": 9.0720023,
+    "lng": -1.8122543,
+    "contacts": [
+      {
+        "phone": "0299346046",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0322022864",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "dbe660ab-637d-53c9-94eb-c3efe3805c08",
+    "name": "Ghana National Fire Service",
+    "region": "Eastern Region",
+    "district": "New Juaben South Municipal District",
+    "lat": 6.0933875,
+    "lng": -0.2612821,
+    "contacts": [
+      {
+        "phone": "0302982062",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346041",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "f06a90f7-c554-5e0b-82fb-a386f4b84a03",
+    "name": "Ghana National Fire Service",
+    "region": "Eastern Region",
+    "district": "Birim South District",
+    "lat": 5.8495069,
+    "lng": -0.9940339,
+    "contacts": [
+      {
+        "phone": "0302982062",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346041",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "68295ff5-aa1d-57c0-ae57-05a03722b5f5",
+    "name": "Ghana National Fire Service",
+    "region": "Greater Accra Region",
+    "district": "La-Nkwantanang-Madina Municipal District",
+    "lat": 5.682055,
+    "lng": -0.1721383,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "67b2fbd0-7d0e-5a56-a2a3-bcd662423487",
+    "name": "Ghana National Fire Service",
+    "region": "Northern Region",
+    "district": "Tamale Metropolitan District",
+    "lat": 9.4038728,
+    "lng": -0.8701066,
+    "contacts": [
+      {
+        "phone": "0299346046",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0322022864",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "7fea0bc7-f545-570f-8bcf-d0a9f878aeaf",
+    "name": "Ghana National Fire Service",
+    "region": "Western Region",
+    "district": "Sekondi Takoradi Metropolitan District",
+    "lat": 4.9295697,
+    "lng": -1.7479607,
+    "contacts": [
+      {
+        "phone": "0312193521",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346040",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "d7731770-188d-58fd-8b56-308e7050b199",
+    "name": "Ghana National Fire Service",
+    "region": "Ashanti Region",
+    "district": "Kwabre East Municipal District",
+    "lat": 6.7867193,
+    "lng": -1.5675943,
+    "contacts": [
+      {
+        "phone": "0322022221",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346044",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "5a9eb3f3-efcb-5614-958a-27689e58d0fd",
+    "name": "Ghana National Fire Service",
+    "region": "Upper East Region",
+    "district": "Unknown District",
+    "lat": 10.7878408,
+    "lng": -0.8421121,
+    "contacts": [
+      {
+        "phone": "0382022277",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "5415673a-86c2-56e0-90d6-71e39883871d",
+    "name": "Ghana National Fire Service",
+    "region": "Central Region",
+    "district": "Effutu Municipal District",
+    "lat": 5.3824871,
+    "lng": -0.6415578,
+    "contacts": [
+      {
+        "phone": "0332132902",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299340499",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "3c51265e-7d1f-5081-b23c-c8d702f22534",
+    "name": "Ghana National Fire Service ( Techiman)",
+    "region": "Bono East Region",
+    "district": "Techiman Municipal District",
+    "lat": 7.5798996,
+    "lng": -1.9414318,
+    "contacts": [
+      {
+        "phone": "0352027129",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299340249",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "938e1940-c8d1-5b87-9246-c81854c686cd",
+    "name": "Ghana National Fire Service Enchi",
+    "region": "Western North Region",
+    "district": "Aowin Municipal District",
+    "lat": 5.821584,
+    "lng": -2.8232395,
+    "contacts": [
+      {
+        "phone": "0312193521",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346040",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "8ed4d9a2-e0f3-58b5-b587-c82cf9fceb6f",
+    "name": "Ghana National Fire Service Headquarters",
+    "region": "Greater Accra Region",
+    "district": "La-Dade-Kotopon Municipal District",
+    "lat": 5.5696908,
+    "lng": -0.1849408,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "77e1f94d-aa44-598b-9d9e-61838309a5f2",
+    "name": "Ghana National Fire Service Office Hohoe",
+    "region": "Volta Region",
+    "district": "Hohoe Municipal District",
+    "lat": 7.1697175,
+    "lng": 0.4778195,
+    "contacts": [
+      {
+        "phone": "0362026679",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346042",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "f112437a-6983-5eb2-a0c6-c4040c381d6b",
+    "name": "Ghana National Fire Service: Wassa Akropong",
+    "region": "Western Region",
+    "district": "Wassa Amenfi East Municipal District",
+    "lat": 5.7832259,
+    "lng": -2.0854927,
+    "contacts": [
+      {
+        "phone": "0312193521",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346040",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "0d47a996-3e7a-5793-a109-1172a99a5c8b",
+    "name": "Ghana National Fire Station, Battor",
+    "region": "Volta Region",
+    "district": "North Tongu District",
+    "lat": 6.0668599,
+    "lng": 0.4014603,
+    "contacts": [
+      {
+        "phone": "0362026679",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346042",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "91760762-0a8f-5ee4-949f-ad46bd31a12e",
+    "name": "Ghanal Fire Service",
+    "region": "Central Region",
+    "district": "Twifo Atti Morkwa District",
+    "lat": 5.599413,
+    "lng": -1.543162,
+    "contacts": [
+      {
+        "phone": "0332132902",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299340499",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "bdf65a4f-582b-5f65-8815-81d5ca11dac2",
+    "name": "Industrial Area Fire Station",
+    "region": "Greater Accra Region",
+    "district": "Accra Metropolitan District",
+    "lat": 5.5649396,
+    "lng": -0.2252361,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "e49d0bb5-53ee-5b4a-b4a5-2ffeed0fa1bd",
+    "name": "KNUST Fire Service Station",
+    "region": "Ashanti Region",
+    "district": "Oforikrom Municipal District",
+    "lat": 6.6847456,
+    "lng": -1.5744027,
+    "contacts": [
+      {
+        "phone": "0322022221",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346044",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "597b7954-ce22-55c4-9f59-e25dbfa8ef69",
+    "name": "Komenda Fire station",
+    "region": "Central Region",
+    "district": "Komenda/Edina/Eguafo/Abirem Municipal District",
+    "lat": 5.0556936,
+    "lng": -1.4952523,
+    "contacts": [
+      {
+        "phone": "0332132902",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299340499",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "c915a19d-ddd9-5bc2-b15a-aee9e6554c75",
+    "name": "Kotoku Fire Station",
+    "region": "Greater Accra Region",
+    "district": "Ga West Municipal District",
+    "lat": 5.7359967,
+    "lng": -0.3599341,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "e59a8ca8-44c2-507c-82f5-9e8bce6a23f2",
+    "name": "Manhyia Fire Station",
+    "region": "Ashanti Region",
+    "district": "Asokore-Mampong Municipal District",
+    "lat": 6.7028942,
+    "lng": -1.6141175,
+    "contacts": [
+      {
+        "phone": "0322022221",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346044",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "529ce7e0-fe5a-5e84-90dc-48f44946ce41",
+    "name": "Metro Fire Station, Adum -Kumasi",
+    "region": "Ashanti Region",
+    "district": "Kumasi Metropolitan District",
+    "lat": 6.6860849,
+    "lng": -1.623289,
+    "contacts": [
+      {
+        "phone": "0322022221",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346044",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "fb1faf17-1052-523f-b3c5-a92a72498f1c",
+    "name": "Municipal Fire Station",
+    "region": "Upper West Region",
+    "district": "Lawra Municipal District",
+    "lat": 10.6458546,
+    "lng": -2.8889195,
+    "contacts": [
+      {
+        "phone": "0392022389",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "f9e8ae9e-557e-5934-974c-8e0e296c76e9",
+    "name": "Navrongo Fire Station",
+    "region": "Upper East Region",
+    "district": "Kassena-Nankana Municipal District",
+    "lat": 10.8960777,
+    "lng": -1.089252,
+    "contacts": [
+      {
+        "phone": "0382022277",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "94a494a6-06d6-5032-98b8-679f1421557d",
+    "name": "Nkwanta fire service post",
+    "region": "Oti Region",
+    "district": "Nkwanta South District",
+    "lat": 8.2568687,
+    "lng": 0.5231755,
+    "contacts": [
+      {
+        "phone": "0362026679",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346042",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "20b53022-86de-5c40-a3d5-86c112ae6a3c",
+    "name": "Shama Fire Service",
+    "region": "Western Region",
+    "district": "Shama District",
+    "lat": 5.0137566,
+    "lng": -1.642328,
+    "contacts": [
+      {
+        "phone": "0312193521",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346040",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "2365e92c-6618-5f58-816f-ffba069655d8",
+    "name": "Tarkwa Fire Station",
+    "region": "Western Region",
+    "district": "Tarkwa-Nsuaem Municipal District",
+    "lat": 5.3028806,
+    "lng": -1.9959644,
+    "contacts": [
+      {
+        "phone": "0312193521",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346040",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "5bdf3a45-4fb7-5031-9654-b50ce6a514d9",
+    "name": "Tema Industrial Area Fire Station",
+    "region": "Greater Accra Region",
+    "district": "Tema Metropolitan District",
+    "lat": 5.6656385,
+    "lng": 0.0001651,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "1367e3ff-acfe-5b56-bad9-53af9696ca3a",
+    "name": "UCC Fire Service Station",
+    "region": "Central Region",
+    "district": "Cape Coast Metropolitan District",
+    "lat": 5.1055128,
+    "lng": -1.2799135,
+    "contacts": [
+      {
+        "phone": "0332132902",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299340499",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "57533584-e092-5ed6-9f51-7b80c1eceb34",
+    "name": "University Fire Station Legon",
+    "region": "Greater Accra Region",
+    "district": "Ayawaso West Municipal District",
+    "lat": 5.6484568,
+    "lng": -0.1812207,
+    "contacts": [
+      {
+        "phone": "0302666576",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346018",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "a6f49d3d-1339-57e3-979e-0bc56dabff0e",
+    "name": "VRA Fire Station",
+    "region": "Eastern Region",
+    "district": "Yilo-Krobo Municipal District",
+    "lat": 6.0953077,
+    "lng": 0.1148369,
+    "contacts": [
+      {
+        "phone": "0302982062",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "0299346041",
+        "responseRate": 0.5,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  },
+  {
+    "id": "2a075c17-5692-5d97-8428-57f8ef066371",
+    "name": "Wa Fire Station",
+    "region": "Upper West Region",
+    "district": "Wa Municipal District",
+    "lat": 10.0622441,
+    "lng": -2.4979385,
+    "contacts": [
+      {
+        "phone": "0392022389",
+        "responseRate": 1,
+        "active": true
+      },
+      {
+        "phone": "192",
+        "responseRate": 0.1,
+        "active": true
+      }
+    ]
+  }
+]
