@@ -227,7 +227,25 @@ export const StationsListScreen = ({ navigation }: Props) => {
           />
         }
         ListHeaderComponent={
-          usablePosition ? null : (
+          /*
+           * Three header states, not two. A `lastKnownStale` position is
+           * usable — the rows keep their distance chips and their ordering —
+           * but it came from an unbounded-age last-known fix, so the ordering
+           * this screen presents may describe where the phone was days ago.
+           * The home screen has always said so; this screen showed exact
+           * per-row distances with no caveat at all, which is the more
+           * misleading of the two because a list reads as a survey of facts.
+           */
+          positionSource === "lastKnownStale" ? (
+            <Text
+              variant="caption"
+              color={theme.warningText}
+              style={styles.noticeText}
+            >
+              Based on where your phone last had a location fix — if you have
+              travelled, this ordering and these distances may be out of date.
+            </Text>
+          ) : usablePosition ? null : (
             <Text
               variant="caption"
               color={theme.textTertiary}

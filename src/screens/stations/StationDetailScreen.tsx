@@ -166,7 +166,7 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
                 color={theme.textSecondary}
                 style={{ letterSpacing: 1 }}
               >
-                PHONE — TRY IN THIS ORDER
+                PHONE NUMBERS
               </Text>
             </View>
             {phones.map((phone) => (
@@ -183,6 +183,25 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
                 </Text>
               </TouchableOpacity>
             ))}
+            {/*
+              The heading used to read "TRY IN THIS ORDER", which claimed the
+              list predicts which number will answer. It does not. The
+              ordering reproduces the publication order of a 2022 source page
+              — one region's is deliberately inverted because that source's
+              first number is disputed — and nothing in it is a measurement of
+              whether a line is answered. The ordering is unchanged; only the
+              claim made about it is.
+            */}
+            {phones.length > 0 && (
+              <Text
+                variant="caption"
+                color={theme.textTertiary}
+                style={styles.phoneCaption}
+              >
+                Regional command lines, recorded 2022. If one does not answer,
+                try the next.
+              </Text>
+            )}
           </View>
         </View>
 
@@ -329,6 +348,10 @@ const styles = StyleSheet.create({
   },
   phoneNumber: {
     paddingLeft: 32,
+  },
+  phoneCaption: {
+    paddingLeft: 32,
+    paddingTop: 4,
   },
   mapSection: {
     gap: 8,

@@ -52,25 +52,73 @@ export const HomeScreen = () => {
     );
   };
 
-  const statusLabel =
-    positionSource === "none"
-      ? "NO LOCATION"
-      : positionSource === "implausible"
-      ? "LOCATION OUTSIDE GHANA"
-      : positionSource === "lastKnownStale"
-      ? "USING LAST KNOWN LOCATION"
-      : isOnline !== false
-      ? "ONLINE · GPS ACTIVE"
-      : "OFFLINE · SAVED LIST";
+  /**
+   * A resolution is in flight and there is nothing to show yet. This is a
+   * distinct state from every failure below, and it has to be said out loud:
+   * the first resolution can take up to 15 seconds, and telling a user whose
+   * location is already switched on to "turn on location" for that whole
+   * time — as this screen used to, because a not-yet-resolved position was
+   * indistinguishable from a refused one — is both wrong and unactionable.
+   */
+  const isFinding = isResolving && !nearest;
 
-  const statusColor =
-    positionSource === "none" ||
-    positionSource === "implausible" ||
-    positionSource === "lastKnownStale"
-      ? colors.warning
-      : isOnline !== false
-      ? colors.success
-      : colors.warning;
+  const statusLabel = isFinding
+    ? "FINDING YOUR LOCATION"
+    : positionSource === "denied"
+    ? "LOCATION OFF"
+    : positionSource === "unavailable"
+    ? "NO LOCATION FIX"
+    : positionSource === "implausible"
+    ? "LOCATION OUTSIDE GHANA"
+    : positionSource === "lastKnownStale"
+    ? "USING LAST KNOWN LOCATION"
+    : isOnline !== false
+    ? "ONLINE · GPS ACTIVE"
+    : "OFFLINE · SAVED LIST";
+
+  const statusColor = isFinding
+    ? theme.textTertiary
+    : positionSource === "denied" ||
+      positionSource === "unavailable" ||
+      positionSource === "implausible" ||
+      positionSource === "lastKnownStale"
+    ? colors.warning
+    : isOnline !== false
+    ? colors.success
+    : colors.warning;
+
+  /**
+   * Only reached when there is no station to name. Ordered so the honest
+   * answer to "why is there no station?" comes first: still looking, then
+   * refused, then permitted-but-no-fix, then a fix that is nowhere near
+   * Ghana. The last branch is unreachable while the station table is
+   * non-empty (a cache invariant), and is kept as a safe default.
+   */
+  const noStationHeading = isFinding
+    ? "Finding nearest station…"
+    : positionSource === "denied"
+    ? "Turn on location to find your station"
+    : positionSource === "unavailable"
+    ? "Can't get a location fix — showing the national number"
+    : positionSource === "implausible"
+    ? "No station near your location"
+    : "Turn on location to find your station";
+
+  /**
+   * A `lastKnownStale` fix is an unbounded-age last-known position, so the
+   * distance computed from it is exact arithmetic on a possibly-old input.
+   * It is qualified rather than hidden: the number is still the best estimate
+   * available and is worth having, but it must not read as a live measurement.
+   * Once a resolution has finished with no fix at all, this stops saying
+   * "Locating…" — that badge contradicted a pill already reporting failure.
+   */
+  const distanceLabel = nearest
+    ? positionSource === "lastKnownStale"
+      ? `${formatDistance(nearest.distanceMeters)} (from your last known location)`
+      : formatDistance(nearest.distanceMeters)
+    : isFinding
+    ? "Locating…"
+    : "Distance unavailable";
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -142,17 +190,12 @@ export const HomeScreen = () => {
             </View>
             <View style={styles.distanceBadge}>
               <Text variant="label" color="#FFFFFF">
-                {nearest ? formatDistance(nearest.distanceMeters) : "Locating…"}
+                {distanceLabel}
               </Text>
             </View>
           </View>
           <View style={styles.stationInfo}>
-            <Text variant="heading2">
-              {nearest?.name ??
-                (positionSource === "implausible"
-                  ? "No station near your location"
-                  : "Turn on location to find your station")}
-            </Text>
+            <Text variant="heading2">{nearest?.name ?? noStationHeading}</Text>
             <Text
               variant="caption"
               weight="medium"
@@ -171,7 +214,7 @@ export const HomeScreen = () => {
             style={styles.freshness}
           >
             Based on where your phone last had a location fix — if you have
-            travelled, check the station name before calling.
+            travelled, check the station name and distance before calling.
           </Text>
         )}
 
@@ -189,8 +232,15 @@ export const HomeScreen = () => {
 
         {alternates.length > 0 && (
           <View style={styles.alternatesRow}>
+            {/*
+              Not "If no answer:" — that implied the chain is ordered by which
+              number is most likely to be picked up. It is not: the ordering
+              comes from the publication order of a 2022 web page, with one
+              region deliberately inverted. These are simply the other numbers
+              on record for this station.
+            */}
             <Text variant="caption" color={theme.textTertiary}>
-              If no answer:
+              Other numbers:
             </Text>
             {alternates.map((phone) => (
               <TouchableOpacity
@@ -332,6 +382,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 16,
     right: 16,
+    // Bounded so the qualified stale-position label wraps inside the badge
+    // instead of stretching across the card.
+    maxWidth: "70%",
     backgroundColor: colors.brandPrimary,
     paddingHorizontal: 12,
     paddingVertical: 4,

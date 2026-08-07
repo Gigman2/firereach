@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { AppState } from "react-native";
 import * as Location from "expo-location";
 import * as Network from "expo-network";
 import {
@@ -55,15 +63,23 @@ const MAX_PLAUSIBLE_DISTANCE_METERS = 500_000;
 export type ResolvedPosition = { lat: number; lng: number };
 /**
  * `lastKnownStale` is an unbounded last-known fix — used only once a live fix
- * has failed — and is distinct from `lastKnown` so the UI can be honest about
- * how stale the answer might be. `implausible` means we have a fix, but it
- * puts the user nowhere near Ghana.
+ * has failed, or retained from an earlier resolution that a later one could
+ * not replace — and is distinct from `lastKnown` so the UI can be honest
+ * about how stale the answer might be. `implausible` means we have a fix, but
+ * it puts the user nowhere near Ghana.
+ *
+ * `denied` and `unavailable` are deliberately separate. Conflating them into
+ * a single "none" made the app tell a user who had *already granted*
+ * permission, and whose GPS simply could not lock indoors, to "turn on
+ * location" — advice that is both wrong and unactionable. Permission refused
+ * is a thing the user can fix; no fix obtainable is not.
  */
 export type PositionSource =
   | "live"
   | "lastKnown"
   | "lastKnownStale"
-  | "none"
+  | "denied"
+  | "unavailable"
   | "implausible";
 
 export type NearestStationState = {
@@ -119,7 +135,9 @@ async function resolvePosition(): Promise<{
     const ask = await Location.requestForegroundPermissionsAsync();
     granted = ask.status === "granted";
   }
-  if (!granted) return { position: null, source: "none" };
+  // Permission refused — the one no-position case the user can actually act
+  // on, and the only one that should ever be presented as "turn on location".
+  if (!granted) return { position: null, source: "denied" };
 
   const last = await Location.getLastKnownPositionAsync({
     maxAge: MAX_LAST_KNOWN_AGE_MS,
@@ -154,7 +172,9 @@ async function resolvePosition(): Promise<{
     };
   }
 
-  return { position: null, source: "none" };
+  // Permitted, but no tier produced a fix. Distinct from `denied`: there is
+  // nothing for the user to switch on.
+  return { position: null, source: "unavailable" };
 }
 
 function isStale(table: StationTable): boolean {
@@ -165,11 +185,33 @@ function isStale(table: StationTable): boolean {
   return Number.isNaN(age) || age < 0 || age > REFRESH_INTERVAL_MS;
 }
 
-export function useNearestStation(): NearestStationState {
+/**
+ * One resolution for the whole app.
+ *
+ * This state was previously a plain hook, which meant every screen that
+ * called it got its own GPS resolution, its own full-table fetch, and its own
+ * `inFlight` ref that deduped nothing across screens. Two tabs could
+ * therefore hold two different positions and name two *different* nearest
+ * stations at the same time. There is exactly one caller and exactly one
+ * emergency, so there is exactly one answer: it lives here.
+ */
+const NearestStationContext = createContext<NearestStationState | null>(null);
+
+export function NearestStationProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [table, setTable] = useState<StationTable>(bundledTable);
   const [position, setPosition] = useState<ResolvedPosition | null>(null);
-  const [positionSource, setPositionSource] = useState<PositionSource>("none");
-  const [isResolving, setIsResolving] = useState(false);
+  // Not "denied": nothing has been refused yet. Before the first resolution
+  // settles there simply is no fix, and `isResolving` — true from the first
+  // render, because the mount effect below always starts a resolution — is
+  // what the UI uses to say "finding your location" rather than accusing the
+  // user of having location switched off.
+  const [positionSource, setPositionSource] =
+    useState<PositionSource>("unavailable");
+  const [isResolving, setIsResolving] = useState(true);
   const [hasError, setHasError] = useState(false);
   const inFlight = useRef(false);
 
@@ -201,7 +243,9 @@ export function useNearestStation(): NearestStationState {
       const resolved = await withTimeout(
         resolvePosition(),
         POSITION_RESOLUTION_TIMEOUT_MS
-      ).then((r) => r ?? { position: null, source: "none" as PositionSource });
+      ).then(
+        (r) => r ?? { position: null, source: "unavailable" as PositionSource }
+      );
 
       if (resolved.position) {
         // A real fix always wins and becomes the new answer.
@@ -212,11 +256,16 @@ export function useNearestStation(): NearestStationState {
         // No fix now, and none before — report honestly. There is nothing
         // to protect: the visible answer was already "no position".
         setPositionSource(resolved.source);
+      } else {
+        // Had a fix, lost it this round. Keep the position — a slightly old
+        // position still names a real nearby station, and a lost GPS lock
+        // must not blank out an answer already on screen — but stop claiming
+        // it is current. Whatever it was when obtained, what it is *now* is a
+        // last-known fix of unknown age, and reporting it as `live` kept the
+        // status pill green over a position that was quietly ageing. This is
+        // also what makes the stale-position warning fire in both screens.
+        setPositionSource("lastKnownStale");
       }
-      // Otherwise: had a fix, lost it this round. Keep the last one and its
-      // source untouched — a slightly old position still names a real nearby
-      // station, and a lost GPS lock must not blank out an answer already on
-      // screen (position state is intentionally left alone here).
 
       // 3. Network refresh, strictly an upgrade of the inputs. Never gates
       //    the answer. Both expo-network fields are optional; if neither is
@@ -229,17 +278,26 @@ export function useNearestStation(): NearestStationState {
       const fresh = await fetchAllStations();
       if (fresh.length === 0) return; // Never replace real data with nothing.
 
-      // A response far smaller than what we already hold is a degraded
-      // server — a partially-seeded database, a half-finished migration, a
-      // filter regression — not a legitimate shrink. Accepting it would
-      // both replace the in-memory table and persist over good data on
-      // disk, permanently shadowing the bundled table with a crippled one.
+      // A response far smaller than the table shipped in the binary is a
+      // degraded server — a partially-seeded database, a half-finished
+      // migration, a filter regression — not a legitimate shrink. Accepting
+      // it would both replace the in-memory table and persist over good data
+      // on disk, permanently shadowing the bundled table with a crippled one.
       // A degraded response is a failed refresh, and a failed refresh must
       // never overwrite good cached data.
-      if (fresh.length < localTable.stations.length / 2) {
+      //
+      // The floor is the *bundled* count, not the cached one. Measured
+      // against the cache it ratchets: 57 accepts 29, which then accepts 15,
+      // then 8, then 4, then 1 — each degraded response lowering the bar for
+      // the next until the guard has eroded itself away. The bundled count is
+      // a compile-time constant and cannot move.
+      const bundledCount = bundledTable().stations.length;
+      if (fresh.length < bundledCount / 2) {
         console.warn(
-          `[useNearestStation] refresh returned ${fresh.length} stations but ` +
-            `${localTable.stations.length} are cached — ignoring as degraded`
+          `[useNearestStation] refresh returned ${fresh.length} stations, ` +
+            `fewer than half the ${bundledCount} bundled with the app ` +
+            `(${localTable.stations.length} currently cached) — response ` +
+            `ignored as degraded`
         );
         return;
       }
@@ -267,6 +325,16 @@ export function useNearestStation(): NearestStationState {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (state) => {
+      // Re-resolve on foreground. A user who travelled while the app was
+      // backgrounded would otherwise keep seeing the station nearest to where
+      // they launched it, under a healthy-looking status.
+      if (state === "active") refresh();
+    });
+    return () => sub.remove();
+  }, [refresh]);
+
   // Derived, never persisted — recomputed whenever the table or position
   // changes, so a station is never "assigned" and never goes stale.
   const allRanked: RankedStation[] = position
@@ -282,7 +350,7 @@ export function useNearestStation(): NearestStationState {
 
   const ranked = implausible ? [] : allRanked;
 
-  return {
+  const value: NearestStationState = {
     nearest: ranked[0] ?? null,
     alternatives: ranked.slice(1),
     table,
@@ -292,4 +360,26 @@ export function useNearestStation(): NearestStationState {
     hasError,
     refresh,
   };
+
+  return (
+    <NearestStationContext.Provider value={value}>
+      {children}
+    </NearestStationContext.Provider>
+  );
+}
+
+/**
+ * The single shared resolution. Shape is unchanged from when this was a
+ * standalone hook, so call sites are untouched — but every caller now reads
+ * the same answer.
+ */
+export function useNearestStation(): NearestStationState {
+  const value = useContext(NearestStationContext);
+  if (!value) {
+    throw new Error(
+      "useNearestStation must be used within a <NearestStationProvider>. " +
+        "Wrap the app (see App.tsx) so every screen reads one shared position."
+    );
+  }
+  return value;
 }
