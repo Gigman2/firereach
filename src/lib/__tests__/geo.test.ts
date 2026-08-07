@@ -11,6 +11,14 @@ describe("haversineMeters", () => {
     expect(d).toBeLessThan(1160);
   });
 
+  it("matches the live API for a known pair: Airport to query point is 1971m", () => {
+    // API reference: GET /v1/stations?lat=5.6&lng=-0.19 returns
+    // Airport Fire Station at (5.6037167, -0.1725827) with distance_meters=1971.
+    // This exact-value assertion catches a 0.1% radius error or a lat/lng swap.
+    const d = haversineMeters(5.6, -0.19, 5.6037167, -0.1725827);
+    expect(d).toBe(1971);
+  });
+
   it("is symmetric", () => {
     const a = haversineMeters(5.55, -0.207, 6.69, -1.62);
     const b = haversineMeters(6.69, -1.62, 5.55, -0.207);
@@ -79,5 +87,66 @@ describe("nearestStations", () => {
       2
     );
     expect(a.map((s) => s.id)).toEqual(b.map((s) => s.id));
+  });
+
+  describe("agrees with the server to the metre", () => {
+    // Expected distances and order captured from the Go API at
+    // GET /v1/stations?lat=5.6&lng=-0.19&limit=5
+    // Using real station coordinates from src/data/stations.bundled.json.
+    // Exact values (toBe, not a range): a wrong earth radius or a swapped
+    // lat/lng argument changes these numbers while leaving relative ordering
+    // intact, and ordering-only assertions cannot see that.
+    it("matches API distances exactly for the 5 nearest stations", () => {
+      const stations = [
+        {
+          id: "0eb0ab4d-8a8f-5ca9-b348-f9e824eaaa6e",
+          name: "Airport Fire Station",
+          lat: 5.6037167,
+          lng: -0.1725827,
+        },
+        {
+          id: "d5599159-1077-549b-b632-60da77e0aa90",
+          name: "Abelemkpe Fire Station",
+          lat: 5.6090978,
+          lng: -0.2111861,
+        },
+        {
+          id: "8ed4d9a2-e0f3-58b5-b587-c82cf9fceb6f",
+          name: "Ghana National Fire Service Headquarters",
+          lat: 5.5696908,
+          lng: -0.1849408,
+        },
+        {
+          id: "8a4010c1-559e-5149-b12b-594c8b863beb",
+          name: "Ghana Fire Service",
+          lat: 5.5698415,
+          lng: -0.2143746,
+        },
+        {
+          id: "57533584-e092-5ed6-9f51-7b80c1eceb34",
+          name: "University Fire Station Legon",
+          lat: 5.6484568,
+          lng: -0.1812207,
+        },
+      ];
+
+      const queryLat = 5.6;
+      const queryLng = -0.19;
+
+      const got = nearestStations(stations, queryLat, queryLng, 5);
+
+      // Assert exact order and distances from the API reference.
+      expect(got).toHaveLength(5);
+      expect(got[0].id).toBe("0eb0ab4d-8a8f-5ca9-b348-f9e824eaaa6e");
+      expect(got[0].distanceMeters).toBe(1971);
+      expect(got[1].id).toBe("d5599159-1077-549b-b632-60da77e0aa90");
+      expect(got[1].distanceMeters).toBe(2553);
+      expect(got[2].id).toBe("8ed4d9a2-e0f3-58b5-b587-c82cf9fceb6f");
+      expect(got[2].distanceMeters).toBe(3416);
+      expect(got[3].id).toBe("8a4010c1-559e-5149-b12b-594c8b863beb");
+      expect(got[3].distanceMeters).toBe(4304);
+      expect(got[4].id).toBe("57533584-e092-5ed6-9f51-7b80c1eceb34");
+      expect(got[4].distanceMeters).toBe(5475);
+    });
   });
 });
