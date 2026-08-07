@@ -821,8 +821,22 @@ const POSITION_TIMEOUT_MS = 6000;
 /** Refresh the table at most this often. Fire stations do not move. */
 const REFRESH_INTERVAL_MS = 24 * 60 * 60 * 1000;
 
+/**
+ * Ghana's longest dimension is roughly 670 km, so a "nearest" station beyond
+ * this means a bad GPS fix or a user outside the country — not a usable answer.
+ * Deliberately generous: station coverage is sparse in rural areas and a
+ * legitimate rural user must not be rejected.
+ *
+ * Ranking used to be filtered at fetch time, but filtering there would shrink
+ * the cached table itself. It belongs here instead, where it affects only what
+ * is presented. Without it, a simulator sitting in San Francisco ranks a
+ * station 11,746 km away as "nearest" and the app offers to dial it.
+ */
+const MAX_PLAUSIBLE_DISTANCE_METERS = 500_000;
+
 export type ResolvedPosition = { lat: number; lng: number };
-export type PositionSource = "live" | "lastKnown" | "none";
+/** `implausible` means we have a fix, but it puts the user nowhere near Ghana. */
+export type PositionSource = "live" | "lastKnown" | "none" | "implausible";
 
 export type NearestStationState = {
   nearest: RankedStation | null;
@@ -964,16 +978,25 @@ export function useNearestStation(): NearestStationState {
 
   // Derived, never persisted — recomputed whenever the table or position
   // changes, so a station is never "assigned" and never goes stale.
-  const ranked: RankedStation[] = position
+  const allRanked: RankedStation[] = position
     ? nearestStations<CachedStation>(table.stations, position.lat, position.lng, 3)
     : [];
+
+  // A fix that puts the nearest station beyond Ghana's own extent is not a
+  // usable answer. Report it as implausible rather than offering to dial a
+  // station on another continent.
+  const implausible =
+    allRanked.length > 0 &&
+    allRanked[0].distanceMeters > MAX_PLAUSIBLE_DISTANCE_METERS;
+
+  const ranked = implausible ? [] : allRanked;
 
   return {
     nearest: ranked[0] ?? null,
     alternatives: ranked.slice(1),
     table,
     position,
-    positionSource,
+    positionSource: implausible ? "implausible" : positionSource,
     isResolving,
     hasError,
     refresh,
@@ -1036,17 +1059,32 @@ It currently claims `"ONLINE · GPS ACTIVE"` whenever `isOnline !== false`, incl
   const statusLabel =
     positionSource === "none"
       ? "NO LOCATION"
+      : positionSource === "implausible"
+      ? "LOCATION OUTSIDE GHANA"
       : isOnline !== false
       ? "ONLINE · GPS ACTIVE"
       : "OFFLINE · SAVED LIST";
 
   const statusColor =
-    positionSource === "none"
+    positionSource === "none" || positionSource === "implausible"
       ? colors.warning
       : isOnline !== false
       ? colors.success
       : colors.warning;
 ```
+
+`nearest` is `null` in the implausible case, so the station card and call button already fall back to their no-station copy — but that copy currently reads "Turn on location to find your station", which is wrong here since location *is* on. Make the card's heading account for it:
+
+```tsx
+            <Text variant="heading2">
+              {nearest?.name ??
+                (positionSource === "implausible"
+                  ? "No station near your location"
+                  : "Turn on location to find your station")}
+            </Text>
+```
+
+The primary button still dials `192` in this state, because `dialOrder` falls back to the national number when there is no station.
 
 Use `statusLabel` and `statusColor` in the existing pill in place of the two inline ternaries.
 
