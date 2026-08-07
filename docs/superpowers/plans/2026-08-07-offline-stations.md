@@ -1061,16 +1061,37 @@ It currently claims `"ONLINE · GPS ACTIVE"` whenever `isOnline !== false`, incl
       ? "NO LOCATION"
       : positionSource === "implausible"
       ? "LOCATION OUTSIDE GHANA"
+      : positionSource === "lastKnownStale"
+      ? "USING LAST KNOWN LOCATION"
       : isOnline !== false
       ? "ONLINE · GPS ACTIVE"
       : "OFFLINE · SAVED LIST";
 
   const statusColor =
-    positionSource === "none" || positionSource === "implausible"
+    positionSource === "none" ||
+    positionSource === "implausible" ||
+    positionSource === "lastKnownStale"
       ? colors.warning
       : isOnline !== false
       ? colors.success
       : colors.warning;
+```
+
+**`lastKnownStale` must be surfaced, not folded in with the healthy states.** It means the position came from an unbounded last-known fix — the tier that exists so an offline user gets *an* answer rather than none. The 500 km plausibility guard only rejects fixes outside Ghana; a days-old in-country fix (Kumasi to Accra is roughly 200 km) passes it and would otherwise name a station with no warning at all. The amber label is what makes that honest.
+
+Add a matching line under the station card so the reason is legible, not just colour-coded:
+
+```tsx
+        {positionSource === "lastKnownStale" && (
+          <Text
+            variant="caption"
+            color={theme.textTertiary}
+            style={styles.freshness}
+          >
+            Based on where your phone last had a location fix — if you have
+            travelled, check the station name before calling.
+          </Text>
+        )}
 ```
 
 `nearest` is `null` in the implausible case, so the station card and call button already fall back to their no-station copy — but that copy currently reads "Turn on location to find your station", which is wrong here since location *is* on. Make the card's heading account for it:
