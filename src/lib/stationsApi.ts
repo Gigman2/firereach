@@ -40,5 +40,18 @@ export async function fetchAllStations(): Promise<CachedStation[]> {
   });
 
   if (!Array.isArray(raw)) return [];
+
+  if (raw.length >= ALL_STATIONS_LIMIT) {
+    // The server truncates to `limit` nearest-to-anchor and gives no
+    // total-count or pagination signal, so hitting the cap is indistinguishable
+    // from a complete response. If this ever fires, the cached table is
+    // incomplete and stations are silently missing offline: raise the limit, or
+    // add a bulk endpoint.
+    console.warn(
+      `[stationsApi] received ${raw.length} stations, at or above the ${ALL_STATIONS_LIMIT} ` +
+        `fetch limit — the station table may be truncated and the offline cache incomplete`
+    );
+  }
+
   return raw.map(toCachedStation);
 }
