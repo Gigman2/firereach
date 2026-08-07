@@ -22,17 +22,12 @@ import { colors } from "../theme/colors";
 import { useTheme } from "../theme/ThemeContext";
 import { useConnectivity } from "../hooks/useConnectivity";
 import { useNearestStation } from "../hooks/useNearestStation";
-import { dialOrder, NATIONAL_EMERGENCY_PHONE } from "../lib/stationTypes";
+import { dialTargets, NATIONAL_EMERGENCY_PHONE } from "../lib/stationTypes";
 
 function formatDistance(meters: number): string {
   if (meters <= 0) return "Distance unavailable";
   const km = meters / 1000;
   return `~${km.toFixed(1)} km away`;
-}
-
-function shortName(name: string): string {
-  // "Accra Central Fire Station" -> "Accra Central"
-  return name.replace(/\s+Fire Station$/i, "").trim();
 }
 
 export const HomeScreen = () => {
@@ -42,9 +37,11 @@ export const HomeScreen = () => {
   const { nearest, table, positionSource, refresh, isResolving } =
     useNearestStation();
 
-  const numbers = nearest ? dialOrder(nearest) : [NATIONAL_EMERGENCY_PHONE];
-  const primaryNumber = numbers[0];
-  const alternates = numbers.slice(1);
+  const targets = nearest
+    ? dialTargets(nearest)
+    : [{ phone: NATIONAL_EMERGENCY_PHONE, tollFree: true }];
+  const primary = targets[0];
+  const alternates = targets.slice(1);
 
   const dial = (phone: string) => {
     Linking.openURL(`tel:${phone}`).catch((err) =>
@@ -222,12 +219,17 @@ export const HomeScreen = () => {
         <TouchableOpacity
           style={styles.callButton}
           activeOpacity={0.85}
-          onPress={() => dial(primaryNumber)}
+          onPress={() => dial(primary.phone)}
         >
           <PhoneIcon size={28} color="#FFFFFF" weight="fill" />
-          <Text variant="bodyLarge" weight="bold" color="#FFFFFF">
-            {nearest ? `Call ${shortName(nearest.name)}` : "Call Emergency"}
-          </Text>
+          <View style={styles.callButtonTextGroup}>
+            <Text variant="bodyLarge" weight="bold" color="#FFFFFF">
+              Call {primary.phone}
+            </Text>
+            <Text variant="caption" color="#FFFFFF">
+              Free on any network — no credit needed
+            </Text>
+          </View>
         </TouchableOpacity>
 
         {alternates.length > 0 && (
@@ -237,23 +239,24 @@ export const HomeScreen = () => {
               number is most likely to be picked up. It is not: the ordering
               comes from the publication order of a 2022 web page, with one
               region deliberately inverted. These are simply the other numbers
-              on record for this station.
+              on record for this station. They are also, unlike the button
+              above, chargeable hotlines — dialling one costs airtime.
             */}
             <Text variant="caption" color={theme.textTertiary}>
-              Other numbers:
+              Station hotline (may cost airtime):
             </Text>
-            {alternates.map((phone) => (
+            {alternates.map((target) => (
               <TouchableOpacity
-                key={phone}
+                key={target.phone}
                 activeOpacity={0.6}
-                onPress={() => dial(phone)}
+                onPress={() => dial(target.phone)}
               >
                 <Text
                   variant="caption"
                   weight="semiBold"
                   color={colors.brandPrimary}
                 >
-                  {phone === NATIONAL_EMERGENCY_PHONE ? "192 (national)" : phone}
+                  {target.phone}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -406,7 +409,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 12,
-    height: 72,
+    minHeight: 72,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     backgroundColor: colors.brandPrimary,
     borderRadius: 16,
     shadowColor: colors.brandPrimary,
@@ -414,6 +419,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 8,
+  },
+  callButtonTextGroup: {
+    alignItems: "center",
+    flexShrink: 1,
   },
   alternatesRow: {
     flexDirection: "row",
