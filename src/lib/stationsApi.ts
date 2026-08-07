@@ -1,47 +1,44 @@
 import { apiGet } from "./apiClient";
-import {
-  ApiStation,
-  NATIONAL_EMERGENCY_PHONE,
-  Station,
-} from "./stationTypes";
+import { ApiStation, CachedStation } from "./stationTypes";
 
-/**
- * Narrows the wire shape to what the app renders and caches. district, lat,
- * lng, and contacts are deliberately dropped — nothing consumes them yet, and
- * adding them to the cached snapshot would require a schema version bump.
- */
-export function toStation(api: ApiStation): Station {
+/** Ghana's approximate centroid. */
+const GHANA_LAT = 7.9465;
+const GHANA_LNG = -1.0232;
+/** Comfortably above the real station count; the server caps nothing. */
+const ALL_STATIONS_LIMIT = 500;
+
+/** Wire shape to cache shape. Keeps every field — offline needs all of them. */
+export function toCachedStation(api: ApiStation): CachedStation {
   return {
     id: api.id,
     name: api.name,
     region: api.region,
-    distanceMeters: Math.max(0, Math.round(api.distance_meters ?? 0)),
-    phone: api.primary_phone || NATIONAL_EMERGENCY_PHONE,
+    district: api.district,
+    lat: api.lat,
+    lng: api.lng,
+    contacts: (api.contacts ?? []).map((c) => ({
+      phone: c.phone,
+      responseRate: c.response_rate ?? 0,
+      active: c.active ?? true,
+    })),
   };
 }
 
 /**
- * Ghana's longest dimension is roughly 670 km, so a "nearest" station beyond
- * this is a bad GPS fix or a user outside the country — not a usable result.
- * Deliberately generous: OSM station coverage is sparse in rural areas and a
- * legitimate rural user must not be rejected.
+ * The whole active station table.
+ *
+ * The endpoint requires coordinates and returns nearest-N, so this anchors at
+ * Ghana's centroid with a limit above the real row count. Wasteful in principle,
+ * free in practice at ~23 KB, and it needs no API change. If a bulk endpoint or
+ * conditional GET is ever added, only this function changes.
  */
-export const MAX_PLAUSIBLE_DISTANCE_METERS = 500_000;
-
-/** Nearest stations first. Returns [] when the API has no active stations. */
-export async function getNearestStations(
-  lat: number,
-  lng: number,
-  limit = 3
-): Promise<Station[]> {
+export async function fetchAllStations(): Promise<CachedStation[]> {
   const raw = await apiGet<ApiStation[] | null>("/v1/stations", {
-    lat,
-    lng,
-    limit,
+    lat: GHANA_LAT,
+    lng: GHANA_LNG,
+    limit: ALL_STATIONS_LIMIT,
   });
 
   if (!Array.isArray(raw)) return [];
-  return raw
-    .map(toStation)
-    .filter((s) => s.distanceMeters <= MAX_PLAUSIBLE_DISTANCE_METERS);
+  return raw.map(toCachedStation);
 }
