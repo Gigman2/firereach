@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
 import {
   FireIcon,
@@ -22,6 +21,7 @@ import {
 import { Text } from "../components/ui/Text";
 import { colors } from "../theme/colors";
 import { useTheme, type ThemeMode } from "../theme/ThemeContext";
+import { clearStationCache } from "../lib/stationCache";
 import appConfig from "../../app.json";
 
 type LocationPermissionStatus = "granted" | "denied" | "undetermined";
@@ -89,8 +89,11 @@ export const SettingsScreen = () => {
           text: "Clear",
           style: "destructive",
           onPress: async () => {
-            await AsyncStorage.clear();
-            Alert.alert("Done", "Cached data has been cleared.");
+            await clearStationCache();
+            Alert.alert(
+              "Done",
+              "Cached station data cleared. The app will use its built-in station list until it can refresh."
+            );
           },
         },
       ]
