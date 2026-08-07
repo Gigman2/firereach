@@ -16,6 +16,7 @@ import {
 import { Text } from "../../components/ui/Text";
 import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
+import { NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { GuidesStackParamList } from "../../navigation/types";
 
@@ -167,7 +168,11 @@ export const GuideDetailScreen = ({ navigation }: Props) => {
           <TouchableOpacity
             style={styles.callNowButton}
             activeOpacity={0.85}
-            onPress={() => Linking.openURL("tel:112")}
+            onPress={() =>
+              Linking.openURL(`tel:${NATIONAL_EMERGENCY_PHONE}`).catch((err) =>
+                console.warn("[GuideDetail] dial failed", err)
+              )
+            }
           >
             <PhoneIcon size={16} color="#FFFFFF" weight="fill" />
             <Text variant="caption" weight="bold" color="#FFFFFF">

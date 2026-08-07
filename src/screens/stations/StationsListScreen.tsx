@@ -19,7 +19,7 @@ import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
 import { useNearestStation } from "../../hooks/useNearestStation";
 import { nearestStations } from "../../lib/geo";
-import { dialOrder } from "../../lib/stationTypes";
+import { dialTargets } from "../../lib/stationTypes";
 import type { CachedStation } from "../../lib/stationTypes";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { StationsStackParamList } from "../../navigation/types";
@@ -114,9 +114,11 @@ export const StationsListScreen = ({ navigation }: Props) => {
   }, [sections, query]);
 
   const dial = (station: CachedStation) => {
-    // Always the dial chain's first number — never a number written into this
-    // screen.
-    const phone = dialOrder(station)[0];
+    // The toll-free national number, for every row. Identifying which station
+    // is nearest matters for telling the dispatcher where you are — the
+    // dataset has only 19 distinct numbers across 57 stations, so picking a
+    // row was never really picking a number.
+    const phone = dialTargets(station)[0].phone;
     Linking.openURL(`tel:${phone}`).catch((err) =>
       console.warn("[StationsList] dial failed", err)
     );

@@ -21,7 +21,7 @@ import { Button } from "../../components/ui/Button";
 import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
 import { readStationTable } from "../../lib/stationCache";
-import { dialOrder, NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
+import { dialTargets, NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
 import type { CachedStation } from "../../lib/stationTypes";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { StationsStackParamList } from "../../navigation/types";
@@ -62,8 +62,8 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
   // Every number on this screen comes from the dial chain, never from a
   // literal. While the lookup is in flight there is no station and therefore
   // no chain, but the call button must never be dead — 192 always answers.
-  const phones = station ? dialOrder(station) : [];
-  const primaryPhone = phones[0] ?? NATIONAL_EMERGENCY_PHONE;
+  const targets = station ? dialTargets(station) : [];
+  const primaryPhone = targets[0]?.phone ?? NATIONAL_EMERGENCY_PHONE;
 
   const dial = (phone: string) => {
     Linking.openURL(`tel:${phone}`).catch((err) =>
@@ -169,17 +169,21 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
                 PHONE NUMBERS
               </Text>
             </View>
-            {phones.map((phone) => (
-              <TouchableOpacity key={phone} onPress={() => dial(phone)}>
+            {targets.map((target) => (
+              <TouchableOpacity
+                key={target.phone}
+                onPress={() => dial(target.phone)}
+              >
                 <Text
                   variant="bodyMedium"
                   weight="semiBold"
                   color={colors.brandPrimary}
                   style={styles.phoneNumber}
                 >
-                  {phone === NATIONAL_EMERGENCY_PHONE
-                    ? `${phone} (national)`
-                    : phone}
+                  {target.phone}
+                  {target.tollFree
+                    ? "  ·  free on any network"
+                    : "  ·  may cost airtime"}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -192,7 +196,7 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
               whether a line is answered. The ordering is unchanged; only the
               claim made about it is.
             */}
-            {phones.length > 0 && (
+            {targets.length > 0 && (
               <Text
                 variant="caption"
                 color={theme.textTertiary}
@@ -243,11 +247,7 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
         {/* Call CTA */}
         <View style={styles.ctaSection}>
           <Button
-            title={
-              missing
-                ? `Call ${NATIONAL_EMERGENCY_PHONE}`
-                : "Call Station"
-            }
+            title={`Call ${primaryPhone}`}
             size="large"
             onPress={() => dial(primaryPhone)}
             leftIcon={<PhoneIcon size={24} color="#FFFFFF" weight="fill" />}
