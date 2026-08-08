@@ -352,7 +352,7 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
                         ? "near the blue kiosk"
                         : "opposite the pharmacy"
                     }
-                    placeholderTextColor={theme.textTertiary}
+                    placeholderTextColor={theme.textSecondary}
                     value={value}
                     onChangeText={(text) => updateLandmark(index, text)}
                     accessibilityLabel={`Landmark ${index + 1}`}
