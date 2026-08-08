@@ -14,6 +14,7 @@ import { SplashScreen } from "../screens/onboarding/SplashScreen";
 import { OnboardingIntroScreen } from "../screens/onboarding/OnboardingIntroScreen";
 import { LocationRequestScreen } from "../screens/onboarding/LocationRequestScreen";
 import { LocationDeniedScreen } from "../screens/onboarding/LocationDeniedScreen";
+import { SavePlaceScreen } from "../screens/onboarding/SavePlaceScreen";
 import { HowItWorksScreen } from "../screens/onboarding/HowItWorksScreen";
 import { OnboardingReadyScreen } from "../screens/onboarding/OnboardingReadyScreen";
 import { colors } from "../theme/colors";
@@ -89,6 +90,7 @@ export const AppNavigator = () => {
             name="LocationDenied"
             component={LocationDeniedScreen}
           />
+          <Stack.Screen name="SavePlace" component={SavePlaceScreen} />
           <Stack.Screen
             name="OnboardingReady"
             component={OnboardingReadyScreen}

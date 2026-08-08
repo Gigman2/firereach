@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { MapPinIcon, XIcon } from 'phosphor-react-native';
 import * as Location from 'expo-location';
@@ -15,7 +15,28 @@ type Props = NativeStackScreenProps<RootStackParamList, 'LocationRequest'>;
 
 export const LocationRequestScreen = ({ navigation }: Props) => {
   const { theme, isDark } = useTheme();
-  const { refresh } = useNearestStation();
+  const { refresh, position, isResolving } = useNearestStation();
+  // Set the instant permission is granted, cleared once the resolution it
+  // triggers settles. `refresh()` writes `position`/`isResolving` through
+  // context state, which lands on this component's *next* render — not in
+  // the `handleAllowLocation` closure below, where `position` would still
+  // read whatever it was before the tap. The effect beneath this is what
+  // actually observes the resolved value and makes the SavePlace-vs-Ready
+  // decision from it.
+  const [awaitingFix, setAwaitingFix] = useState(false);
+
+  useEffect(() => {
+    if (!awaitingFix || isResolving) return;
+    setAwaitingFix(false);
+    // This is the whole gate: a position "actually resolved" means `position`
+    // is non-null once the resolution this tap triggered has settled — it
+    // covers a live fix, a bounded last-known fix, and even the unbounded
+    // last-known fallback (see useNearestStation's resolvePosition), and
+    // excludes denied/unavailable and a timeout with no last-known fix at
+    // all. A place with no coordinates can never match a radius, so anything
+    // short of a real position skips SavePlace and goes straight to Ready.
+    navigation.replace(position ? 'SavePlace' : 'OnboardingReady');
+  }, [awaitingFix, isResolving, position, navigation]);
 
   /**
    * The only place in the app that may raise the system location dialog from
@@ -27,13 +48,14 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
   const handleAllowLocation = async () => {
     const { status } = await Location.requestForegroundPermissionsAsync();
     if (status === 'granted') {
-      // Start resolving now, not when Home mounts. The provider's own mount
-      // effect already ran and settled on "denied" because permission was
-      // undetermined at app start; nothing else would re-run it until the app
-      // is next foregrounded. Deliberately not awaited — a resolution is
-      // bounded at 15 s and must never sit between a tap and a screen change.
+      // Now awaited via the effect above, not fire-and-forget: whether this
+      // screen offers SavePlace depends on whether a position resolves, so
+      // the transition has to wait for that answer. Still bounded — the
+      // provider caps the whole resolution at POSITION_RESOLUTION_TIMEOUT_MS
+      // (15 s) — and the button shows a spinner for it via `awaitingFix`
+      // rather than leaving the tap looking unresponsive.
+      setAwaitingFix(true);
       void refresh();
-      navigation.replace('OnboardingReady');
     } else {
       navigation.replace('LocationDenied');
     }
@@ -94,7 +116,11 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
       </View>
 
       <View style={styles.actions}>
-        <Button title="Allow Location" onPress={handleAllowLocation} />
+        <Button
+          title="Allow Location"
+          onPress={handleAllowLocation}
+          loading={awaitingFix}
+        />
         <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
           <Text variant="caption" weight="medium" color={theme.textSecondary}>
             Skip for now

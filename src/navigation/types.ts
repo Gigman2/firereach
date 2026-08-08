@@ -4,6 +4,7 @@ export type RootStackParamList = {
   HowItWorks: undefined;
   LocationRequest: undefined;
   LocationDenied: undefined;
+  SavePlace: undefined;
   OnboardingReady: undefined;
   MainTabs: undefined;
 };
