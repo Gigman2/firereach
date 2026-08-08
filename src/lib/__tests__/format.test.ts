@@ -64,7 +64,8 @@ describe("formatCoords", () => {
   // src/data/stations.bundled.json — which also exercises the rounding,
   // since the stored values carry seven decimals and we render four.
   it("renders a western-Ghana longitude as W, never as a minus sign", () => {
-    // Ghana Fire Service, Bono Region — the majority case.
+    // "Ghana Fire Service", Asunafo North Municipal District, Ahafo Region.
+    // Four stations share that name, so the district is what identifies it.
     expect(formatCoords(6.808575, -2.5159709)).toBe("6.8086° N, 2.5160° W");
   });
 
