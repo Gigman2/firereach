@@ -25,7 +25,11 @@ export function whatToSay(
   places: SavedPlace[],
   nearest: RankedStation | null
 ): SpeakableLocation {
-  if (!position) {
+  if (
+    !position ||
+    !Number.isFinite(position.lat) ||
+    !Number.isFinite(position.lng)
+  ) {
     return { kind: "none" };
   }
 

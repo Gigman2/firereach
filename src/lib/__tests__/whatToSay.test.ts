@@ -72,6 +72,15 @@ describe("whatToSay", () => {
     expect(got.lines.join(" ")).not.toContain("undefined");
   });
 
+  it("says nothing for a non-finite position", () => {
+    // Some Android OEMs hand back a partial fix during a lock failure. The
+    // contract is "none" — not a derived sentence built on NaN. Without this,
+    // stripping the finite guard leaves every other test green, which is
+    // exactly how the guard once got removed unnoticed.
+    expect(whatToSay({ lat: NaN, lng: -0.2112 }, [], STATION).kind).toBe("none");
+    expect(whatToSay({ lat: 5.6091, lng: Infinity }, [HOME], STATION).kind).toBe("none");
+  });
+
   it("says nothing when there is no position", () => {
     expect(whatToSay(null, [HOME], STATION).kind).toBe("none");
   });
