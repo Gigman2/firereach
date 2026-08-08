@@ -51,3 +51,50 @@ export function nearestStations<T extends GeoPoint & { id: string }>(
     )
     .slice(0, Math.max(0, limit));
 }
+
+/**
+ * Initial great-circle bearing from A to B, degrees clockwise from north.
+ *
+ * Used to describe where the caller is relative to a station the dispatcher
+ * knows — "north-east of Madina station" — so the direction runs station to
+ * caller, and callers pass the arguments in that order.
+ */
+export function bearingDegrees(
+  fromLat: number,
+  fromLng: number,
+  toLat: number,
+  toLng: number
+): number {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const φ1 = toRad(fromLat);
+  const φ2 = toRad(toLat);
+  const Δλ = toRad(toLng - fromLng);
+
+  const y = Math.sin(Δλ) * Math.cos(φ2);
+  const x =
+    Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+
+  // atan2(0, 0) is 0, so identical points give north rather than NaN.
+  const deg = (Math.atan2(y, x) * 180) / Math.PI;
+  return (deg + 360) % 360;
+}
+
+const POINTS = [
+  "north",
+  "north-east",
+  "east",
+  "south-east",
+  "south",
+  "south-west",
+  "west",
+  "north-west",
+] as const;
+
+/**
+ * Eight points, spelled out. Someone is reading this down a phone line while
+ * a fire burns; "NE" is not a word.
+ */
+export function compassPoint(bearing: number): string {
+  const norm = ((bearing % 360) + 360) % 360;
+  return POINTS[Math.round(norm / 45) % 8];
+}

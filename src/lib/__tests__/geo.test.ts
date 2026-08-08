@@ -1,4 +1,9 @@
-import { haversineMeters, nearestStations } from "../geo";
+import {
+  haversineMeters,
+  nearestStations,
+  bearingDegrees,
+  compassPoint,
+} from "../geo";
 
 describe("haversineMeters", () => {
   it("is zero at the same point", () => {
@@ -148,5 +153,61 @@ describe("nearestStations", () => {
       expect(got[4].id).toBe("57533584-e092-5ed6-9f51-7b80c1eceb34");
       expect(got[4].distanceMeters).toBe(5475);
     });
+  });
+});
+
+describe("bearingDegrees", () => {
+  it("reads 0 for due north", () => {
+    expect(Math.round(bearingDegrees(5.6, -0.2, 6.6, -0.2))).toBe(0);
+  });
+
+  it("reads 180 for due south", () => {
+    expect(Math.round(bearingDegrees(6.6, -0.2, 5.6, -0.2))).toBe(180);
+  });
+
+  it("reads about 90 for due east", () => {
+    expect(Math.round(bearingDegrees(5.6, -0.2, 5.6, 0.8))).toBe(90);
+  });
+
+  it("reads about 270 for due west", () => {
+    expect(Math.round(bearingDegrees(5.6, 0.8, 5.6, -0.2))).toBe(270);
+  });
+
+  it("always returns 0-360, never negative", () => {
+    const b = bearingDegrees(5.6, 0.5, 5.5, -0.5);
+    expect(b).toBeGreaterThanOrEqual(0);
+    expect(b).toBeLessThan(360);
+  });
+
+  it("returns 0 for identical points rather than NaN", () => {
+    expect(bearingDegrees(5.6, -0.2, 5.6, -0.2)).toBe(0);
+  });
+});
+
+describe("compassPoint", () => {
+  it("names the eight points at their centres", () => {
+    expect(compassPoint(0)).toBe("north");
+    expect(compassPoint(45)).toBe("north-east");
+    expect(compassPoint(90)).toBe("east");
+    expect(compassPoint(135)).toBe("south-east");
+    expect(compassPoint(180)).toBe("south");
+    expect(compassPoint(225)).toBe("south-west");
+    expect(compassPoint(270)).toBe("west");
+    expect(compassPoint(315)).toBe("north-west");
+  });
+
+  it("wraps past 337.5 back to north", () => {
+    expect(compassPoint(338)).toBe("north");
+    expect(compassPoint(359.9)).toBe("north");
+    expect(compassPoint(360)).toBe("north");
+  });
+
+  it("splits on the 22.5 boundaries", () => {
+    expect(compassPoint(22)).toBe("north");
+    expect(compassPoint(23)).toBe("north-east");
+  });
+
+  it("spells words rather than abbreviations, because this is read aloud", () => {
+    expect(compassPoint(45)).not.toBe("NE");
   });
 });
