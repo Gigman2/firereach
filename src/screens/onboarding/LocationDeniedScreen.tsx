@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity, Linking, Platform } from 'react-nat
 import { GpsSlashIcon, WarningIcon, ArrowLeftIcon, ArrowSquareOutIcon } from 'phosphor-react-native';
 import { Text } from '../../components/ui/Text';
 import { Button } from '../../components/ui/Button';
+import { OnboardingDots } from '../../components/ui/OnboardingDots';
 import { colors } from '../../theme/colors';
 import { useTheme } from '../../theme/ThemeContext';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -74,10 +75,14 @@ export const LocationDeniedScreen = ({ navigation }: Props) => {
           style={[styles.continueButton, { borderColor: theme.border }]}
         />
 
-        <View style={styles.dots}>
-          <View style={[styles.dotInactive, { backgroundColor: theme.border }]} />
-          <View style={styles.dotActive} />
-          <View style={[styles.dotInactive, { backgroundColor: theme.border }]} />
+        {/*
+          Step 3 of 5, the same step as LocationRequest — this is that screen's
+          denied variant, not a step of its own. It used to draw three dots of
+          its own in a different colour, which read as a different flow the
+          moment the shared component took the count to five.
+        */}
+        <View style={styles.dotsRow}>
+          <OnboardingDots total={5} step={3} />
         </View>
       </View>
     </View>
@@ -142,21 +147,8 @@ const styles = StyleSheet.create({
   continueButton: {
     borderWidth: 2,
   },
-  dots: {
+  dotsRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
-    gap: 12,
-  },
-  dotActive: {
-    height: 8,
-    width: 8,
-    borderRadius: 4,
-    backgroundColor: colors.brandPrimary,
-  },
-  dotInactive: {
-    height: 8,
-    width: 8,
-    borderRadius: 4,
   },
 });
