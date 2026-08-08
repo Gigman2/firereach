@@ -1,5 +1,6 @@
 import { ThemeProvider } from './src/theme/ThemeContext';
 import { NearestStationProvider } from './src/hooks/useNearestStation';
+import { SavedPlacesProvider } from './src/hooks/useSavedPlaces';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { AppFonts } from './src/components/AppFonts';
 
@@ -21,7 +22,9 @@ export default function App() {
       */}
       <NearestStationProvider>
         <AppFonts>
-          <AppNavigator />
+          <SavedPlacesProvider>
+            <AppNavigator />
+          </SavedPlacesProvider>
         </AppFonts>
       </NearestStationProvider>
     </ThemeProvider>
