@@ -8,6 +8,7 @@ import { colors } from '../../theme/colors';
 import { useTheme } from '../../theme/ThemeContext';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
+import * as onboarding from './onboardingStyles';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LocationDenied'>;
 
@@ -23,8 +24,8 @@ export const LocationDeniedScreen = ({ navigation }: Props) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={styles.header}>
+    <View style={[onboarding.screen, { backgroundColor: theme.background }]}>
+      <View style={onboarding.header}>
         {/*
           Now genuinely returns to LocationRequest — it used to land on
           HowItWorks because that screen replaced itself on the way here.
@@ -40,7 +41,7 @@ export const LocationDeniedScreen = ({ navigation }: Props) => {
       </View>
 
       <View style={styles.content}>
-        <View style={styles.iconContainer}>
+        <View style={[onboarding.iconCircle(192), styles.iconContainer]}>
           <GpsSlashIcon size={80} color={colors.warning} weight="regular" />
         </View>
 
@@ -74,9 +75,9 @@ export const LocationDeniedScreen = ({ navigation }: Props) => {
         </View>
       </View>
 
-      <View style={styles.spacer} />
+      <View style={onboarding.fill} />
 
-      <View style={styles.footer}>
+      <View style={onboarding.footer}>
         <Button
           title="Continue anyway"
           variant="secondary"
@@ -99,25 +100,11 @@ export const LocationDeniedScreen = ({ navigation }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 8,
-  },
   content: {
     paddingHorizontal: 24,
   },
   iconContainer: {
-    width: 192,
-    height: 192,
-    borderRadius: 96,
     backgroundColor: `${colors.warning}15`,
-    alignItems: 'center',
-    justifyContent: 'center',
     alignSelf: 'center',
     marginVertical: 40,
   },
@@ -144,14 +131,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 4,
-  },
-  spacer: {
-    flex: 1,
-  },
-  footer: {
-    paddingHorizontal: 24,
-    paddingBottom: 40,
-    gap: 20,
   },
   continueButton: {
     borderWidth: 2,

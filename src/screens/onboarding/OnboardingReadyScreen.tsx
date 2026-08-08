@@ -9,6 +9,7 @@ import { useTheme } from "../../theme/ThemeContext";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../navigation/types";
 import { completeOnboarding } from "../../lib/onboarding";
+import * as onboarding from "./onboardingStyles";
 
 type Props = NativeStackScreenProps<RootStackParamList, "OnboardingReady">;
 
@@ -27,8 +28,8 @@ export const OnboardingReadyScreen = ({ navigation }: Props) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={styles.header}>
+    <View style={[onboarding.screen, { backgroundColor: theme.background }]}>
+      <View style={onboarding.headerSplit}>
         {/*
           Back matters here specifically because the step before it is
           skippable: skip saving a place, land on this screen, change your
@@ -54,7 +55,13 @@ export const OnboardingReadyScreen = ({ navigation }: Props) => {
       </View>
 
       <View style={styles.content}>
-        <View style={[styles.iconContainer, { backgroundColor: isDark ? "#0D2818" : "#D1FAE5" }]}>
+        <View
+          style={[
+            onboarding.iconCircle(96),
+            styles.iconContainer,
+            { backgroundColor: isDark ? "#0D2818" : "#D1FAE5" },
+          ]}
+        >
           <ShieldCheckIcon size={48} color={colors.success} weight="fill" />
         </View>
 
@@ -79,7 +86,7 @@ export const OnboardingReadyScreen = ({ navigation }: Props) => {
         </Text>
       </View>
 
-      <View style={styles.spacer} />
+      <View style={onboarding.fill} />
 
       <View style={styles.footer}>
         <OnboardingDots total={5} step={5} />
@@ -98,28 +105,12 @@ export const OnboardingReadyScreen = ({ navigation }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 8,
-  },
   content: {
     alignItems: "center",
     paddingHorizontal: 24,
     paddingTop: 40,
   },
   iconContainer: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    alignItems: "center",
-    justifyContent: "center",
     marginBottom: 32,
   },
   heading: {
@@ -128,9 +119,6 @@ const styles = StyleSheet.create({
   description: {
     marginBottom: 40,
     paddingHorizontal: 8,
-  },
-  spacer: {
-    flex: 1,
   },
   footer: {
     paddingHorizontal: 24,

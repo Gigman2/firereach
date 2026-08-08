@@ -22,6 +22,7 @@ import {
 } from '../../lib/savedPlaces';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
+import * as onboarding from './onboardingStyles';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SavePlace'>;
 
@@ -123,13 +124,13 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View style={[onboarding.screen, { backgroundColor: theme.background }]}>
       {/*
         This screen had no back affordance at all, and was reached by a
         replace, so there was nothing to go back to either. Both are fixed:
         LocationRequest now pushes, and this returns to it.
       */}
-      <View style={styles.header}>
+      <View style={onboarding.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           accessibilityRole="button"
@@ -282,7 +283,7 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
         )}
       </ScrollView>
 
-      <View style={styles.footer}>
+      <View style={[onboarding.footer, styles.footer]}>
         <OnboardingDots total={5} step={4} />
         <Button
           title="Save"
@@ -301,17 +302,8 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   scroll: {
     flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 8,
   },
   content: {
     paddingHorizontal: 24,
@@ -373,9 +365,6 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   footer: {
-    paddingHorizontal: 24,
-    paddingBottom: 40,
-    gap: 20,
     alignItems: 'center',
   },
   skipButton: {

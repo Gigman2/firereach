@@ -15,6 +15,7 @@ import {
 } from '../../hooks/useNearestStation';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
+import * as onboarding from './onboardingStyles';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LocationRequest'>;
 
@@ -151,9 +152,15 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={styles.mainContent}>
-        <View style={styles.header}>
+    <View
+      style={[
+        onboarding.screen,
+        styles.container,
+        { backgroundColor: theme.background },
+      ]}
+    >
+      <View style={onboarding.fill}>
+        <View style={onboarding.headerSplit}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             accessibilityRole='button'
@@ -182,6 +189,7 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
         <View style={styles.content}>
           <View
             style={[
+              onboarding.iconCircle(96),
               styles.iconContainer,
               { backgroundColor: isDark ? '#431C00' : '#FFF7ED' },
             ]}
@@ -226,7 +234,7 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
           </Text>
         </View>
 
-        <View style={styles.actions}>
+        <View style={onboarding.actions}>
           <Button
             title='Allow Location'
             onPress={handleAllowLocation}
@@ -235,7 +243,7 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
         </View>
       </View>
 
-      <View style={styles.dotsRow}>
+      <View style={onboarding.dotsRow}>
         <OnboardingDots total={5} step={3} />
       </View>
     </View>
@@ -244,20 +252,8 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'space-between',
     paddingBottom: 32,
-  },
-  mainContent: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
   content: {
     alignItems: 'center',
@@ -265,11 +261,6 @@ const styles = StyleSheet.create({
     paddingTop: 32,
   },
   iconContainer: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginBottom: 24,
   },
   badge: {
@@ -281,14 +272,5 @@ const styles = StyleSheet.create({
   },
   description: {
     paddingHorizontal: 16,
-  },
-  actions: {
-    paddingHorizontal: 32,
-    paddingTop: 32,
-    gap: 16,
-  },
-  dotsRow: {
-    alignItems: 'center',
-    paddingVertical: 32,
   },
 });

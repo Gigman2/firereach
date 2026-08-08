@@ -9,6 +9,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 import { completeOnboarding } from '../../lib/onboarding';
+import * as onboarding from './onboardingStyles';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'OnboardingIntro'>;
 
@@ -16,9 +17,9 @@ export const OnboardingIntroScreen = ({ navigation }: Props) => {
   const { theme } = useTheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={styles.mainContent}>
-        <View style={styles.skipRow}>
+    <View style={[onboarding.screen, { backgroundColor: theme.background }]}>
+      <View style={onboarding.fill}>
+        <View style={onboarding.headerEnd}>
           <TouchableOpacity
             onPress={async () => {
               // Leaving onboarding by any door counts as having seen it.
@@ -45,8 +46,8 @@ export const OnboardingIntroScreen = ({ navigation }: Props) => {
         </View>
 
         <View style={styles.heroSection}>
-          <View style={styles.iconOuter}>
-            <View style={styles.iconInner}>
+          <View style={[onboarding.iconCircle(192), styles.iconOuter]}>
+            <View style={[onboarding.iconCircle(128), styles.iconInner]}>
               <FireIcon size={64} color='#FFFFFF' weight='fill' />
             </View>
           </View>
@@ -67,7 +68,7 @@ export const OnboardingIntroScreen = ({ navigation }: Props) => {
           </Text>
         </View>
 
-        <View style={styles.actions}>
+        <View style={onboarding.actions}>
           <Button
             title='Next'
             onPress={() => navigation.navigate('HowItWorks')}
@@ -76,7 +77,7 @@ export const OnboardingIntroScreen = ({ navigation }: Props) => {
         </View>
       </View>
 
-      <View style={styles.dotsRow}>
+      <View style={onboarding.dotsRow}>
         <OnboardingDots total={5} step={1} />
       </View>
     </View>
@@ -84,28 +85,6 @@ export const OnboardingIntroScreen = ({ navigation }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  mainContent: {
-    flex: 1,
-  },
-  skipRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 8,
-  },
-  actions: {
-    paddingHorizontal: 32,
-    paddingTop: 32,
-    gap: 16,
-  },
-  dotsRow: {
-    alignItems: 'center',
-    paddingVertical: 32,
-  },
   heroSection: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -113,19 +92,9 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   iconOuter: {
-    width: 192,
-    height: 192,
-    borderRadius: 96,
     backgroundColor: `${colors.brandPrimary}15`,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   iconInner: {
-    width: 128,
-    height: 128,
-    borderRadius: 64,
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: colors.brandPrimary,
     shadowColor: colors.brandPrimary,
     shadowOffset: { width: 0, height: 8 },

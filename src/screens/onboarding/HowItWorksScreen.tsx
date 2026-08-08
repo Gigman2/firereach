@@ -15,6 +15,7 @@ import { useTheme } from "../../theme/ThemeContext";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../navigation/types";
 import { completeOnboarding } from "../../lib/onboarding";
+import * as onboarding from "./onboardingStyles";
 
 type Props = NativeStackScreenProps<RootStackParamList, "HowItWorks">;
 
@@ -56,9 +57,9 @@ export const HowItWorksScreen = ({ navigation }: Props) => {
   const { theme } = useTheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={styles.mainContent}>
-        <View style={styles.header}>
+    <View style={[onboarding.screen, { backgroundColor: theme.background }]}>
+      <View style={onboarding.fill}>
+        <View style={onboarding.headerSplit}>
           {/*
           Back was reachable only by the Android hardware key before — there
           was no on-screen way to reread the intro.
@@ -130,7 +131,7 @@ export const HowItWorksScreen = ({ navigation }: Props) => {
           </View>
         </View>
 
-        <View style={styles.actions}>
+        <View style={onboarding.actions}>
           <Button
             title="Next"
             onPress={() => navigation.navigate("LocationRequest")}
@@ -139,7 +140,7 @@ export const HowItWorksScreen = ({ navigation }: Props) => {
         </View>
       </View>
 
-      <View style={styles.dotsRow}>
+      <View style={[onboarding.dotsRow, styles.dotsRow]}>
         <OnboardingDots total={5} step={2} />
       </View>
     </View>
@@ -147,25 +148,6 @@ export const HowItWorksScreen = ({ navigation }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  mainContent: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  actions: {
-    paddingHorizontal: 32,
-    paddingTop: 32,
-    gap: 16,
-  },
   content: {
     paddingHorizontal: 32,
     paddingTop: 32,
@@ -199,8 +181,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   dotsRow: {
-    alignItems: "center",
-    paddingVertical: 32,
     marginBottom: 32,
   },
 });
