@@ -1,12 +1,15 @@
 import React from "react";
 import { View } from "react-native";
-import {
-  useFonts,
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-} from "@expo-google-fonts/inter";
+// Per-weight subpaths, NOT the package root. The root index.js `require()`s
+// all 18 faces (nine weights, roman and italic) at module load, and Metro does
+// not tree-shake them back out — importing from it ships 6.0 MB of TTF to
+// register 1.3 MB. On a low-end Android target that is the difference between
+// a rounding error and a fifth of the download.
+import { useFonts } from "@expo-google-fonts/inter/useFonts";
+import { Inter_400Regular } from "@expo-google-fonts/inter/400Regular";
+import { Inter_500Medium } from "@expo-google-fonts/inter/500Medium";
+import { Inter_600SemiBold } from "@expo-google-fonts/inter/600SemiBold";
+import { Inter_700Bold } from "@expo-google-fonts/inter/700Bold";
 import { useTheme } from "../theme/ThemeContext";
 
 /**

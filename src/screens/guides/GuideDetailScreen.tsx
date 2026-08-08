@@ -89,7 +89,7 @@ export const GuideDetailScreen = ({ navigation }: Props) => {
       >
         {/* Hero placeholder */}
         <View style={[styles.heroImage, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-          <Text style={{ fontSize: 48 }}>🩹</Text>
+          <Text style={{ fontSize: 48 /* font-exempt: emoji glyph */ }}>🩹</Text>
         </View>
 
         {/* Meta badge */}

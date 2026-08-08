@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   fireIcon: {
-    fontSize: 64,
+    fontSize: 64, // font-exempt: emoji glyph
   },
   tagline: {
     marginTop: 8,
