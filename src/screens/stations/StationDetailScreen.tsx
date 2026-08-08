@@ -183,7 +183,7 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
               Each number carries its own cost tag above, so this caption says
               only what the tags cannot: where the numbers came from. It no
               longer points at "the numbers below", which was wrong even
-              before the station hotlines moved ahead of 192.
+              before the regional lines moved ahead of 192.
             */}
             {/*
               Gated on a chargeable line actually being present, not on the

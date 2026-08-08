@@ -21,7 +21,7 @@ const HOTLINES: CachedStation["contacts"] = [
 ];
 
 describe("dialTargets", () => {
-  it("puts the station's own hotline first when the station has one", () => {
+  it("puts the regional command line first when the station has one", () => {
     expect(dialTargets(station(HOTLINES))[0].phone).toBe("0302666576");
   });
 

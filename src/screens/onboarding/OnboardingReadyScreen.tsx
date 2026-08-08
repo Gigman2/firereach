@@ -135,7 +135,4 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: `${colors.brandPrimary}33`,
   },
-  tutorialsButton: {
-    paddingVertical: 8,
-  },
 });
