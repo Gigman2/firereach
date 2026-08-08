@@ -22,8 +22,12 @@ import { useConnectivity } from "../hooks/useConnectivity";
 import { useNearestStation } from "../hooks/useNearestStation";
 import { dialTargets, NATIONAL_EMERGENCY_PHONE } from "../lib/stationTypes";
 import { formatDistance } from "../lib/format";
+import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import type { MainTabParamList } from "../navigation/types";
 
-export const HomeScreen = () => {
+type Props = BottomTabScreenProps<MainTabParamList, "Home">;
+
+export const HomeScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { isOnline } = useConnectivity();
@@ -150,7 +154,12 @@ export const HomeScreen = () => {
             {statusLabel}
           </Text>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Settings")}
+          accessibilityRole="button"
+          accessibilityLabel="Settings"
+          hitSlop={8}
+        >
           <GearSixIcon size={24} color={theme.textTertiary} />
         </TouchableOpacity>
       </View>
@@ -299,6 +308,15 @@ export const HomeScreen = () => {
               ).toLocaleDateString()}`}
         </Text>
 
+        {/*
+          Absorbs the slack when the card is short — which is exactly the
+          states with the least to say, such as a rejected position. Without
+          it the quick actions float mid-screen above a large void. When the
+          content is tall enough to fill the viewport this collapses to zero
+          and everything scrolls normally.
+        */}
+        <View style={styles.spacer} />
+
         {/* Quick Actions Grid */}
         <View style={styles.quickActions}>
           <TouchableOpacity
@@ -306,6 +324,8 @@ export const HomeScreen = () => {
               styles.actionCard,
               { backgroundColor: theme.background, borderColor: theme.border },
             ]}
+            onPress={() => navigation.navigate("Guides")}
+            accessibilityRole="button"
           >
             <View style={styles.actionIconContainer}>
               <ShieldCheckIcon
@@ -324,6 +344,8 @@ export const HomeScreen = () => {
               styles.actionCard,
               { backgroundColor: theme.background, borderColor: theme.border },
             ]}
+            onPress={() => navigation.navigate("Stations")}
+            accessibilityRole="button"
           >
             <View style={styles.actionIconContainer}>
               <ListBulletsIcon size={24} color={colors.brandPrimary} />
@@ -363,7 +385,16 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
     gap: 20,
-    paddingBottom: 100,
+    // flexGrow lets the content stretch to the viewport so `spacer` has room
+    // to push the quick actions down; it still scrolls once content exceeds it.
+    // paddingBottom was 100 to clear a floating action button that no longer
+    // exists — the tab bar reserves its own space, so this only needs breathing
+    // room.
+    flexGrow: 1,
+    paddingBottom: 24,
+  },
+  spacer: {
+    flex: 1,
   },
   alert: {
     flexDirection: "row",

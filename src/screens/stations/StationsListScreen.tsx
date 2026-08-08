@@ -194,9 +194,6 @@ export const StationsListScreen = ({ navigation }: Props) => {
         ]}
       >
         <Text variant="heading2">Fire Stations</Text>
-        <TouchableOpacity>
-          <MagnifyingGlassIcon size={24} color={theme.textPrimary} />
-        </TouchableOpacity>
       </View>
 
       {/* Search */}
