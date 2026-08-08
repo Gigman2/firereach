@@ -17,61 +17,67 @@ export const OnboardingIntroScreen = ({ navigation }: Props) => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={styles.skipRow}>
-        <TouchableOpacity
-          onPress={async () => {
-            // Leaving onboarding by any door counts as having seen it.
-            // This used to jump straight to MainTabs without recording it,
-            // so the whole flow replayed on the next launch, forever.
-            await completeOnboarding();
-            // reset, not replace: replace swaps only the focused route, so the
-            // steps pushed behind it survive and an edge-swipe from Home
-            // re-reveals them.
-            navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
-          }}
-          accessibilityRole="button"
-          accessibilityLabel="Skip onboarding"
-          hitSlop={8}
-        >
-          <Text variant="caption" weight="semiBold" color={theme.textSecondary}>
-            Skip
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <View style={styles.mainContent}>
+        <View style={styles.skipRow}>
+          <TouchableOpacity
+            onPress={async () => {
+              // Leaving onboarding by any door counts as having seen it.
+              // This used to jump straight to MainTabs without recording it,
+              // so the whole flow replayed on the next launch, forever.
+              await completeOnboarding();
+              // reset, not replace: replace swaps only the focused route, so the
+              // steps pushed behind it survive and an edge-swipe from Home
+              // re-reveals them.
+              navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
+            }}
+            accessibilityRole='button'
+            accessibilityLabel='Skip onboarding'
+            hitSlop={8}
+          >
+            <Text
+              variant='caption'
+              weight='semiBold'
+              color={theme.textSecondary}
+            >
+              Skip
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.heroSection}>
-        <View style={styles.iconOuter}>
-          <View style={styles.iconInner}>
-            <FireIcon size={64} color="#FFFFFF" weight="fill" />
+        <View style={styles.heroSection}>
+          <View style={styles.iconOuter}>
+            <View style={styles.iconInner}>
+              <FireIcon size={64} color='#FFFFFF' weight='fill' />
+            </View>
           </View>
+        </View>
+
+        <View style={styles.contentSection}>
+          <Text variant='displayBold' align='center'>
+            Reach help faster.
+          </Text>
+          <Text
+            variant='bodyLarge'
+            color={theme.textSecondary}
+            align='center'
+            style={styles.description}
+          >
+            In case of an emergency, get the assistance you need with just a few
+            taps on your screen.
+          </Text>
+        </View>
+
+        <View style={styles.actions}>
+          <Button
+            title='Next'
+            onPress={() => navigation.navigate('HowItWorks')}
+            rightIcon={<ArrowRightIcon size={20} color='#FFFFFF' />}
+          />
         </View>
       </View>
 
-      <View style={styles.contentSection}>
-        <Text variant="displayBold" align="center">
-          Reach help faster.
-        </Text>
-        <Text
-          variant="bodyLarge"
-          color={theme.textSecondary}
-          align="center"
-          style={styles.description}
-        >
-          In case of an emergency, get the assistance you need with just a few
-          taps on your screen.
-        </Text>
-      </View>
-
-      <View style={styles.spacer} />
-
-      <View style={styles.footer}>
+      <View style={styles.dotsRow}>
         <OnboardingDots total={5} step={1} />
-
-        <Button
-          title="Next"
-          onPress={() => navigation.navigate('HowItWorks')}
-          rightIcon={<ArrowRightIcon size={20} color="#FFFFFF" />}
-        />
       </View>
     </View>
   );
@@ -81,12 +87,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  mainContent: {
+    flex: 1,
+  },
   skipRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 8,
+  },
+  actions: {
+    paddingHorizontal: 32,
+    paddingTop: 32,
+    gap: 16,
+  },
+  dotsRow: {
+    alignItems: 'center',
+    paddingVertical: 32,
   },
   heroSection: {
     alignItems: 'center',
@@ -106,9 +124,9 @@ const styles = StyleSheet.create({
     width: 128,
     height: 128,
     borderRadius: 64,
-    backgroundColor: colors.brandPrimary,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: colors.brandPrimary,
     shadowColor: colors.brandPrimary,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
@@ -121,14 +139,5 @@ const styles = StyleSheet.create({
   },
   description: {
     marginTop: 16,
-  },
-  spacer: {
-    flex: 1,
-  },
-  footer: {
-    paddingHorizontal: 32,
-    paddingBottom: 48,
-    gap: 32,
-    alignItems: 'center',
   },
 });

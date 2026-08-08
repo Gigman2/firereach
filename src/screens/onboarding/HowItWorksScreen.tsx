@@ -57,84 +57,90 @@ export const HowItWorksScreen = ({ navigation }: Props) => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={styles.skipRow}>
-        {/*
+      <View style={styles.mainContent}>
+        <View style={styles.header}>
+          {/*
           Back was reachable only by the Android hardware key before — there
           was no on-screen way to reread the intro.
         */}
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          hitSlop={8}
-        >
-          <ArrowLeftIcon size={24} color={theme.textSecondary} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={async () => {
-            await completeOnboarding();
-            // reset, not replace — see OnboardingIntroScreen.
-            navigation.reset({ index: 0, routes: [{ name: "MainTabs" }] });
-          }}
-          accessibilityRole="button"
-          hitSlop={8}
-        >
-          <Text
-            variant="caption"
-            weight="semiBold"
-            color={theme.textSecondary}
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+            hitSlop={8}
           >
-            Skip
+            <ArrowLeftIcon size={24} color={theme.textSecondary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={async () => {
+              await completeOnboarding();
+              // reset, not replace — see OnboardingIntroScreen.
+              navigation.reset({ index: 0, routes: [{ name: "MainTabs" }] });
+            }}
+            accessibilityRole="button"
+            hitSlop={8}
+          >
+            <Text
+              variant="caption"
+              weight="semiBold"
+              color={theme.textSecondary}
+            >
+              Skip
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.content}>
+          <Text variant="displayBold" align="center">
+            How it works
           </Text>
-        </TouchableOpacity>
-      </View>
+          <Text
+            variant="bodyMedium"
+            color={theme.textSecondary}
+            align="center"
+            style={styles.subtitle}
+          >
+            Three simple steps between you and help.
+          </Text>
 
-      <View style={styles.content}>
-        <Text variant="displayBold" align="center">
-          How it works
-        </Text>
-        <Text
-          variant="bodyMedium"
-          color={theme.textSecondary}
-          align="center"
-          style={styles.subtitle}
-        >
-          Three simple steps between you and help.
-        </Text>
+          <View style={styles.steps}>
+            {steps.map((step, index) => (
+              <View key={index} style={styles.stepRow}>
+                <View style={styles.stepIconContainer}>
+                  <step.Icon
+                    size={24}
+                    color={colors.brandPrimary}
+                    weight="fill"
+                  />
+                </View>
+                <View style={styles.stepText}>
+                  <Text variant="bodyMedium" weight="bold">
+                    {step.title}
+                  </Text>
+                  <Text
+                    variant="caption"
+                    color={theme.textSecondary}
+                    style={styles.stepBody}
+                  >
+                    {step.body}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
 
-        <View style={styles.steps}>
-          {steps.map((step, index) => (
-            <View key={index} style={styles.stepRow}>
-              <View style={styles.stepIconContainer}>
-                <step.Icon size={24} color={colors.brandPrimary} weight="fill" />
-              </View>
-              <View style={styles.stepText}>
-                <Text variant="bodyMedium" weight="bold">
-                  {step.title}
-                </Text>
-                <Text
-                  variant="caption"
-                  color={theme.textSecondary}
-                  style={styles.stepBody}
-                >
-                  {step.body}
-                </Text>
-              </View>
-            </View>
-          ))}
+        <View style={styles.actions}>
+          <Button
+            title="Next"
+            onPress={() => navigation.navigate("LocationRequest")}
+            rightIcon={<ArrowRightIcon size={20} color="#FFFFFF" />}
+          />
         </View>
       </View>
 
-      <View style={styles.spacer} />
-
-      <View style={styles.footer}>
+      <View style={styles.dotsRow}>
         <OnboardingDots total={5} step={2} />
-
-        <Button
-          title="Next"
-          onPress={() => navigation.navigate("LocationRequest")}
-          rightIcon={<ArrowRightIcon size={20} color="#FFFFFF" />}
-        />
       </View>
     </View>
   );
@@ -144,13 +150,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  skipRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+  mainContent: {
+    flex: 1,
+  },
+  header: {
     paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  actions: {
+    paddingHorizontal: 32,
+    paddingTop: 32,
+    gap: 16,
   },
   content: {
     paddingHorizontal: 32,
@@ -184,13 +198,9 @@ const styles = StyleSheet.create({
     marginTop: 4,
     lineHeight: 20,
   },
-  spacer: {
-    flex: 1,
-  },
-  footer: {
-    paddingHorizontal: 32,
-    paddingBottom: 48,
-    gap: 32,
+  dotsRow: {
     alignItems: "center",
+    paddingVertical: 32,
+    marginBottom: 32,
   },
 });

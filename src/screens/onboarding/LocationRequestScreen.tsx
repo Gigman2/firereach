@@ -152,47 +152,63 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={styles.header}>
-        {/*
-          An arrow, not a cross. It has always called goBack(), but a cross
-          reads as "leave onboarding" — which is what the crosses on the
-          intro and ready screens actually do.
-        */}
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          hitSlop={8}
-        >
-          <ArrowLeftIcon size={24} color={theme.textSecondary} />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.content}>
-        <View style={[styles.iconContainer, { backgroundColor: isDark ? '#431C00' : '#FFF7ED' }]}>
-          <MapPinIcon size={48} color="#F97316" weight="fill" />
+      <View style={styles.mainContent}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            accessibilityRole='button'
+            accessibilityLabel='Back'
+            hitSlop={8}
+          >
+            <ArrowLeftIcon size={24} color={theme.textSecondary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={async () => {
+              await handleSkip();
+            }}
+            accessibilityRole='button'
+            hitSlop={8}
+          >
+            <Text
+              variant='caption'
+              weight='semiBold'
+              color={theme.textSecondary}
+            >
+              Skip
+            </Text>
+          </TouchableOpacity>
         </View>
 
-        <Text
-          variant="label"
-          color={colors.brandPrimary}
-          align="center"
-          style={styles.badge}
-        >
-          ACCESS REQUIRED
-        </Text>
+        <View style={styles.content}>
+          <View
+            style={[
+              styles.iconContainer,
+              { backgroundColor: isDark ? '#431C00' : '#FFF7ED' },
+            ]}
+          >
+            <MapPinIcon size={48} color='#F97316' weight='fill' />
+          </View>
 
-        <Text variant="displayBold" align="center" style={styles.heading}>
-          We need your location.
-        </Text>
+          <Text
+            variant='label'
+            color={colors.brandPrimary}
+            align='center'
+            style={styles.badge}
+          >
+            ACCESS REQUIRED
+          </Text>
 
-        <Text
-          variant="bodyMedium"
-          color={theme.textSecondary}
-          align="center"
-          style={styles.description}
-        >
-          {/*
+          <Text variant='displayBold' align='center' style={styles.heading}>
+            We need your location.
+          </Text>
+
+          <Text
+            variant='bodyMedium'
+            color={theme.textSecondary}
+            align='center'
+            style={styles.description}
+          >
+            {/*
             Was generic boilerplate — "the best experience", "nearby services",
             "tailor results just for you". The permission prompt is the one
             moment to say what is actually at stake, which is why the app never
@@ -204,30 +220,18 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
             Ghana's centroid (stationsApi.ts) rather than the user's position.
             If that ever changes, this sentence has to change with it.
           */}
-          Without it we cannot tell you which fire station is closest to you.
-          Your location stays on this phone — it is never sent anywhere. You
-          can skip this and still call 192.
-        </Text>
-      </View>
-
-      <View style={styles.actions}>
-        <Button
-          title="Allow Location"
-          onPress={handleAllowLocation}
-          loading={awaitingFix}
-        />
-        <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
-          <Text variant="caption" weight="medium" color={theme.textSecondary}>
-            Skip for now
+            Without it we cannot tell you which fire station is closest to you.
+            Your location stays on this phone — it is never sent anywhere. You
+            can skip this and still call 192.
           </Text>
-        </TouchableOpacity>
-      </View>
+        </View>
 
-      <View style={[styles.mapPlaceholder, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-        <View style={styles.mapInner}>
-          <View style={[styles.mapPin, { borderColor: theme.background }]}>
-            <View style={styles.mapPinDot} />
-          </View>
+        <View style={styles.actions}>
+          <Button
+            title='Allow Location'
+            onPress={handleAllowLocation}
+            loading={awaitingFix}
+          />
         </View>
       </View>
 
@@ -241,13 +245,19 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'space-between',
+    paddingBottom: 32,
+  },
+  mainContent: {
+    flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
     paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   content: {
     alignItems: 'center',
@@ -276,44 +286,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     paddingTop: 32,
     gap: 16,
-  },
-  skipButton: {
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  mapPlaceholder: {
-    marginTop: 32,
-    marginHorizontal: 24,
-    height: 128,
-    borderRadius: 12,
-    borderWidth: 1,
-    overflow: 'hidden',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  mapInner: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  mapPin: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.brandPrimary,
-    borderWidth: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  mapPinDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#FFFFFF',
   },
   dotsRow: {
     alignItems: 'center',
