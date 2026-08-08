@@ -16,6 +16,7 @@ import {
   PencilSimpleIcon,
   TrashIcon,
   PlusIcon,
+  XIcon,
 } from "phosphor-react-native";
 import { Text } from "../../components/ui/Text";
 import { Button } from "../../components/ui/Button";
@@ -32,6 +33,7 @@ import {
   DEFAULT_RADIUS_METERS,
   MAX_SAVED_PLACES,
   MAX_LABEL_LENGTH,
+  MAX_LANDMARKS,
   newPlaceId,
   type SavedPlace,
 } from "../../lib/savedPlaces";
@@ -61,6 +63,18 @@ function formatRadius(meters: number): string {
   return meters >= 1000 ? `${meters / 1000} km` : `${meters} m`;
 }
 
+/**
+ * The list row shows one line, not all three: the first landmark, plus a
+ * count of the rest when there are more. `numberOfLines={1}` on the Text
+ * that renders this is what actually stops a long landmark wrapping the row
+ * — this only decides the words, not the truncation.
+ */
+function landmarksSummary(landmarks: string[]): string {
+  if (landmarks.length === 0) return "No landmark saved";
+  if (landmarks.length === 1) return landmarks[0];
+  return `${landmarks[0]} +${landmarks.length - 1} more`;
+}
+
 type FormState =
   | { mode: "add" }
   | { mode: "edit"; place: SavedPlace }
@@ -76,7 +90,7 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
 
   const [form, setForm] = useState<FormState>(null);
   const [label, setLabel] = useState<string>("Home");
-  const [note, setNote] = useState("");
+  const [landmarks, setLandmarks] = useState<string[]>([""]);
   const [radiusMeters, setRadiusMeters] = useState<number>(
     DEFAULT_RADIUS_METERS
   );
@@ -86,6 +100,18 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
   const trimmedLabel = label.trim();
   const atCap = places.length >= MAX_SAVED_PLACES;
   const canAdd = !!position && !atCap;
+  const filledLandmarks = landmarks.filter((l) => l.trim().length > 0).length;
+
+  const updateLandmark = (index: number, text: string) =>
+    setLandmarks((prev) => prev.map((l, i) => (i === index ? text : l)));
+
+  const addLandmark = () =>
+    setLandmarks((prev) =>
+      prev.length < MAX_LANDMARKS ? [...prev, ""] : prev,
+    );
+
+  const removeLandmark = (index: number) =>
+    setLandmarks((prev) => prev.filter((_, i) => i !== index));
 
   // Shown next to a disabled Add control rather than swallowed, so someone
   // who cannot add a place still learns why — a control that just vanishes
@@ -98,7 +124,7 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
 
   const openAdd = () => {
     setLabel("Home");
-    setNote("");
+    setLandmarks([""]);
     setRadiusMeters(DEFAULT_RADIUS_METERS);
     setSaveError(null);
     setForm({ mode: "add" });
@@ -106,7 +132,7 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
 
   const openEdit = (place: SavedPlace) => {
     setLabel(place.label);
-    setNote(place.note);
+    setLandmarks(place.landmarks.length > 0 ? place.landmarks : [""]);
     setRadiusMeters(place.radiusMeters);
     setSaveError(null);
     setForm({ mode: "edit", place });
@@ -138,13 +164,18 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
           label: trimmedLabel,
           lat: at.lat,
           lng: at.lng,
-          note,
+          landmarks,
           radiusMeters,
         });
     } else {
       const existing = form.place;
       run = () =>
-        updatePlace({ ...existing, label: trimmedLabel, note, radiusMeters });
+        updatePlace({
+          ...existing,
+          label: trimmedLabel,
+          landmarks,
+          radiusMeters,
+        });
     }
 
     // `finally`, because a rejection that skipped it left the Save button
@@ -300,21 +331,57 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
             </View>
 
             <View style={styles.section}>
-              <Text variant="caption" weight="bold" color={theme.textSecondary}>
-                Landmark (optional)
-              </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  styles.textarea,
-                  { borderColor: theme.border, color: theme.textPrimary, backgroundColor: theme.background },
-                ]}
-                placeholder="near the blue kiosk, opposite the pharmacy"
-                placeholderTextColor={theme.textTertiary}
-                value={note}
-                onChangeText={setNote}
-                multiline
-              />
+              <View style={styles.landmarksHeader}>
+                <Text variant="caption" weight="bold" color={theme.textSecondary}>
+                  Landmarks near you
+                </Text>
+                <Text variant="caption" color={theme.textSecondary}>
+                  {filledLandmarks} of {MAX_LANDMARKS}
+                </Text>
+              </View>
+              {landmarks.map((value, index) => (
+                <View key={index} style={styles.landmarkRow}>
+                  <TextInput
+                    style={[
+                      styles.input,
+                      styles.landmarkInput,
+                      { borderColor: theme.border, color: theme.textPrimary, backgroundColor: theme.background },
+                    ]}
+                    placeholder={
+                      index === 0
+                        ? "near the blue kiosk"
+                        : "opposite the pharmacy"
+                    }
+                    placeholderTextColor={theme.textTertiary}
+                    value={value}
+                    onChangeText={(text) => updateLandmark(index, text)}
+                    accessibilityLabel={`Landmark ${index + 1}`}
+                  />
+                  <TouchableOpacity
+                    onPress={() => removeLandmark(index)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Remove landmark ${index + 1}`}
+                    hitSlop={8}
+                    style={styles.removeLandmark}
+                  >
+                    <XIcon size={18} color={theme.textTertiary} />
+                  </TouchableOpacity>
+                </View>
+              ))}
+              {landmarks.length < MAX_LANDMARKS && (
+                <TouchableOpacity
+                  onPress={addLandmark}
+                  activeOpacity={0.7}
+                  style={styles.addLandmark}
+                  accessibilityRole="button"
+                  accessibilityLabel="Add another landmark"
+                >
+                  <PlusIcon size={16} color={colors.brandPrimary} weight="bold" />
+                  <Text variant="caption" weight="semiBold" color={colors.brandPrimary}>
+                    Add another
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
 
             <View style={styles.section}>
@@ -447,8 +514,9 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
                     variant="caption"
                     color={theme.textSecondary}
                     style={styles.placeNote}
+                    numberOfLines={1}
                   >
-                    {place.note.trim() || "No landmark saved"}
+                    {landmarksSummary(place.landmarks)}
                   </Text>
                   <View style={[styles.placeActions, { borderTopColor: theme.divider }]}>
                     <TouchableOpacity
@@ -608,15 +676,36 @@ const styles = StyleSheet.create({
     fontFamily: typography.fonts.regular,
   },
   labelInput: {
-    // Single line, so it needs its own comfortable tap height — `textarea`
-    // below is what gives the multi-line note field its size.
+    // Single line, so it needs its own comfortable tap height.
     minHeight: 52,
     paddingVertical: 12,
   },
-  textarea: {
-    minHeight: 72,
-    paddingTop: 12,
-    textAlignVertical: "top",
+  landmarksHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  landmarkRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  landmarkInput: {
+    flex: 1,
+    minHeight: 52,
+    paddingVertical: 12,
+  },
+  removeLandmark: {
+    minHeight: 44,
+    minWidth: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addLandmark: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    minHeight: 44,
   },
   footer: {
     paddingHorizontal: 24,

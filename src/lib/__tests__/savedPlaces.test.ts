@@ -9,6 +9,7 @@ import {
   readSavedPlacesResult,
   writeSavedPlaces,
   MAX_SAVED_PLACES,
+  MAX_LANDMARKS,
   DEFAULT_RADIUS_METERS,
   SAVED_PLACES_KEY,
   SAVED_PLACES_VERSION,
@@ -20,7 +21,7 @@ const place = (over: Partial<SavedPlace> = {}): SavedPlace => ({
   label: "Home",
   lat: 5.6091,
   lng: -0.2112,
-  note: "near the blue kiosk",
+  landmarks: ["near the blue kiosk"],
   radiusMeters: DEFAULT_RADIUS_METERS,
   ...over,
 });
@@ -164,16 +165,40 @@ describe("savedPlaces", () => {
     expect(persisted.places[0].label).toBe("Home");
   });
 
-  it("normalises radius and note on write, not just on read", async () => {
+  it("normalises radius and landmarks on write, not just on read", async () => {
     await writeSavedPlaces([
-      place({ id: "z", radiusMeters: -5, note: undefined as unknown as string }),
+      place({
+        id: "z",
+        radiusMeters: -5,
+        landmarks: [
+          "  near the kiosk  ",
+          "",
+          "   ",
+          "second one",
+          "third",
+          "fourth", // beyond MAX_LANDMARKS, must be dropped
+        ],
+      }),
     ]);
     // Inspect what actually landed on disk, bypassing readSavedPlaces's own
     // normalisation, so this fails if only the read side were fixed.
     const raw = await AsyncStorage.getItem(SAVED_PLACES_KEY);
     const persisted = JSON.parse(raw as string) as { places: SavedPlace[] };
     expect(persisted.places[0].radiusMeters).toBe(DEFAULT_RADIUS_METERS);
-    expect(persisted.places[0].note).toBe("");
+    expect(persisted.places[0].landmarks).toEqual([
+      "near the kiosk",
+      "second one",
+      "third",
+    ]);
+  });
+
+  it("treats a missing landmarks array as no landmarks, on write", async () => {
+    await writeSavedPlaces([
+      place({ id: "z2", landmarks: undefined as unknown as string[] }),
+    ]);
+    const raw = await AsyncStorage.getItem(SAVED_PLACES_KEY);
+    const persisted = JSON.parse(raw as string) as { places: SavedPlace[] };
+    expect(persisted.places[0].landmarks).toEqual([]);
   });
 });
 
@@ -242,5 +267,101 @@ describe("readSavedPlacesResult", () => {
       new Error("storage unavailable")
     );
     await expect(readSavedPlaces()).resolves.toEqual([]);
+  });
+});
+
+/**
+ * `SAVED_PLACES_VERSION` moved from 1 to 2 when `note: string` became
+ * `landmarks: string[]`. Bumping the constant with no conversion would make
+ * every one of these v1 files fail the version check and come back as
+ * `{ ok: true, places: [] }` — a silent wipe of everyone's saved places, with
+ * no error and nothing for a caller to catch. These pin the migration that
+ * makes that not true: a v1 file must still be read, and its `note` carried
+ * forward as the place's one landmark.
+ *
+ * The payloads below are written by hand rather than through `place()`,
+ * because that factory produces today's (v2) shape — it could never stand in
+ * for a genuine file from before landmarks existed.
+ */
+describe("migrating a v1 file forward", () => {
+  const v1Payload = (overrides: { note?: string } = {}) => ({
+    schemaVersion: 1,
+    places: [
+      {
+        id: "v1home",
+        label: "Home",
+        lat: 5.6091,
+        lng: -0.2112,
+        note: "near the blue kiosk",
+        radiusMeters: 300,
+        ...overrides,
+      },
+    ],
+  });
+
+  it("carries a v1 place's note into a single landmark", async () => {
+    await AsyncStorage.setItem(SAVED_PLACES_KEY, JSON.stringify(v1Payload()));
+
+    const got = await readSavedPlaces();
+    expect(got).toEqual([
+      {
+        id: "v1home",
+        label: "Home",
+        lat: 5.6091,
+        lng: -0.2112,
+        landmarks: ["near the blue kiosk"],
+        radiusMeters: 300,
+      },
+    ]);
+  });
+
+  it("reports ok:true with the migrated place via readSavedPlacesResult", async () => {
+    // The read-modify-write callers use — a caller that saw `ok: false` here
+    // would refuse to write on top of a v1 file it could not migrate.
+    await AsyncStorage.setItem(SAVED_PLACES_KEY, JSON.stringify(v1Payload()));
+
+    const got = await readSavedPlacesResult();
+    expect(got.ok).toBe(true);
+    expect(got.places).toHaveLength(1);
+    expect(got.places[0].landmarks).toEqual(["near the blue kiosk"]);
+  });
+
+  it("drops an empty v1 note rather than inventing a blank landmark", async () => {
+    await AsyncStorage.setItem(
+      SAVED_PLACES_KEY,
+      JSON.stringify(v1Payload({ note: "   " }))
+    );
+
+    const got = await readSavedPlaces();
+    expect(got).toHaveLength(1);
+    expect(got[0].landmarks).toEqual([]);
+  });
+
+  it("still yields nothing for a version from the future, whose shape it cannot guess", async () => {
+    // Not a storage failure and not the v1 shape this build knows how to
+    // migrate — a version ahead of this build is exactly as unreadable as
+    // one behind it that changed shape twice over.
+    await AsyncStorage.setItem(
+      SAVED_PLACES_KEY,
+      JSON.stringify({ schemaVersion: 999, places: [place()] })
+    );
+    expect(await readSavedPlaces()).toEqual([]);
+  });
+
+  it("a place surviving migration round-trips through a write as v2", async () => {
+    // The full lifecycle a real upgrade goes through: read (and migrate) a
+    // v1 file, then let a normal write persist it — the file on disk must
+    // come back out as v2, not silently stay v1 forever.
+    await AsyncStorage.setItem(SAVED_PLACES_KEY, JSON.stringify(v1Payload()));
+    const migrated = await readSavedPlaces();
+    await writeSavedPlaces(migrated);
+
+    const raw = await AsyncStorage.getItem(SAVED_PLACES_KEY);
+    const persisted = JSON.parse(raw as string) as {
+      schemaVersion: number;
+      places: SavedPlace[];
+    };
+    expect(persisted.schemaVersion).toBe(SAVED_PLACES_VERSION);
+    expect(persisted.places[0].landmarks).toEqual(["near the blue kiosk"]);
   });
 });

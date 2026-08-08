@@ -18,18 +18,25 @@ const STALE_FIX_CAVEAT =
 
 /**
  * Mirrors the `savedPlace` line format in `whatToSay.ts` exactly (`I'm at
- * ${label}.` plus the note, verbatim, when present). Needed only for the
- * picker below: `whatToSay` always needs a position to decide a saved place
- * is a match, and the picker exists precisely when there isn't a trustworthy
- * one — the caller is naming the place directly instead. Kept as a small
- * literal duplicate rather than calling `whatToSay` with the place's own
- * coordinates as a synthetic position, because two saved places with
- * overlapping radii could then have `whatToSay` report the *other* one as
- * nearer to itself than the one the caller actually picked.
+ * ${label}.` plus each landmark, verbatim, one per line, blanks skipped).
+ * Needed only for the picker below: `whatToSay` always needs a position to
+ * decide a saved place is a match, and the picker exists precisely when
+ * there isn't a trustworthy one — the caller is naming the place directly
+ * instead. Kept as a small literal duplicate rather than calling `whatToSay`
+ * with the place's own coordinates as a synthetic position, because two
+ * saved places with overlapping radii could then have `whatToSay` report the
+ * *other* one as nearer to itself than the one the caller actually picked.
+ *
+ * Must stay byte-for-byte in step with the loop in `whatToSay` — a caller
+ * must not hear different words depending on whether the place was matched
+ * by GPS or picked by hand.
  */
 function linesForPlace(place: SavedPlace): string[] {
   const lines = [`I'm at ${place.label}.`];
-  if (place.note.trim()) lines.push(place.note.trim());
+  for (const landmark of place.landmarks) {
+    const trimmed = landmark.trim();
+    if (trimmed) lines.push(trimmed);
+  }
   return lines;
 }
 

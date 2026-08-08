@@ -4,7 +4,7 @@ import type { SavedPlace } from "./savedPlaces";
 import type { RankedStation } from "./stationTypes";
 
 export type SpeakableLocation =
-  | { kind: "savedPlace"; label: string; note: string; lines: string[] }
+  | { kind: "savedPlace"; label: string; landmarks: string[]; lines: string[] }
   | { kind: "derived"; lines: string[]; coords: string }
   | { kind: "none" };
 
@@ -57,9 +57,12 @@ export const NEAR_STATION_MAX_METERS = 100;
  * the nearest station changes no dialled digits — what the caller says is the
  * only thing that locates them.
  *
- * Order matters. A saved place wins outright, because the user's own landmark
- * beats anything derived. Nothing is ever paraphrased: `note` is passed
- * through exactly as typed.
+ * Order matters. A saved place wins outright, because the user's own
+ * landmarks beat anything derived. Nothing is ever paraphrased: each
+ * landmark is pushed as its own line, verbatim, in the order it was saved —
+ * a regional operator triangulates off whichever one they happen to
+ * recognise, so three short lines read one at a time serve that better than
+ * one line joining them together would.
  *
  * Every derived line is bounded by how far the caller is from the station the
  * line is derived from, because a confidently wrong sentence sends the truck
@@ -98,8 +101,11 @@ export function whatToSay(
   if (matches.length > 0) {
     const { p } = matches[0];
     const lines = [`I'm at ${p.label}.`];
-    if (p.note.trim()) lines.push(p.note.trim());
-    return { kind: "savedPlace", label: p.label, note: p.note, lines };
+    for (const landmark of p.landmarks) {
+      const trimmed = landmark.trim();
+      if (trimmed) lines.push(trimmed);
+    }
+    return { kind: "savedPlace", label: p.label, landmarks: p.landmarks, lines };
   }
 
   const lines: string[] = [];

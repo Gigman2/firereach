@@ -1,7 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const SAVED_PLACES_VERSION = 1 as const;
+export const SAVED_PLACES_VERSION = 2 as const;
 export const SAVED_PLACES_KEY = "@firereach_saved_places";
+
+/** The version this build still knows how to migrate forward from. */
+const SAVED_PLACES_VERSION_V1 = 1 as const;
 
 /** Enough for a real life, small enough that the nearest-place scan is free. */
 export const MAX_SAVED_PLACES = 10;
@@ -17,14 +20,26 @@ export const DEFAULT_RADIUS_METERS = 300;
  */
 export const MAX_LABEL_LENGTH = 24;
 
+/**
+ * Cap on how many landmarks a place carries. A regional operator
+ * triangulates off whichever one they happen to recognise, so this is "how
+ * many chances to be recognised", not "how much text" — each individual
+ * landmark is free text with no length cap of its own.
+ */
+export const MAX_LANDMARKS = 3;
+
 export type SavedPlace = {
   id: string;
   /** The user's own word for it — "Home", "Shop", "Mum's house". */
   label: string;
   lat: number;
   lng: number;
-  /** The user's own landmark sentence, read aloud verbatim. May be empty. */
-  note: string;
+  /**
+   * Up to `MAX_LANDMARKS` of the user's own landmark sentences, read aloud
+   * verbatim, one per line, in the order the user entered them. May be
+   * empty — a place is still a place with none.
+   */
+  landmarks: string[];
   /** How close counts as being here. */
   radiusMeters: number;
 };
@@ -33,6 +48,41 @@ export type SavedPlacesFile = {
   schemaVersion: typeof SAVED_PLACES_VERSION;
   places: SavedPlace[];
 };
+
+/**
+ * The v1 shape on disk, kept only so a v1 file can be recognised and
+ * migrated. v1 carried one free-text `note` instead of `landmarks`.
+ */
+type SavedPlaceV1 = {
+  id: string;
+  label: string;
+  lat: number;
+  lng: number;
+  note: string;
+  radiusMeters: number;
+};
+
+/**
+ * Converts one v1 place into v2 shape: its `note` becomes its one landmark,
+ * trimmed, or no landmarks at all if the note was blank — never a blank line
+ * for a caller to read aloud. Defensive about the input's actual shape
+ * because it runs on parsed JSON before `usable` has had a chance to reject
+ * anything malformed: a non-object entry is handed back unchanged so `usable`
+ * can throw it out on its own terms, the same as it would for a v2 file.
+ */
+function migrateV1Place(p: unknown): unknown {
+  if (!p || typeof p !== "object") return p;
+  const q = p as Partial<SavedPlaceV1>;
+  const note = typeof q.note === "string" ? q.note.trim() : "";
+  return {
+    id: q.id,
+    label: q.label,
+    lat: q.lat,
+    lng: q.lng,
+    radiusMeters: q.radiusMeters,
+    landmarks: note ? [note] : [],
+  };
+}
 
 export function newPlaceId(): string {
   // Enough entropy for a device-local list capped at ten. Not a UUID, and not
@@ -60,9 +110,28 @@ function usable(p: unknown): p is SavedPlace {
 }
 
 /**
- * Normalises the fields that are optional or easy to corrupt (a missing
- * note, a negative or absent radius) so a place is always valid the moment
- * it is persisted, not just after it happens to pass back through
+ * Drops anything that is not a string, trims what remains, drops entries
+ * that are empty or whitespace-only, preserves order and caps at
+ * `MAX_LANDMARKS`. Applied on both read and write, like every other field
+ * here, so disk and memory can never disagree about what "valid" means.
+ */
+function sanitizeLandmarks(landmarks: unknown): string[] {
+  if (!Array.isArray(landmarks)) return [];
+  const cleaned: string[] = [];
+  for (const l of landmarks) {
+    if (typeof l !== "string") continue;
+    const trimmed = l.trim();
+    if (!trimmed) continue;
+    cleaned.push(trimmed);
+    if (cleaned.length >= MAX_LANDMARKS) break;
+  }
+  return cleaned;
+}
+
+/**
+ * Normalises the fields that are optional or easy to corrupt (missing
+ * landmarks, a negative or absent radius) so a place is always valid the
+ * moment it is persisted, not just after it happens to pass back through
  * `readSavedPlaces`. Shared by both directions so disk and memory can never
  * disagree about what "valid" means.
  */
@@ -72,7 +141,7 @@ function sanitize(p: SavedPlace): SavedPlace {
     // Trimmed here rather than at each input, so "Home " and "Home" cannot
     // become two entries and the spoken line never carries stray whitespace.
     label: p.label.trim(),
-    note: typeof p.note === "string" ? p.note : "",
+    landmarks: sanitizeLandmarks(p.landmarks),
     radiusMeters:
       Number.isFinite(p.radiusMeters) && p.radiusMeters > 0
         ? p.radiusMeters
@@ -99,26 +168,41 @@ export type SavedPlacesRead = { ok: boolean; places: SavedPlace[] };
  * when `ok` is false.
  *
  * `ok: false` covers a rejecting `getItem` and unparseable JSON — storage
- * spoke but not in a language we know. A version mismatch or a non-array
- * payload is `ok: true` with nothing recovered: that file is genuinely not a
- * place list this build can carry forward, and it is the migration path's job
- * to replace it, not a reason to freeze writes forever.
+ * spoke but not in a language we know. A version this build recognises but
+ * cannot read forward from — anything other than the current version or the
+ * one migration path below — is `ok: true` with nothing recovered: that file
+ * is genuinely not a shape this build can guess at, and freezing writes
+ * forever over an unreadable future format would be worse than starting
+ * fresh.
+ *
+ * A v1 file (`note: string`) is not one of those: it is read and migrated
+ * rather than discarded, because bumping `SAVED_PLACES_VERSION` without a
+ * conversion would otherwise make every place anyone had already saved
+ * disappear the moment this build first opens their storage, with no error
+ * and nothing for a caller to catch.
  */
 export async function readSavedPlacesResult(): Promise<SavedPlacesRead> {
   try {
     const raw = await AsyncStorage.getItem(SAVED_PLACES_KEY);
     if (!raw) return { ok: true, places: [] };
-    const parsed = JSON.parse(raw) as SavedPlacesFile;
-    if (parsed?.schemaVersion !== SAVED_PLACES_VERSION) {
+    const parsed = JSON.parse(raw) as { schemaVersion?: unknown; places?: unknown };
+
+    let rawPlaces: unknown[];
+    if (parsed?.schemaVersion === SAVED_PLACES_VERSION) {
+      rawPlaces = Array.isArray(parsed.places) ? parsed.places : [];
+    } else if (parsed?.schemaVersion === SAVED_PLACES_VERSION_V1) {
+      rawPlaces = Array.isArray(parsed.places)
+        ? parsed.places.map(migrateV1Place)
+        : [];
+    } else {
+      // Neither the current version nor the one we know how to migrate from —
+      // including a version from the future, whose shape we cannot guess at.
       return { ok: true, places: [] };
     }
-    if (!Array.isArray(parsed.places)) return { ok: true, places: [] };
+
     return {
       ok: true,
-      places: parsed.places
-        .filter(usable)
-        .slice(0, MAX_SAVED_PLACES)
-        .map(sanitize),
+      places: rawPlaces.filter(usable).slice(0, MAX_SAVED_PLACES).map(sanitize),
     };
   } catch {
     return { ok: false, places: [] };

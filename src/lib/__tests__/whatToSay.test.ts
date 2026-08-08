@@ -8,7 +8,7 @@ import type { RankedStation } from "../stationTypes";
 
 const HOME: SavedPlace = {
   id: "h", label: "Home", lat: 5.6091, lng: -0.2112,
-  note: "near the blue kiosk", radiusMeters: 300,
+  landmarks: ["near the blue kiosk"], radiusMeters: 300,
 };
 
 // Madina, from the bundled table.
@@ -24,13 +24,45 @@ describe("whatToSay", () => {
     expect(got.kind).toBe("savedPlace");
     if (got.kind !== "savedPlace") return;
     expect(got.label).toBe("Home");
-    expect(got.note).toBe("near the blue kiosk");
+    expect(got.landmarks).toEqual(["near the blue kiosk"]);
   });
 
-  it("renders the user's note verbatim, never paraphrased", () => {
-    const odd = { ...HOME, note: "3rd gate AFTER the mosque, blue roof" };
+  it("renders a landmark verbatim, never paraphrased", () => {
+    const odd = { ...HOME, landmarks: ["3rd gate AFTER the mosque, blue roof"] };
     const got = whatToSay({ lat: 5.6091, lng: -0.2112 }, [odd], STATION);
     expect(JSON.stringify(got)).toContain("3rd gate AFTER the mosque, blue roof");
+  });
+
+  it("pushes each landmark as its own line, in order, after the 'I'm at' line", () => {
+    const many = {
+      ...HOME,
+      landmarks: ["near the blue kiosk", "opposite the pharmacy", "behind the mosque"],
+    };
+    const got = whatToSay({ lat: 5.6091, lng: -0.2112 }, [many], STATION);
+    expect(got.kind).toBe("savedPlace");
+    if (got.kind !== "savedPlace") return;
+    expect(got.lines).toEqual([
+      "I'm at Home.",
+      "near the blue kiosk",
+      "opposite the pharmacy",
+      "behind the mosque",
+    ]);
+  });
+
+  it("skips blank landmarks without leaving an empty line", () => {
+    const withBlank = { ...HOME, landmarks: ["near the blue kiosk", "   ", ""] };
+    const got = whatToSay({ lat: 5.6091, lng: -0.2112 }, [withBlank], STATION);
+    expect(got.kind).toBe("savedPlace");
+    if (got.kind !== "savedPlace") return;
+    expect(got.lines).toEqual(["I'm at Home.", "near the blue kiosk"]);
+  });
+
+  it("still gives the 'I'm at' line for a place with no landmarks", () => {
+    const bare = { ...HOME, landmarks: [] };
+    const got = whatToSay({ lat: 5.6091, lng: -0.2112 }, [bare], STATION);
+    expect(got.kind).toBe("savedPlace");
+    if (got.kind !== "savedPlace") return;
+    expect(got.lines).toEqual(["I'm at Home."]);
   });
 
   it("does not claim a place the caller is outside the radius of", () => {

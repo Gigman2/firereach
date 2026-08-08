@@ -11,6 +11,8 @@ import {
   BriefcaseIcon,
   DotsThreeIcon,
   ArrowLeftIcon,
+  PlusIcon,
+  XIcon,
 } from "phosphor-react-native";
 import { Text } from "../../components/ui/Text";
 import { Button } from "../../components/ui/Button";
@@ -24,6 +26,7 @@ import {
   RADIUS_PRESETS,
   DEFAULT_RADIUS_METERS,
   MAX_LABEL_LENGTH,
+  MAX_LANDMARKS,
   newPlaceId,
 } from "../../lib/savedPlaces";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -70,7 +73,7 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
   const labelInput = useRef<TextInput>(null);
 
   const [label, setLabel] = useState<string>("Home");
-  const [note, setNote] = useState("");
+  const [landmarks, setLandmarks] = useState<string[]>([""]);
   const [radiusMeters, setRadiusMeters] = useState<number>(
     DEFAULT_RADIUS_METERS,
   );
@@ -89,8 +92,20 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
 
   const trimmedLabel = label.trim();
   const canSave = trimmedLabel.length > 0 && !isSaving;
+  const filledLandmarks = landmarks.filter((l) => l.trim().length > 0).length;
 
   const goToReady = () => navigation.navigate("OnboardingReady");
+
+  const updateLandmark = (index: number, text: string) =>
+    setLandmarks((prev) => prev.map((l, i) => (i === index ? text : l)));
+
+  const addLandmark = () =>
+    setLandmarks((prev) =>
+      prev.length < MAX_LANDMARKS ? [...prev, ""] : prev,
+    );
+
+  const removeLandmark = (index: number) =>
+    setLandmarks((prev) => prev.filter((_, i) => i !== index));
 
   const handleSave = async () => {
     // Belt and braces: this screen is only reached with a fix, but a param
@@ -112,7 +127,7 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
         label: trimmedLabel,
         lat: savePosition.lat,
         lng: savePosition.lng,
-        note,
+        landmarks,
         radiusMeters,
       });
     } finally {
@@ -180,8 +195,8 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
             align="center"
             style={styles.description}
           >
-            To help the fire men find you even without internet we adivise you
-            save at least 3 landmarks closest to you.
+            To help the fire service find you, even without internet, we
+            advise saving at least 3 landmarks closest to you.
           </Text>
 
           <View style={styles.section}>
@@ -256,25 +271,61 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
           </View>
 
           <View style={styles.section}>
-            <Text variant="caption" weight="bold" color={theme.textSecondary}>
-              Landmark (optional)
-            </Text>
-            <TextInput
-              style={[
-                styles.input,
-                styles.textarea,
-                {
-                  borderColor: theme.border,
-                  color: theme.textPrimary,
-                  backgroundColor: theme.background,
-                },
-              ]}
-              placeholder="near the blue kiosk, opposite the pharmacy"
-              placeholderTextColor={theme.textTertiary}
-              value={note}
-              onChangeText={setNote}
-              multiline
-            />
+            <View style={styles.landmarksHeader}>
+              <Text variant="caption" weight="bold" color={theme.textSecondary}>
+                Landmarks near you
+              </Text>
+              <Text variant="caption" color={theme.textSecondary}>
+                {filledLandmarks} of {MAX_LANDMARKS}
+              </Text>
+            </View>
+            {landmarks.map((value, index) => (
+              <View key={index} style={styles.landmarkRow}>
+                <TextInput
+                  style={[
+                    styles.input,
+                    styles.landmarkInput,
+                    {
+                      borderColor: theme.border,
+                      color: theme.textPrimary,
+                      backgroundColor: theme.background,
+                    },
+                  ]}
+                  placeholder={
+                    index === 0
+                      ? "near the blue kiosk"
+                      : "opposite the pharmacy"
+                  }
+                  placeholderTextColor={theme.textTertiary}
+                  value={value}
+                  onChangeText={(text) => updateLandmark(index, text)}
+                  accessibilityLabel={`Landmark ${index + 1}`}
+                />
+                <TouchableOpacity
+                  onPress={() => removeLandmark(index)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Remove landmark ${index + 1}`}
+                  hitSlop={8}
+                  style={styles.removeLandmark}
+                >
+                  <XIcon size={18} color={theme.textTertiary} />
+                </TouchableOpacity>
+              </View>
+            ))}
+            {landmarks.length < MAX_LANDMARKS && (
+              <TouchableOpacity
+                onPress={addLandmark}
+                activeOpacity={0.7}
+                style={styles.addLandmark}
+                accessibilityRole="button"
+                accessibilityLabel="Add another landmark"
+              >
+                <PlusIcon size={16} color={colors.brandPrimary} weight="bold" />
+                <Text variant="caption" weight="semiBold" color={colors.brandPrimary}>
+                  Add another
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {saveError === "full" && (
@@ -361,15 +412,36 @@ const styles = StyleSheet.create({
     fontFamily: typography.fonts.regular,
   },
   labelInput: {
-    // Single line, so it needs its own comfortable tap height — `textarea`
-    // below is what gives the multi-line note field its size.
+    // Single line, so it needs its own comfortable tap height.
     minHeight: 52,
     paddingVertical: 12,
   },
-  textarea: {
-    minHeight: 72,
-    paddingTop: 12,
-    textAlignVertical: "top",
+  landmarksHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  landmarkRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  landmarkInput: {
+    flex: 1,
+    minHeight: 52,
+    paddingVertical: 12,
+  },
+  removeLandmark: {
+    minHeight: 44,
+    minWidth: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addLandmark: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    minHeight: 44,
   },
   footer: {
     alignItems: "center",
