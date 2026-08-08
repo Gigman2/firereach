@@ -27,3 +27,8 @@ export type GuidesStackParamList = {
   GuideDetail: { guideId: string };
   GuidesChat: undefined;
 };
+
+export type SettingsStackParamList = {
+  SettingsHome: undefined;
+  SavedPlaces: undefined;
+};
