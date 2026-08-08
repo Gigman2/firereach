@@ -94,7 +94,8 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
    *
    * `refresh()` is still kicked off, unawaited, so the shared provider picks
    * up the new permission for the rest of the app — but nothing here waits on
-   * it or reads its outcome.
+   * it or reads its outcome, and it is fired after the local fix rather than
+   * before, so it does not land inside the provider's own in-flight window.
    */
   const handleAllowLocation = async () => {
     if (awaitingFix) return;
@@ -118,9 +119,17 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
       return;
     }
 
-    void refresh();
     const fix = await fixAfterGrant();
     setAwaitingFix(false);
+
+    // Fired AFTER the local fix, not before. `refresh()` early-returns while
+    // a resolution is already in flight, and on first launch the provider's
+    // own mount refresh is usually still running here — so calling it first
+    // meant it did nothing, nothing retried, and Home could read
+    // "LOCATION OFF" for the rest of the session even though the user had
+    // just granted permission and saved a place. By now that in-flight
+    // resolution has almost always settled, so this one actually runs.
+    void refresh();
 
     // The fix travels with the navigation rather than being looked up again
     // on the next screen: SavePlace saves coordinates, and the provider may

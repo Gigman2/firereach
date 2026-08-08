@@ -154,7 +154,7 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
               { borderColor: theme.border, color: theme.textPrimary, backgroundColor: theme.background },
             ]}
             placeholder="Home, Shop, Mum's house"
-            placeholderTextColor={theme.textTertiary}
+            placeholderTextColor={theme.textSecondary}
             value={label}
             onChangeText={setLabel}
             maxLength={MAX_LABEL_LENGTH}

@@ -41,8 +41,9 @@ export const DISTRICT_CLAIM_MAX_METERS = 10_000;
  * compass bearing over a few dozen metres is noise: it is derived from a fix
  * whose own accuracy is usually worse than the distance being described.
  *
- * Kept equal to `formatDistance`'s own fragment threshold on purpose, so this
- * branch covers exactly the inputs that would otherwise produce the fragment.
+ * Set to cover `formatDistance`'s fragment range on purpose: it emits the
+ * fragment below 100, this branch catches everything at or below 100, so every
+ * input that would produce the fragment is handled here.
  * `formatDistance` itself is shared and correct for its own callers, so it is
  * not the thing that changes.
  */
