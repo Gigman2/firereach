@@ -67,9 +67,16 @@ describe("onboarding shared styles", () => {
   });
 
   it("matches the dots row", () => {
+    // The one value here that is deliberately no longer "what the screens did
+    // before". The extraction left marginBottom: 32 composed locally on
+    // HowItWorks, because only that screen had it; it has since been hoisted
+    // so all five rows are identical, and the local override removed. Checked
+    // that no screen still composes its own on top — a second 32 would be the
+    // obvious way for this to go wrong.
     expect(onboarding.dotsRow).toEqual({
       alignItems: "center",
       paddingVertical: 32,
+      marginBottom: 32,
     });
   });
 
