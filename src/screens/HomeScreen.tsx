@@ -11,10 +11,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   GearSixIcon,
   PhoneIcon,
-  MapPinIcon,
   ShieldCheckIcon,
   ListBulletsIcon,
-  PencilSimpleIcon,
   WifiSlashIcon,
 } from "phosphor-react-native";
 import { Text } from "../components/ui/Text";
@@ -101,8 +99,20 @@ export const HomeScreen = () => {
     : positionSource === "unavailable"
     ? "Can't get a location fix — showing the national number"
     : positionSource === "implausible"
-    ? "No station near your location"
+    ? "Can't place your location in Ghana"
     : "Turn on location to find your station";
+
+  /**
+   * A second line for the no-station states, shown under the heading. The
+   * heading says what happened; this says what to do about it. Empty when a
+   * station is showing, since the district/region line takes that slot.
+   */
+  const noStationHelp =
+    positionSource === "implausible"
+      ? "Your phone reports a position outside the country. Call 192 — they can find you."
+      : positionSource === "denied"
+      ? "Without location we cannot pick a station, but 192 always answers."
+      : "";
 
   /**
    * A `lastKnownStale` fix is an unbounded-age last-known position, so the
@@ -112,13 +122,11 @@ export const HomeScreen = () => {
    * Once a resolution has finished with no fix at all, this stops saying
    * "Locating…" — that badge contradicted a pill already reporting failure.
    */
-  const distanceLabel = nearest
-    ? positionSource === "lastKnownStale"
-      ? `${formatDistance(nearest.distanceMeters)} (from your last known location)`
-      : formatDistance(nearest.distanceMeters)
-    : isFinding
-    ? "Locating…"
-    : "Distance unavailable";
+  const rawDistance = nearest ? formatDistance(nearest.distanceMeters) : null;
+  const distanceLabel =
+    rawDistance && positionSource === "lastKnownStale"
+      ? `${rawDistance} (from your last known location)`
+      : rawDistance;
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -182,28 +190,38 @@ export const HomeScreen = () => {
             { backgroundColor: theme.background, borderColor: theme.border },
           ]}
         >
-          <View
-            style={[styles.mapContainer, { backgroundColor: theme.surface }]}
-          >
-            <View style={styles.mapPlaceholder}>
-              <MapPinIcon size={32} color={colors.brandPrimary} weight="fill" />
-            </View>
-            <View style={styles.distanceBadge}>
-              <Text variant="label" color="#FFFFFF">
-                {distanceLabel}
-              </Text>
-            </View>
-          </View>
           <View style={styles.stationInfo}>
             <Text variant="heading2">{nearest?.name ?? noStationHeading}</Text>
-            <Text
-              variant="caption"
-              weight="medium"
-              color={theme.textSecondary}
-              style={styles.stationRegion}
-            >
-              {nearest ? `${nearest.district}, ${nearest.region}` : ""}
-            </Text>
+
+            {nearest ? (
+              <Text
+                variant="caption"
+                weight="medium"
+                color={theme.textSecondary}
+                style={styles.stationRegion}
+              >
+                {`${nearest.district}, ${nearest.region}`}
+              </Text>
+            ) : noStationHelp ? (
+              <Text
+                variant="caption"
+                weight="medium"
+                color={theme.textSecondary}
+                style={styles.stationRegion}
+              >
+                {noStationHelp}
+              </Text>
+            ) : null}
+
+            {distanceLabel && (
+              <Text
+                variant="caption"
+                color={theme.textTertiary}
+                style={styles.stationRegion}
+              >
+                {distanceLabel}
+              </Text>
+            )}
           </View>
         </View>
 
@@ -315,14 +333,6 @@ export const HomeScreen = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-
-      {/* FAB */}
-      <TouchableOpacity
-        style={[styles.fab, { bottom: 24 }]}
-        activeOpacity={0.85}
-      >
-        <PencilSimpleIcon size={24} color="#FFFFFF" />
-      </TouchableOpacity>
     </View>
   );
 };
@@ -372,36 +382,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 1,
-  },
-  mapContainer: {
-    height: 192,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  mapPlaceholder: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: `${colors.brandPrimary}15`,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  distanceBadge: {
-    position: "absolute",
-    top: 16,
-    right: 16,
-    // Bounded so the qualified stale-position label wraps inside the badge
-    // instead of stretching across the card.
-    maxWidth: "70%",
-    backgroundColor: colors.brandPrimary,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 100,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
   },
   stationInfo: {
     padding: 16,
@@ -461,20 +441,5 @@ const styles = StyleSheet.create({
     backgroundColor: `${colors.brandPrimary}15`,
     alignItems: "center",
     justifyContent: "center",
-  },
-  fab: {
-    position: "absolute",
-    right: 20,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.brandPrimary,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 6,
   },
 });
