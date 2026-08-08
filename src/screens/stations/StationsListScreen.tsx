@@ -20,6 +20,7 @@ import { useTheme } from "../../theme/ThemeContext";
 import { useNearestStation } from "../../hooks/useNearestStation";
 import { nearestStations } from "../../lib/geo";
 import { dialTargets } from "../../lib/stationTypes";
+import { formatDistance } from "../../lib/format";
 import type { CachedStation } from "../../lib/stationTypes";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { StationsStackParamList } from "../../navigation/types";
@@ -35,11 +36,6 @@ type Props = NativeStackScreenProps<StationsStackParamList, "StationsList">;
 type ListStation = CachedStation & { distanceMeters: number | null };
 
 type Section = { title: string; data: ListStation[] };
-
-function formatDistance(meters: number): string {
-  if (meters < 1000) return `~${meters} m`;
-  return `~${(meters / 1000).toFixed(1)} km`;
-}
 
 export const StationsListScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
@@ -149,7 +145,7 @@ export const StationsListScreen = ({ navigation }: Props) => {
         {item.distanceMeters !== null && (
           <View style={[styles.distanceChip, { backgroundColor: theme.surface }]}>
             <Text variant="label" color={theme.textSecondary}>
-              {formatDistance(item.distanceMeters)}
+              {formatDistance(item.distanceMeters) ?? ""}
             </Text>
           </View>
         )}

@@ -23,12 +23,7 @@ import { useTheme } from "../theme/ThemeContext";
 import { useConnectivity } from "../hooks/useConnectivity";
 import { useNearestStation } from "../hooks/useNearestStation";
 import { dialTargets, NATIONAL_EMERGENCY_PHONE } from "../lib/stationTypes";
-
-function formatDistance(meters: number): string {
-  if (meters <= 0) return "Distance unavailable";
-  const km = meters / 1000;
-  return `~${km.toFixed(1)} km away`;
-}
+import { formatDistance } from "../lib/format";
 
 export const HomeScreen = () => {
   const insets = useSafeAreaInsets();
