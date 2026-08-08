@@ -42,11 +42,12 @@ export const HomeScreen = ({ navigation }: Props) => {
 
   // Derived from the tollFree flag rather than the array position, so this
   // stays correct even if dialTargets' shape ever changes — the detail
-  // screen already derives its cost labels the same way.
+  // screen already derives its cost labels the same way. Since the station's
+  // own hotline now leads, the toll-free branch is what a caller sees only
+  // when no station resolved and 192 is all there is.
   const primaryCostCaption = primary.tollFree
     ? "Free on any network — no credit needed"
-    : "May cost airtime";
-  const alternatesAreTollFree = alternates.every((t) => t.tollFree);
+    : "Your nearest station — may cost airtime";
 
   const dial = (phone: string) => {
     Linking.openURL(`tel:${phone}`).catch((err) =>
@@ -270,13 +271,15 @@ export const HomeScreen = ({ navigation }: Props) => {
               number is most likely to be picked up. It is not: the ordering
               comes from the publication order of a 2022 web page, with one
               region deliberately inverted. These are simply the other numbers
-              on record for this station. They are also, unlike the button
-              above, chargeable hotlines — dialling one costs airtime.
+              on record.
+
+              The cost tag is per-number rather than a group label. Now that
+              the station's hotline leads, this list mixes a chargeable second
+              hotline with toll-free 192, so no single heading is true of all
+              of it.
             */}
             <Text variant="caption" color={theme.textTertiary}>
-              {alternatesAreTollFree
-                ? "Other numbers:"
-                : "Station hotlines (may cost airtime):"}
+              Other numbers:
             </Text>
             {alternates.map((target) => (
               <TouchableOpacity
@@ -290,6 +293,11 @@ export const HomeScreen = ({ navigation }: Props) => {
                   color={colors.brandPrimary}
                 >
                   {target.phone}
+                  <Text variant="caption" color={theme.textTertiary}>
+                    {target.tollFree
+                      ? "  ·  free on any network"
+                      : "  ·  may cost airtime"}
+                  </Text>
                 </Text>
               </TouchableOpacity>
             ))}

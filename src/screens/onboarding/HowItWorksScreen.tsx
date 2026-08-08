@@ -15,21 +15,33 @@ import type { RootStackParamList } from "../../navigation/types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "HowItWorks">;
 
+/**
+ * Every line here describes something the app actually does. The previous
+ * version promised three things it does not: that tapping alerts the fire
+ * service with "no phone calls", that FireReach "sends them your exact
+ * location", and that you can "track responders on their way to you". There
+ * is no dispatch integration and no tracking — the app dials a phone number.
+ *
+ * Two of those were dangerous rather than merely wrong. A user who believes
+ * no call is needed taps and waits for help nobody summoned. A user who
+ * believes their location was already sent will not say it on the call, and
+ * saying it is the single most useful thing they can do.
+ */
 const steps = [
   {
     Icon: MegaphoneIcon,
-    title: "Report an emergency",
-    body: "Tap one button to alert your local fire department. No phone calls, no waiting.",
+    title: "We find your nearest station",
+    body: "FireReach works out which fire station is closest to you and puts its number on one big button.",
   },
   {
     Icon: MapTrifoldIcon,
-    title: "We find help nearby",
-    body: "FireReach locates the closest fire stations and sends them your exact location.",
+    title: "You make the call",
+    body: "Tap the button to dial. Tell them where you are — they cannot see your location, so describe it in your own words.",
   },
   {
     Icon: FirstAidKitIcon,
-    title: "Stay safe until help arrives",
-    body: "Get real-time safety tips and track responders on their way to you.",
+    title: "It works without internet",
+    body: "Every station in Ghana is stored inside the app. If the line does not answer, 192 is always there and is free on any network.",
   },
 ];
 

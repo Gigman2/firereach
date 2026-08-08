@@ -50,8 +50,9 @@ export const LocationDeniedScreen = ({ navigation }: Props) => {
             color={theme.textSecondary}
             style={styles.warningBody}
           >
-            To get the best experience and find nearby services, please enable
-            location permissions in your device settings.
+            Without location we cannot pick the station nearest you, so the app
+            will offer 192 instead. To get station numbers, enable location in
+            your device settings.
           </Text>
           <TouchableOpacity onPress={handleOpenSettings} style={styles.settingsLink}>
             <Text variant="caption" weight="bold" color={colors.warning}>

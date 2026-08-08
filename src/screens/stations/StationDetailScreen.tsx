@@ -178,8 +178,12 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
               ordering reproduces the publication order of a 2022 source page
               — one region's is deliberately inverted because that source's
               first number is disputed — and nothing in it is a measurement of
-              whether a line is answered. The ordering is unchanged; only the
-              claim made about it is.
+              whether a line is answered.
+
+              Each number carries its own cost tag above, so this caption says
+              only what the tags cannot: where the numbers came from. It no
+              longer points at "the numbers below", which was wrong even
+              before the station hotlines moved ahead of 192.
             */}
             {targets.length > 0 && (
               <Text
@@ -187,8 +191,9 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
                 color={theme.textTertiary}
                 style={styles.phoneCaption}
               >
-                192 is free on any network. The numbers below are regional
-                command lines recorded in 2022 and may cost airtime.
+                Station hotlines were recorded in 2022 and may be out of date.
+                192 reaches the national fire service on any network, with no
+                credit.
               </Text>
             )}
           </View>

@@ -74,8 +74,21 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
           align="center"
           style={styles.description}
         >
-          To provide the best experience and find nearby services, please enable
-          location access. This helps us tailor results just for you.
+          {/*
+            Was generic boilerplate — "the best experience", "nearby services",
+            "tailor results just for you". The permission prompt is the one
+            moment to say what is actually at stake, which is why the app never
+            asks for location before this screen has explained it.
+
+            "never sent anywhere" is a load-bearing promise, and it is true
+            today: ranking happens on-device in geo.ts, and the only network
+            call that carries coordinates is fetchAllStations, which anchors at
+            Ghana's centroid (stationsApi.ts) rather than the user's position.
+            If that ever changes, this sentence has to change with it.
+          */}
+          Without it we cannot tell you which fire station is closest to you.
+          Your location stays on this phone — it is never sent anywhere. You
+          can skip this and still call 192.
         </Text>
       </View>
 

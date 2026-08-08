@@ -44,9 +44,14 @@ export const OnboardingReadyScreen = ({ navigation }: Props) => {
           align="center"
           style={styles.description}
         >
-          Your account is set up and you are ready to start exploring all the
-          features we have to offer. Follow the tips below to get the most out
-          of your experience and streamline your workflow.
+          {/*
+            Was: "Your account is set up... Follow the tips below." There is no
+            account — the product scope requires that none is ever needed — and
+            there were no tips below.
+          */}
+          FireReach is ready to use. There is no account and no sign-up. Open
+          the app in an emergency and the nearest station's number is already
+          on screen.
         </Text>
       </View>
 
