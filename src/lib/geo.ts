@@ -95,6 +95,11 @@ const POINTS = [
  * a fire burns; "NE" is not a word.
  */
 export function compassPoint(bearing: number): string {
+  // NaN would index the array out of range and return undefined, which
+  // reaches a caller as the literal "undefined" in a sentence read to a
+  // dispatcher. bearingDegrees never emits NaN, but this is exported on its
+  // own and the cost of not depending on that is one line.
+  if (!Number.isFinite(bearing)) return "";
   const norm = ((bearing % 360) + 360) % 360;
   return POINTS[Math.round(norm / 45) % 8];
 }

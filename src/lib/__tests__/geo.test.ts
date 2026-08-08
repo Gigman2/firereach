@@ -210,4 +210,16 @@ describe("compassPoint", () => {
   it("spells words rather than abbreviations, because this is read aloud", () => {
     expect(compassPoint(45)).not.toBe("NE");
   });
+
+  it("returns empty rather than 'undefined' for a non-finite bearing", () => {
+    // Indexing POINTS with NaN yields undefined, which would reach a caller
+    // as the literal word "undefined" in a sentence read to a dispatcher.
+    expect(compassPoint(NaN)).toBe("");
+    expect(compassPoint(Infinity)).toBe("");
+  });
+
+  it("normalises bearings outside 0-360", () => {
+    expect(compassPoint(-45)).toBe("north-west");
+    expect(compassPoint(720)).toBe("north");
+  });
 });
