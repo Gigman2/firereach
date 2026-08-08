@@ -107,12 +107,13 @@ export const HomeScreen = () => {
    * heading says what happened; this says what to do about it. Empty when a
    * station is showing, since the district/region line takes that slot.
    */
-  const noStationHelp =
-    positionSource === "implausible"
-      ? "Your phone reports a position outside the country. Call 192 — they can find you."
-      : positionSource === "denied"
-      ? "Without location we cannot pick a station, but 192 always answers."
-      : "";
+  const noStationHelp = isFinding
+    ? ""
+    : positionSource === "implausible"
+    ? "Your phone reports a position outside the country. Call 192 and tell them where you are."
+    : positionSource === "denied"
+    ? "Without location we cannot pick a station, but 192 is free to dial on any network."
+    : "";
 
   /**
    * A `lastKnownStale` fix is an unbounded-age last-known position, so the
@@ -216,7 +217,7 @@ export const HomeScreen = () => {
             {distanceLabel && (
               <Text
                 variant="caption"
-                color={theme.textTertiary}
+                color={theme.textSecondary}
                 style={styles.stationRegion}
               >
                 {distanceLabel}

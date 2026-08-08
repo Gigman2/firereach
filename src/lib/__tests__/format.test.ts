@@ -30,4 +30,29 @@ describe("formatDistance", () => {
     expect(formatDistance(NaN)).toBeNull();
     expect(formatDistance(Infinity)).toBeNull();
   });
+
+  it("switches unit exactly at the 100 m boundary", () => {
+    expect(formatDistance(99)).toBe("Less than 100 m away");
+    expect(formatDistance(100)).toBe("~100 m away");
+  });
+
+  describe("with { suffix: false }", () => {
+    it("drops the trailing ' away' below 100 m", () => {
+      expect(formatDistance(0, { suffix: false })).toBe("Less than 100 m");
+      expect(formatDistance(99, { suffix: false })).toBe("Less than 100 m");
+    });
+
+    it("drops the trailing ' away' below a kilometre", () => {
+      expect(formatDistance(826, { suffix: false })).toBe("~826 m");
+    });
+
+    it("drops the trailing ' away' at and above a kilometre", () => {
+      expect(formatDistance(2415, { suffix: false })).toBe("~2.4 km");
+    });
+
+    it("still returns null for an unusable distance", () => {
+      expect(formatDistance(-1, { suffix: false })).toBeNull();
+      expect(formatDistance(NaN, { suffix: false })).toBeNull();
+    });
+  });
 });

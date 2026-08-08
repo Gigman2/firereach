@@ -120,41 +120,48 @@ export const StationsListScreen = ({ navigation }: Props) => {
     );
   };
 
-  const renderStation = ({ item }: { item: ListStation }) => (
-    <TouchableOpacity
-      style={[styles.stationRow, { borderBottomColor: theme.divider }]}
-      activeOpacity={0.7}
-      onPress={() => navigation.navigate("StationDetail", { stationId: item.id })}
-    >
-      <View style={styles.stationIcon}>
-        <MapPinIcon size={22} color={colors.brandPrimary} weight="fill" />
-      </View>
-      <View style={styles.stationInfo}>
-        <Text variant="bodyMedium" weight="bold" numberOfLines={1}>
-          {item.name}
-        </Text>
-        <Text
-          variant="caption"
-          color={theme.textSecondary}
-          numberOfLines={1}
-        >
-          {`${item.district}, ${item.region}`}
-        </Text>
-      </View>
-      <View style={styles.stationActions}>
-        {item.distanceMeters !== null && (
-          <View style={[styles.distanceChip, { backgroundColor: theme.surface }]}>
-            <Text variant="label" color={theme.textSecondary}>
-              {formatDistance(item.distanceMeters) ?? ""}
-            </Text>
-          </View>
-        )}
-        <TouchableOpacity style={styles.callChip} onPress={() => dial(item)}>
-          <PhoneIcon size={18} color="#FFFFFF" weight="fill" />
-        </TouchableOpacity>
-      </View>
-    </TouchableOpacity>
-  );
+  const renderStation = ({ item }: { item: ListStation }) => {
+    const distanceLabel =
+      item.distanceMeters !== null
+        ? formatDistance(item.distanceMeters, { suffix: false })
+        : null;
+
+    return (
+      <TouchableOpacity
+        style={[styles.stationRow, { borderBottomColor: theme.divider }]}
+        activeOpacity={0.7}
+        onPress={() => navigation.navigate("StationDetail", { stationId: item.id })}
+      >
+        <View style={styles.stationIcon}>
+          <MapPinIcon size={22} color={colors.brandPrimary} weight="fill" />
+        </View>
+        <View style={styles.stationInfo}>
+          <Text variant="bodyMedium" weight="bold" numberOfLines={1}>
+            {item.name}
+          </Text>
+          <Text
+            variant="caption"
+            color={theme.textSecondary}
+            numberOfLines={1}
+          >
+            {`${item.district}, ${item.region}`}
+          </Text>
+        </View>
+        <View style={styles.stationActions}>
+          {distanceLabel && (
+            <View style={[styles.distanceChip, { backgroundColor: theme.surface }]}>
+              <Text variant="label" color={theme.textSecondary}>
+                {distanceLabel}
+              </Text>
+            </View>
+          )}
+          <TouchableOpacity style={styles.callChip} onPress={() => dial(item)}>
+            <PhoneIcon size={18} color="#FFFFFF" weight="fill" />
+          </TouchableOpacity>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   const renderSectionHeader = ({
     section,
