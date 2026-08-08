@@ -1,7 +1,6 @@
 import React from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { ShieldCheckIcon, XIcon } from "phosphor-react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ShieldCheckIcon, XIcon, ArrowLeftIcon } from "phosphor-react-native";
 import { Text } from "../../components/ui/Text";
 import { Button } from "../../components/ui/Button";
 import { OnboardingDots } from "../../components/ui/OnboardingDots";
@@ -9,8 +8,7 @@ import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../navigation/types";
-
-const ONBOARDING_COMPLETE_KEY = "@firereach_onboarding_complete";
+import { completeOnboarding } from "../../lib/onboarding";
 
 type Props = NativeStackScreenProps<RootStackParamList, "OnboardingReady">;
 
@@ -18,14 +16,33 @@ export const OnboardingReadyScreen = ({ navigation }: Props) => {
   const { theme, isDark } = useTheme();
 
   const handleGoToApp = async () => {
-    await AsyncStorage.setItem(ONBOARDING_COMPLETE_KEY, "true");
+    await completeOnboarding();
     navigation.replace("MainTabs");
   };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleGoToApp}>
+        {/*
+          Back matters here specifically because the step before it is
+          skippable: skip saving a place, land on this screen, change your
+          mind, and without this the only route back is Settings after
+          onboarding has already finished.
+        */}
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+          hitSlop={8}
+        >
+          <ArrowLeftIcon size={24} color={theme.textSecondary} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleGoToApp}
+          accessibilityRole="button"
+          accessibilityLabel="Go to app"
+          hitSlop={8}
+        >
           <XIcon size={24} color={theme.textTertiary} />
         </TouchableOpacity>
       </View>
@@ -80,7 +97,8 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    justifyContent: "flex-end",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 8,

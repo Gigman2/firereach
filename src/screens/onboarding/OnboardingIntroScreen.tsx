@@ -8,6 +8,7 @@ import { colors } from '../../theme/colors';
 import { useTheme } from '../../theme/ThemeContext';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
+import { completeOnboarding } from '../../lib/onboarding';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'OnboardingIntro'>;
 
@@ -17,7 +18,18 @@ export const OnboardingIntroScreen = ({ navigation }: Props) => {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.skipRow}>
-        <TouchableOpacity onPress={() => navigation.replace('MainTabs')}>
+        <TouchableOpacity
+          onPress={async () => {
+            // Leaving onboarding by any door counts as having seen it.
+            // This used to jump straight to MainTabs without recording it,
+            // so the whole flow replayed on the next launch, forever.
+            await completeOnboarding();
+            navigation.replace('MainTabs');
+          }}
+          accessibilityRole="button"
+          accessibilityLabel="Skip onboarding"
+          hitSlop={8}
+        >
           <Text variant="caption" weight="semiBold" color={theme.textSecondary}>
             Skip
           </Text>

@@ -19,8 +19,7 @@ import { HowItWorksScreen } from "../screens/onboarding/HowItWorksScreen";
 import { OnboardingReadyScreen } from "../screens/onboarding/OnboardingReadyScreen";
 import { colors } from "../theme/colors";
 import { useTheme } from "../theme/ThemeContext";
-
-const ONBOARDING_COMPLETE_KEY = "@firereach_onboarding_complete";
+import { hasCompletedOnboarding as readOnboardingFlag } from "../lib/onboarding";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -47,8 +46,7 @@ export const AppNavigator = () => {
 
   useEffect(() => {
     const checkOnboarding = async () => {
-      const value = await AsyncStorage.getItem(ONBOARDING_COMPLETE_KEY);
-      setHasCompletedOnboarding(value === "true");
+      setHasCompletedOnboarding(await readOnboardingFlag());
       setIsLoading(false);
     };
     checkOnboarding();

@@ -25,7 +25,16 @@ export const LocationDeniedScreen = ({ navigation }: Props) => {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        {/*
+          Now genuinely returns to LocationRequest — it used to land on
+          HowItWorks because that screen replaced itself on the way here.
+        */}
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+          hitSlop={8}
+        >
           <ArrowLeftIcon size={24} color={theme.textPrimary} />
         </TouchableOpacity>
       </View>
@@ -71,7 +80,7 @@ export const LocationDeniedScreen = ({ navigation }: Props) => {
         <Button
           title="Continue anyway"
           variant="secondary"
-          onPress={() => navigation.replace('OnboardingReady')}
+          onPress={() => navigation.navigate('OnboardingReady')}
           style={[styles.continueButton, { borderColor: theme.border }]}
         />
 

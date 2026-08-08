@@ -1,6 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
-import { HouseIcon, BriefcaseIcon, DotsThreeIcon } from 'phosphor-react-native';
+import {
+  HouseIcon,
+  BriefcaseIcon,
+  DotsThreeIcon,
+  ArrowLeftIcon,
+} from 'phosphor-react-native';
 import { Text } from '../../components/ui/Text';
 import { Button } from '../../components/ui/Button';
 import { OnboardingDots } from '../../components/ui/OnboardingDots';
@@ -72,7 +77,7 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
   const trimmedLabel = label.trim();
   const canSave = trimmedLabel.length > 0 && !isSaving;
 
-  const goToReady = () => navigation.replace('OnboardingReady');
+  const goToReady = () => navigation.navigate('OnboardingReady');
 
   const handleSave = async () => {
     // Belt and braces: this screen is only reached with a fix, but a param
@@ -119,6 +124,22 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
+      {/*
+        This screen had no back affordance at all, and was reached by a
+        replace, so there was nothing to go back to either. Both are fixed:
+        LocationRequest now pushes, and this returns to it.
+      */}
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+          hitSlop={8}
+        >
+          <ArrowLeftIcon size={24} color={theme.textSecondary} />
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
@@ -286,9 +307,15 @@ const styles = StyleSheet.create({
   scroll: {
     flex: 1,
   },
-  content: {
+  header: {
+    flexDirection: 'row',
     paddingHorizontal: 24,
     paddingTop: 60,
+    paddingBottom: 8,
+  },
+  content: {
+    paddingHorizontal: 24,
+    paddingTop: 8,
     paddingBottom: 24,
     gap: 24,
   },

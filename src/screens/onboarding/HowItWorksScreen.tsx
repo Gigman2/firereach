@@ -5,6 +5,7 @@ import {
   MapTrifoldIcon,
   FirstAidKitIcon,
   ArrowRightIcon,
+  ArrowLeftIcon,
 } from "phosphor-react-native";
 import { Text } from "../../components/ui/Text";
 import { Button } from "../../components/ui/Button";
@@ -13,6 +14,7 @@ import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../navigation/types";
+import { completeOnboarding } from "../../lib/onboarding";
 
 type Props = NativeStackScreenProps<RootStackParamList, "HowItWorks">;
 
@@ -56,7 +58,26 @@ export const HowItWorksScreen = ({ navigation }: Props) => {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.skipRow}>
-        <TouchableOpacity onPress={() => navigation.replace("MainTabs")}>
+        {/*
+          Back was reachable only by the Android hardware key before — there
+          was no on-screen way to reread the intro.
+        */}
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+          hitSlop={8}
+        >
+          <ArrowLeftIcon size={24} color={theme.textSecondary} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={async () => {
+            await completeOnboarding();
+            navigation.replace("MainTabs");
+          }}
+          accessibilityRole="button"
+          hitSlop={8}
+        >
           <Text
             variant="caption"
             weight="semiBold"
@@ -124,7 +145,8 @@ const styles = StyleSheet.create({
   },
   skipRow: {
     flexDirection: "row",
-    justifyContent: "flex-end",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 8,

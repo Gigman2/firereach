@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { MapPinIcon, XIcon } from 'phosphor-react-native';
+import { MapPinIcon, ArrowLeftIcon } from 'phosphor-react-native';
 import * as Location from 'expo-location';
 import { Text } from '../../components/ui/Text';
 import { Button } from '../../components/ui/Button';
@@ -115,7 +115,11 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
 
     if (!granted) {
       setAwaitingFix(false);
-      navigation.replace('LocationDenied');
+      // navigate, not replace. Replacing removed this screen from the
+      // stack, so the denied screen's own back arrow landed two steps back on
+      // HowItWorks and a user who refused by accident had no way to reach the
+      // Allow button again.
+      navigation.navigate('LocationDenied');
       return;
     }
 
@@ -136,21 +140,31 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
     // still be holding null when it mounts. A place with no coordinates could
     // never match a radius, so no fix means no step.
     if (fix) {
-      navigation.replace('SavePlace', fix);
+      navigation.navigate('SavePlace', fix);
     } else {
-      navigation.replace('OnboardingReady');
+      navigation.navigate('OnboardingReady');
     }
   };
 
   const handleSkip = () => {
-    navigation.replace('OnboardingReady');
+    navigation.navigate('OnboardingReady');
   };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <XIcon size={24} color={theme.textTertiary} />
+        {/*
+          An arrow, not a cross. It has always called goBack(), but a cross
+          reads as "leave onboarding" — which is what the crosses on the
+          intro and ready screens actually do.
+        */}
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+          hitSlop={8}
+        >
+          <ArrowLeftIcon size={24} color={theme.textSecondary} />
         </TouchableOpacity>
       </View>
 
