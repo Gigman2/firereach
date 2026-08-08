@@ -3,6 +3,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { FireIcon, ArrowRightIcon } from 'phosphor-react-native';
 import { Text } from '../../components/ui/Text';
 import { Button } from '../../components/ui/Button';
+import { OnboardingDots } from '../../components/ui/OnboardingDots';
 import { colors } from '../../theme/colors';
 import { useTheme } from '../../theme/ThemeContext';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -49,12 +50,7 @@ export const OnboardingIntroScreen = ({ navigation }: Props) => {
       <View style={styles.spacer} />
 
       <View style={styles.footer}>
-        <View style={styles.dots}>
-          <View style={styles.dotActive} />
-          <View style={styles.dotInactive} />
-          <View style={styles.dotInactive} />
-          <View style={styles.dotInactive} />
-        </View>
+        <OnboardingDots total={5} step={1} />
 
         <Button
           title="Next"
@@ -119,22 +115,5 @@ const styles = StyleSheet.create({
     paddingBottom: 48,
     gap: 32,
     alignItems: 'center',
-  },
-  dots: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  dotActive: {
-    height: 8,
-    width: 32,
-    borderRadius: 4,
-    backgroundColor: colors.brandPrimary,
-  },
-  dotInactive: {
-    height: 8,
-    width: 8,
-    borderRadius: 4,
-    backgroundColor: `${colors.brandPrimary}33`,
   },
 });

@@ -4,6 +4,7 @@ import { MapPinIcon, XIcon } from 'phosphor-react-native';
 import * as Location from 'expo-location';
 import { Text } from '../../components/ui/Text';
 import { Button } from '../../components/ui/Button';
+import { OnboardingDots } from '../../components/ui/OnboardingDots';
 import { colors } from '../../theme/colors';
 import { useTheme } from '../../theme/ThemeContext';
 import { useNearestStation } from '../../hooks/useNearestStation';
@@ -109,10 +110,8 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
         </View>
       </View>
 
-      <View style={styles.dots}>
-        <View style={[styles.dotInactive, { backgroundColor: theme.border }]} />
-        <View style={styles.dotActive} />
-        <View style={[styles.dotInactive, { backgroundColor: theme.border }]} />
+      <View style={styles.dotsRow}>
+        <OnboardingDots total={5} step={3} />
       </View>
     </View>
   );
@@ -195,22 +194,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: '#FFFFFF',
   },
-  dots: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+  dotsRow: {
     alignItems: 'center',
-    gap: 8,
     paddingVertical: 32,
-  },
-  dotActive: {
-    height: 8,
-    width: 24,
-    borderRadius: 4,
-    backgroundColor: colors.brandPrimary,
-  },
-  dotInactive: {
-    height: 8,
-    width: 8,
-    borderRadius: 4,
   },
 });
