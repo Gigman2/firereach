@@ -72,6 +72,7 @@ export const footer: ViewStyle = {
 export const dotsRow: ViewStyle = {
   alignItems: "center",
   paddingVertical: layout.contentX,
+  marginBottom: 32,
 };
 
 /**

@@ -1,30 +1,36 @@
-import React, { useRef, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import React, { useRef, useState } from "react";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+} from "react-native";
 import {
   HouseIcon,
   BriefcaseIcon,
   DotsThreeIcon,
   ArrowLeftIcon,
-} from 'phosphor-react-native';
-import { Text } from '../../components/ui/Text';
-import { Button } from '../../components/ui/Button';
-import { OnboardingDots } from '../../components/ui/OnboardingDots';
-import { colors } from '../../theme/colors';
-import { useTheme } from '../../theme/ThemeContext';
-import { typography } from '../../theme/typography';
-import { useNearestStation } from '../../hooks/useNearestStation';
-import { useSavedPlaces } from '../../hooks/useSavedPlaces';
+} from "phosphor-react-native";
+import { Text } from "../../components/ui/Text";
+import { Button } from "../../components/ui/Button";
+import { OnboardingDots } from "../../components/ui/OnboardingDots";
+import { colors } from "../../theme/colors";
+import { useTheme } from "../../theme/ThemeContext";
+import { typography } from "../../theme/typography";
+import { useNearestStation } from "../../hooks/useNearestStation";
+import { useSavedPlaces } from "../../hooks/useSavedPlaces";
 import {
   RADIUS_PRESETS,
   DEFAULT_RADIUS_METERS,
   MAX_LABEL_LENGTH,
   newPlaceId,
-} from '../../lib/savedPlaces';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../navigation/types';
-import * as onboarding from './onboardingStyles';
+} from "../../lib/savedPlaces";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "../../navigation/types";
+import * as onboarding from "./onboardingStyles";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'SavePlace'>;
+type Props = NativeStackScreenProps<RootStackParamList, "SavePlace">;
 
 /**
  * Shortcuts that fill the label field, not a closed list of labels.
@@ -35,10 +41,14 @@ type Props = NativeStackScreenProps<RootStackParamList, 'SavePlace'>;
  * the cursor in it, because the only useful answer to "somewhere else" is the
  * caller's own word for the place. `fill: null` is what marks it.
  */
-const LABEL_OPTIONS: { key: string; fill: string | null; Icon: typeof HouseIcon }[] = [
-  { key: 'Home', fill: 'Home', Icon: HouseIcon },
-  { key: 'Work', fill: 'Work', Icon: BriefcaseIcon },
-  { key: 'Other', fill: null, Icon: DotsThreeIcon },
+const LABEL_OPTIONS: {
+  key: string;
+  fill: string | null;
+  Icon: typeof HouseIcon;
+}[] = [
+  { key: "Home", fill: "Home", Icon: HouseIcon },
+  { key: "Work", fill: "Work", Icon: BriefcaseIcon },
+  { key: "Other", fill: null, Icon: DotsThreeIcon },
 ];
 
 const PRESET_FILLS = LABEL_OPTIONS.map((o) => o.fill).filter(Boolean);
@@ -59,10 +69,12 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
   const { addPlace } = useSavedPlaces();
   const labelInput = useRef<TextInput>(null);
 
-  const [label, setLabel] = useState<string>('Home');
-  const [note, setNote] = useState('');
-  const [radiusMeters, setRadiusMeters] = useState<number>(DEFAULT_RADIUS_METERS);
-  const [saveError, setSaveError] = useState<'full' | 'storage' | null>(null);
+  const [label, setLabel] = useState<string>("Home");
+  const [note, setNote] = useState("");
+  const [radiusMeters, setRadiusMeters] = useState<number>(
+    DEFAULT_RADIUS_METERS,
+  );
+  const [saveError, setSaveError] = useState<"full" | "storage" | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   /**
@@ -78,7 +90,7 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
   const trimmedLabel = label.trim();
   const canSave = trimmedLabel.length > 0 && !isSaving;
 
-  const goToReady = () => navigation.navigate('OnboardingReady');
+  const goToReady = () => navigation.navigate("OnboardingReady");
 
   const handleSave = async () => {
     // Belt and braces: this screen is only reached with a fix, but a param
@@ -125,177 +137,172 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
 
   return (
     <View style={[onboarding.screen, { backgroundColor: theme.background }]}>
-      {/*
-        This screen had no back affordance at all, and was reached by a
-        replace, so there was nothing to go back to either. Both are fixed:
-        LocationRequest now pushes, and this returns to it.
-      */}
-      <View style={onboarding.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          hitSlop={8}
+      <View style={onboarding.fill}>
+        <View style={onboarding.headerSplit}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+            hitSlop={8}
+          >
+            <ArrowLeftIcon size={24} color={theme.textSecondary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={async () => {
+              await goToReady();
+            }}
+            accessibilityRole="button"
+            hitSlop={8}
+          >
+            <Text
+              variant="caption"
+              weight="semiBold"
+              color={theme.textSecondary}
+            >
+              Skip
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <ArrowLeftIcon size={24} color={theme.textSecondary} />
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-      >
-        <Text variant="displayBold" align="center" style={styles.heading}>
-          Save where you are now
-        </Text>
-
-        <Text
-          variant="bodyMedium"
-          color={theme.textSecondary}
-          align="center"
-          style={styles.description}
-        >
-          Whoever answers the call covers your whole region and cannot see
-          you — save this place so you always have the right words ready.
-        </Text>
-
-        <View style={styles.section}>
-          <Text variant="caption" weight="bold" color={theme.textSecondary}>
-            Label
+          <Text variant="displayBold" align="center" style={styles.heading}>
+            Save a location
           </Text>
-          {/* The label is read aloud as a whole sentence — "I'm at Mum's
+
+          <Text
+            variant="bodyMedium"
+            color={theme.textSecondary}
+            align="center"
+            style={styles.description}
+          >
+            To help the fire men find you even without internet we adivise you
+            save at least 3 landmarks closest to you.
+          </Text>
+
+          <View style={styles.section}>
+            <Text variant="caption" weight="bold" color={theme.textSecondary}>
+              Label
+            </Text>
+            {/* The label is read aloud as a whole sentence — "I'm at Mum's
               house." — so it has to be the caller's own word for the place.
               The chips only fill this field; they no longer replace it. */}
-          <TextInput
-            ref={labelInput}
-            style={[
-              styles.input,
-              styles.labelInput,
-              { borderColor: theme.border, color: theme.textPrimary, backgroundColor: theme.background },
-            ]}
-            placeholder="Home, Shop, Mum's house"
-            placeholderTextColor={theme.textSecondary}
-            value={label}
-            onChangeText={setLabel}
-            maxLength={MAX_LABEL_LENGTH}
-            autoCapitalize="sentences"
-            returnKeyType="done"
-            accessibilityLabel="Name for this place"
-          />
-          <View style={styles.chipRow}>
-            {LABEL_OPTIONS.map((option) => {
-              const isSelected = option.fill
-                ? trimmedLabel === option.fill
-                : trimmedLabel.length > 0 && !PRESET_FILLS.includes(trimmedLabel);
-              return (
-                <TouchableOpacity
-                  key={option.key}
-                  onPress={() => {
-                    setLabel(option.fill ?? '');
-                    if (!option.fill) labelInput.current?.focus();
-                  }}
-                  activeOpacity={0.7}
-                  style={[
-                    styles.labelChip,
-                    { borderColor: theme.border, backgroundColor: theme.background },
-                    isSelected && styles.chipSelected,
-                  ]}
-                >
-                  <option.Icon
-                    size={20}
-                    color={isSelected ? colors.brandPrimary : theme.textTertiary}
-                  />
-                  <Text
-                    variant="caption"
-                    weight="semiBold"
-                    color={isSelected ? theme.textPrimary : theme.textSecondary}
+            <TextInput
+              ref={labelInput}
+              style={[
+                styles.input,
+                styles.labelInput,
+                {
+                  borderColor: theme.border,
+                  color: theme.textPrimary,
+                  backgroundColor: theme.background,
+                },
+              ]}
+              placeholder="Home, Shop, Mum's house"
+              placeholderTextColor={theme.textSecondary}
+              value={label}
+              onChangeText={setLabel}
+              maxLength={MAX_LABEL_LENGTH}
+              autoCapitalize="sentences"
+              returnKeyType="done"
+              accessibilityLabel="Name for this place"
+            />
+            <View style={styles.chipRow}>
+              {LABEL_OPTIONS.map((option) => {
+                const isSelected = option.fill
+                  ? trimmedLabel === option.fill
+                  : trimmedLabel.length > 0 &&
+                    !PRESET_FILLS.includes(trimmedLabel);
+                return (
+                  <TouchableOpacity
+                    key={option.key}
+                    onPress={() => {
+                      setLabel(option.fill ?? "");
+                      if (!option.fill) labelInput.current?.focus();
+                    }}
+                    activeOpacity={0.7}
+                    style={[
+                      styles.labelChip,
+                      {
+                        borderColor: theme.border,
+                        backgroundColor: theme.background,
+                      },
+                      isSelected && styles.chipSelected,
+                    ]}
                   >
-                    {option.key}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
+                    <option.Icon
+                      size={20}
+                      color={
+                        isSelected ? colors.brandPrimary : theme.textTertiary
+                      }
+                    />
+                    <Text
+                      variant="caption"
+                      weight="semiBold"
+                      color={
+                        isSelected ? theme.textPrimary : theme.textSecondary
+                      }
+                    >
+                      {option.key}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           </View>
-        </View>
 
-        <View style={styles.section}>
-          <Text variant="caption" weight="bold" color={theme.textSecondary}>
-            Landmark (optional)
-          </Text>
-          <TextInput
-            style={[
-              styles.input,
-              styles.textarea,
-              { borderColor: theme.border, color: theme.textPrimary, backgroundColor: theme.background },
-            ]}
-            placeholder="near the blue kiosk, opposite the pharmacy"
-            placeholderTextColor={theme.textTertiary}
-            value={note}
-            onChangeText={setNote}
-            multiline
+          <View style={styles.section}>
+            <Text variant="caption" weight="bold" color={theme.textSecondary}>
+              Landmark (optional)
+            </Text>
+            <TextInput
+              style={[
+                styles.input,
+                styles.textarea,
+                {
+                  borderColor: theme.border,
+                  color: theme.textPrimary,
+                  backgroundColor: theme.background,
+                },
+              ]}
+              placeholder="near the blue kiosk, opposite the pharmacy"
+              placeholderTextColor={theme.textTertiary}
+              value={note}
+              onChangeText={setNote}
+              multiline
+            />
+          </View>
+
+          {saveError === "full" && (
+            <Text variant="caption" color={colors.error} align="center">
+              Your saved places are full, so this one could not be added. Skip
+              for now — you can manage saved places from Settings.
+            </Text>
+          )}
+          {saveError === "storage" && (
+            <Text variant="caption" color={colors.error} align="center">
+              This phone would not save the place. Try again, or skip for now —
+              you can add it later from Settings.
+            </Text>
+          )}
+        </ScrollView>
+
+        <View style={onboarding.actions}>
+          <Button
+            title="Save"
+            onPress={handleSave}
+            disabled={!canSave}
+            loading={isSaving}
           />
         </View>
 
-        <View style={styles.section}>
-          <Text variant="caption" weight="bold" color={theme.textSecondary}>
-            How close counts as being here?
-          </Text>
-          <View style={styles.chipRow}>
-            {RADIUS_PRESETS.map((preset) => {
-              const isSelected = radiusMeters === preset;
-              return (
-                <TouchableOpacity
-                  key={preset}
-                  onPress={() => setRadiusMeters(preset)}
-                  activeOpacity={0.7}
-                  style={[
-                    styles.radiusChip,
-                    { borderColor: theme.border, backgroundColor: theme.background },
-                    isSelected && styles.chipSelected,
-                  ]}
-                >
-                  <Text
-                    variant="caption"
-                    weight="semiBold"
-                    color={isSelected ? theme.textPrimary : theme.textSecondary}
-                  >
-                    {formatRadius(preset)}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+        <View style={onboarding.dotsRow}>
+          <OnboardingDots total={5} step={4} />
         </View>
-
-        {saveError === 'full' && (
-          <Text variant="caption" color={colors.error} align="center">
-            Your saved places are full, so this one could not be added. Skip
-            for now — you can manage saved places from Settings.
-          </Text>
-        )}
-        {saveError === 'storage' && (
-          <Text variant="caption" color={colors.error} align="center">
-            This phone would not save the place. Try again, or skip for now —
-            you can add it later from Settings.
-          </Text>
-        )}
-      </ScrollView>
-
-      <View style={[onboarding.footer, styles.footer]}>
-        <OnboardingDots total={5} step={4} />
-        <Button
-          title="Save"
-          onPress={handleSave}
-          disabled={!canSave}
-          loading={isSaving}
-        />
-        <TouchableOpacity onPress={goToReady} style={styles.skipButton}>
-          <Text variant="caption" weight="medium" color={theme.textSecondary}>
-            Skip for now
-          </Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -312,7 +319,7 @@ const styles = StyleSheet.create({
     gap: 24,
   },
   heading: {
-    marginBottom: 4,
+    marginBottom: 0,
   },
   description: {
     paddingHorizontal: 8,
@@ -321,13 +328,13 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   chipRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   labelChip: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     gap: 6,
     paddingVertical: 14,
     borderRadius: 12,
@@ -335,8 +342,8 @@ const styles = StyleSheet.create({
   },
   radiusChip: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 12,
     borderRadius: 12,
     borderWidth: 2,
@@ -362,13 +369,13 @@ const styles = StyleSheet.create({
   textarea: {
     minHeight: 72,
     paddingTop: 12,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   footer: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   skipButton: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 8,
   },
 });

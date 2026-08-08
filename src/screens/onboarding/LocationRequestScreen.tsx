@@ -1,23 +1,23 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import { MapPinIcon, ArrowLeftIcon } from 'phosphor-react-native';
-import * as Location from 'expo-location';
-import { Text } from '../../components/ui/Text';
-import { Button } from '../../components/ui/Button';
-import { OnboardingDots } from '../../components/ui/OnboardingDots';
-import { colors } from '../../theme/colors';
-import { useTheme } from '../../theme/ThemeContext';
+import React, { useState } from "react";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { MapPinIcon, ArrowLeftIcon } from "phosphor-react-native";
+import * as Location from "expo-location";
+import { Text } from "../../components/ui/Text";
+import { Button } from "../../components/ui/Button";
+import { OnboardingDots } from "../../components/ui/OnboardingDots";
+import { colors } from "../../theme/colors";
+import { useTheme } from "../../theme/ThemeContext";
 import {
   useNearestStation,
   withTimeout,
   MAX_LAST_KNOWN_AGE_MS,
   MAX_LAST_KNOWN_ACCURACY_M,
-} from '../../hooks/useNearestStation';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../navigation/types';
-import * as onboarding from './onboardingStyles';
+} from "../../hooks/useNearestStation";
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "../../navigation/types";
+import * as onboarding from "./onboardingStyles";
 
-type Props = NativeStackScreenProps<RootStackParamList, 'LocationRequest'>;
+type Props = NativeStackScreenProps<RootStackParamList, "LocationRequest">;
 
 /**
  * Bounds the post-grant fix attempt. Shorter than the provider's own 15 s
@@ -45,7 +45,7 @@ async function fixAfterGrant(): Promise<{ lat: number; lng: number } | null> {
       maxAge: MAX_LAST_KNOWN_AGE_MS,
       requiredAccuracy: MAX_LAST_KNOWN_ACCURACY_M,
     }),
-    GRANT_FIX_TIMEOUT_MS
+    GRANT_FIX_TIMEOUT_MS,
   );
   if (recent) {
     return { lat: recent.coords.latitude, lng: recent.coords.longitude };
@@ -53,7 +53,7 @@ async function fixAfterGrant(): Promise<{ lat: number; lng: number } | null> {
 
   const live = await withTimeout(
     Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
-    GRANT_FIX_TIMEOUT_MS
+    GRANT_FIX_TIMEOUT_MS,
   );
   if (live) {
     return { lat: live.coords.latitude, lng: live.coords.longitude };
@@ -109,9 +109,9 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
     let granted = false;
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      granted = status === 'granted';
+      granted = status === "granted";
     } catch (err) {
-      console.warn('[LocationRequestScreen] permission request failed', err);
+      console.warn("[LocationRequestScreen] permission request failed", err);
     }
 
     if (!granted) {
@@ -120,7 +120,7 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
       // stack, so the denied screen's own back arrow landed two steps back on
       // HowItWorks and a user who refused by accident had no way to reach the
       // Allow button again.
-      navigation.navigate('LocationDenied');
+      navigation.navigate("LocationDenied");
       return;
     }
 
@@ -141,14 +141,14 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
     // still be holding null when it mounts. A place with no coordinates could
     // never match a radius, so no fix means no step.
     if (fix) {
-      navigation.navigate('SavePlace', fix);
+      navigation.navigate("SavePlace", fix);
     } else {
-      navigation.navigate('OnboardingReady');
+      navigation.navigate("OnboardingReady");
     }
   };
 
   const handleSkip = () => {
-    navigation.navigate('OnboardingReady');
+    navigation.navigate("OnboardingReady");
   };
 
   return (
@@ -163,8 +163,8 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
         <View style={onboarding.headerSplit}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            accessibilityRole='button'
-            accessibilityLabel='Back'
+            accessibilityRole="button"
+            accessibilityLabel="Back"
             hitSlop={8}
           >
             <ArrowLeftIcon size={24} color={theme.textSecondary} />
@@ -173,12 +173,12 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
             onPress={async () => {
               await handleSkip();
             }}
-            accessibilityRole='button'
+            accessibilityRole="button"
             hitSlop={8}
           >
             <Text
-              variant='caption'
-              weight='semiBold'
+              variant="caption"
+              weight="semiBold"
               color={theme.textSecondary}
             >
               Skip
@@ -191,29 +191,29 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
             style={[
               onboarding.iconCircle(96),
               styles.iconContainer,
-              { backgroundColor: isDark ? '#431C00' : '#FFF7ED' },
+              { backgroundColor: isDark ? "#431C00" : "#FFF7ED" },
             ]}
           >
-            <MapPinIcon size={48} color='#F97316' weight='fill' />
+            <MapPinIcon size={48} color="#F97316" weight="fill" />
           </View>
 
           <Text
-            variant='label'
+            variant="label"
             color={colors.brandPrimary}
-            align='center'
+            align="center"
             style={styles.badge}
           >
             ACCESS REQUIRED
           </Text>
 
-          <Text variant='displayBold' align='center' style={styles.heading}>
+          <Text variant="displayBold" align="center" style={styles.heading}>
             We need your location.
           </Text>
 
           <Text
-            variant='bodyMedium'
+            variant="bodyMedium"
             color={theme.textSecondary}
-            align='center'
+            align="center"
             style={styles.description}
           >
             {/*
@@ -236,7 +236,7 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
 
         <View style={onboarding.actions}>
           <Button
-            title='Allow Location'
+            title="Allow Location"
             onPress={handleAllowLocation}
             loading={awaitingFix}
           />
@@ -252,11 +252,10 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'space-between',
-    paddingBottom: 32,
+    justifyContent: "space-between",
   },
   content: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingHorizontal: 32,
     paddingTop: 32,
   },

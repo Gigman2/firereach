@@ -140,7 +140,7 @@ export const HowItWorksScreen = ({ navigation }: Props) => {
         </View>
       </View>
 
-      <View style={[onboarding.dotsRow, styles.dotsRow]}>
+      <View style={onboarding.dotsRow}>
         <OnboardingDots total={5} step={2} />
       </View>
     </View>
@@ -179,8 +179,5 @@ const styles = StyleSheet.create({
   stepBody: {
     marginTop: 4,
     lineHeight: 20,
-  },
-  dotsRow: {
-    marginBottom: 32,
   },
 });

@@ -162,7 +162,7 @@ export const HomeScreen = ({ navigation }: Props) => {
           accessibilityLabel="Settings"
           hitSlop={8}
         >
-          <GearSixIcon size={24} color={theme.textTertiary} />
+          <GearSixIcon size={24} color={colors.brandPrimary} />
         </TouchableOpacity>
       </View>
 
