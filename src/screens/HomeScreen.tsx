@@ -16,6 +16,7 @@ import {
   WifiSlashIcon,
 } from "phosphor-react-native";
 import { Text } from "../components/ui/Text";
+import { WhatToSayCard } from "../components/WhatToSayCard";
 import { colors } from "../theme/colors";
 import { useTheme } from "../theme/ThemeContext";
 import { useConnectivity } from "../hooks/useConnectivity";
@@ -263,6 +264,8 @@ export const HomeScreen = ({ navigation }: Props) => {
             </Text>
           </View>
         </TouchableOpacity>
+
+        <WhatToSayCard />
 
         {alternates.length > 0 && (
           <View style={styles.alternatesRow}>
