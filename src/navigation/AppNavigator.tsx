@@ -7,7 +7,6 @@ import {
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RootStackParamList } from "./types";
 import { TabNavigator } from "./TabNavigator";
 import { SplashScreen } from "../screens/onboarding/SplashScreen";

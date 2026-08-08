@@ -24,7 +24,10 @@ export const OnboardingIntroScreen = ({ navigation }: Props) => {
             // This used to jump straight to MainTabs without recording it,
             // so the whole flow replayed on the next launch, forever.
             await completeOnboarding();
-            navigation.replace('MainTabs');
+            // reset, not replace: replace swaps only the focused route, so the
+            // steps pushed behind it survive and an edge-swipe from Home
+            // re-reveals them.
+            navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
           }}
           accessibilityRole="button"
           accessibilityLabel="Skip onboarding"

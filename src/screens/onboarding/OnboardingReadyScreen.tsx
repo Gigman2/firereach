@@ -17,7 +17,13 @@ export const OnboardingReadyScreen = ({ navigation }: Props) => {
 
   const handleGoToApp = async () => {
     await completeOnboarding();
-    navigation.replace("MainTabs");
+    // reset, not replace. Now that the steps push instead of replacing, this
+    // is the only exit that clears them: replace swaps just the focused route,
+    // leaving up to four onboarding screens mounted under MainTabs. An
+    // ordinary iOS edge-swipe from Home then re-revealed SavePlace, still
+    // armed, and tapping Save again wrote a duplicate place after onboarding
+    // had supposedly finished.
+    navigation.reset({ index: 0, routes: [{ name: "MainTabs" }] });
   };
 
   return (

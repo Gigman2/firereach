@@ -73,7 +73,8 @@ export const HowItWorksScreen = ({ navigation }: Props) => {
         <TouchableOpacity
           onPress={async () => {
             await completeOnboarding();
-            navigation.replace("MainTabs");
+            // reset, not replace — see OnboardingIntroScreen.
+            navigation.reset({ index: 0, routes: [{ name: "MainTabs" }] });
           }}
           accessibilityRole="button"
           hitSlop={8}

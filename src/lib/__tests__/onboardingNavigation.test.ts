@@ -62,13 +62,26 @@ describe("onboarding navigation", () => {
     expect(offenders).toEqual([]);
   });
 
+  it("clears the onboarding stack on the way out, rather than replacing", () => {
+    // replace() swaps only the focused route, so every step pushed behind it
+    // stays mounted under MainTabs and an iOS edge-swipe from Home re-reveals
+    // the last one — armed, and able to save a duplicate place.
+    const offenders: string[] = [];
+    for (const { name, src } of files) {
+      if (src.includes(`navigation.replace("${EXIT_ROUTE}")`) ||
+          src.includes(`navigation.replace('${EXIT_ROUTE}')`)) {
+        offenders.push(`${name} → replace("${EXIT_ROUTE}")`);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
   it("records completion at every exit to the app", () => {
     // Three screens leave onboarding. All three must persist the flag, or the
     // flow replays forever for anyone who skips.
     const offenders: string[] = [];
     for (const { name, src } of files) {
-      if (!src.includes(`navigation.replace("${EXIT_ROUTE}")`) &&
-          !src.includes(`navigation.replace('${EXIT_ROUTE}')`)) continue;
+      if (!src.includes(EXIT_ROUTE)) continue;
       // A live call, not the identifier appearing anywhere — checking for the
       // bare name passed with the call commented out, which is precisely the
       // regression this is for.
