@@ -365,3 +365,38 @@ describe("migrating a v1 file forward", () => {
     expect(persisted.places[0].landmarks).toEqual(["near the blue kiosk"]);
   });
 });
+
+describe("sanitize builds records explicitly", () => {
+  it("does not carry an unknown key forward through a write", async () => {
+    // sanitize used to spread ...p, so a v2 record holding a leftover `note`
+    // round-tripped forever with the text unreachable by any consumer.
+    await AsyncStorage.clear();
+    await AsyncStorage.setItem(
+      SAVED_PLACES_KEY,
+      JSON.stringify({
+        schemaVersion: SAVED_PLACES_VERSION,
+        places: [
+          {
+            id: "a",
+            label: "Home",
+            lat: 5.6091,
+            lng: -0.2112,
+            landmarks: ["near the blue kiosk"],
+            radiusMeters: 300,
+            note: "stale v1 leftover",
+          },
+        ],
+      })
+    );
+    const got = await readSavedPlaces();
+    expect(got).toHaveLength(1);
+    expect(got[0]).not.toHaveProperty("note");
+    expect(got[0].landmarks).toEqual(["near the blue kiosk"]);
+    expect(got[0].lat).toBe(5.6091);
+    expect(got[0].lng).toBe(-0.2112);
+
+    await writeSavedPlaces(got);
+    const raw = (await AsyncStorage.getItem(SAVED_PLACES_KEY)) as string;
+    expect(raw).not.toContain("stale v1 leftover");
+  });
+});

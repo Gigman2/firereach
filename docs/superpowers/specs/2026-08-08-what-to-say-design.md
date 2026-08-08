@@ -18,7 +18,7 @@ This is therefore not a convenience feature. It is the half of the product that 
 
 | # | Decision | Rationale |
 |---|---|---|
-| 1 | **Saved places**, a short list of `{label, lat, lng, note, radiusMeters}` | A single landmark captured at onboarding only helps if the emergency happens where you onboarded. "Home", "Shop", "Mum's house" covers where people actually are. |
+| 1 | **Saved places**, a short list of `{label, lat, lng, landmarks, radiusMeters}` | A single landmark captured at onboarding only helps if the emergency happens where you onboarded. "Home", "Shop", "Mum's house" covers where people actually are. |
 | 2 | **One optional onboarding screen**, after `LocationRequest`, before `OnboardingReady` | Best capture rate — most users end up with exactly one place saved. Skippable, and skipped automatically when there is no position to seed from. |
 | 3 | **Per-place radius**, default 300 m, chosen from four presets | A shop front is a point; a farm or compound is not. Presets rather than a text field, so it stays a tap. |
 | 4 | **Fallback: district, region, and bearing from the nearest station**, with coordinates underneath | A dispatcher knows their own stations. "About 5 km north-east of Madina station" is actionable in a way four-decimal coordinates read aloud are not. |
@@ -39,8 +39,12 @@ export type SavedPlace = {
   label: string;
   lat: number;
   lng: number;
-  /** The user's own landmark sentence, read aloud verbatim. May be empty. */
-  note: string;
+  /**
+   * The user's own landmarks, read aloud verbatim, one line each. Up to
+   * MAX_LANDMARKS (3) — a regional operator triangulates, so a caller who can
+   * offer three reference points is easier to place than one who offers one.
+   */
+  landmarks: string[];
   /** How close counts as being here. Default 300. */
   radiusMeters: number;
 };
@@ -77,7 +81,7 @@ One pure function, no I/O, fully testable:
 
 ```ts
 export type SpeakableLocation =
-  | { kind: "savedPlace"; label: string; note: string; lines: string[] }
+  | { kind: "savedPlace"; label: string; landmarks: string[]; lines: string[] }
   | { kind: "derived"; lines: string[]; coords: string }
   | { kind: "none" };
 
@@ -90,7 +94,7 @@ export function whatToSay(
 
 Resolution order:
 
-1. **Inside a saved place's own radius** → that place. Nearest wins if several match. Renders the label and the user's note verbatim; the app never paraphrases the user's landmark.
+1. **Inside a saved place's own radius** → that place. Nearest wins if several match. Renders the label, then each landmark verbatim on its own line; the app never paraphrases them.
 2. **A position but no matching place** → district and region from the nearest station, plus distance and compass bearing from it, plus coordinates.
 3. **No position at all** → `kind: "none"`. The card is replaced by the picker below.
 
@@ -132,6 +136,6 @@ Sharing a place with anyone. Syncing across devices. Reverse geocoding or any ga
 
 ## Risks
 
-- **A saved place whose note has gone stale** ("near the blue kiosk" — the kiosk is gone) reads confidently and wrongly. Mitigated only by the note being the user's own words and editable; not solvable in software.
+- **A saved place whose landmarks have gone stale** ("near the blue kiosk" — the kiosk is gone) reads confidently and wrongly. Mitigated by them being the user's own words and editable, and by there being up to three: an operator who does not know one may know another. Not solvable in software.
 - **Bearing from a station the dispatcher does not think in terms of.** They cover the region and know their stations, but "5 km north-east of Madina" still assumes a shared mental map. It is strictly better than coordinates and strictly worse than a landmark, which is why it is the fallback rather than the primary.
 - **The 300 m default is a guess.** It is defensible in dense Accra and probably too tight for a rural compound, which is exactly why the radius is per-place.

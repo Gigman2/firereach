@@ -69,10 +69,16 @@ function formatRadius(meters: number): string {
  * that renders this is what actually stops a long landmark wrapping the row
  * — this only decides the words, not the truncation.
  */
-function landmarksSummary(landmarks: string[]): string {
-  if (landmarks.length === 0) return "No landmark saved";
-  if (landmarks.length === 1) return landmarks[0];
-  return `${landmarks[0]} +${landmarks.length - 1} more`;
+function landmarksSummary(landmarks: string[]): {
+  first: string;
+  extra: number;
+} {
+  // Blanks filtered here too. On the "write landed, read-back failed" path the
+  // provider puts an unsanitized array into state, and ["kiosk", "", ""] would
+  // otherwise claim "+2 more" while ["", "pharmacy"] rendered a blank line.
+  const real = landmarks.filter((l) => l.trim().length > 0);
+  if (real.length === 0) return { first: "No landmark saved", extra: 0 };
+  return { first: real[0].trim(), extra: real.length - 1 };
 }
 
 type FormState =
@@ -510,14 +516,28 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
                       </Text>
                     </View>
                   </View>
-                  <Text
-                    variant="caption"
-                    color={theme.textSecondary}
-                    style={styles.placeNote}
-                    numberOfLines={1}
-                  >
-                    {landmarksSummary(place.landmarks)}
-                  </Text>
+                  {/*
+                    Two Texts, not one string. The count used to be
+                    concatenated into the truncated line, so three landmarks
+                    on a narrow handset clipped the first one AND hid the fact
+                    that the other two existed — on the only screen where a
+                    user can confirm what was saved.
+                  */}
+                  <View style={styles.placeNoteRow}>
+                    <Text
+                      variant="caption"
+                      color={theme.textSecondary}
+                      style={[styles.placeNote, { flexShrink: 1 }]}
+                      numberOfLines={1}
+                    >
+                      {landmarksSummary(place.landmarks).first}
+                    </Text>
+                    {landmarksSummary(place.landmarks).extra > 0 && (
+                      <Text variant="caption" color={theme.textSecondary}>
+                        {`  +${landmarksSummary(place.landmarks).extra} more`}
+                      </Text>
+                    )}
+                  </View>
                   <View style={[styles.placeActions, { borderTopColor: theme.divider }]}>
                     <TouchableOpacity
                       style={styles.placeActionButton}
@@ -621,6 +641,10 @@ const styles = StyleSheet.create({
   },
   placeNote: {
     lineHeight: 20,
+  },
+  placeNoteRow: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   placeActions: {
     flexDirection: "row",

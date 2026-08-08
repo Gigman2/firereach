@@ -301,15 +301,22 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
                   onChangeText={(text) => updateLandmark(index, text)}
                   accessibilityLabel={`Landmark ${index + 1}`}
                 />
-                <TouchableOpacity
-                  onPress={() => removeLandmark(index)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Remove landmark ${index + 1}`}
-                  hitSlop={8}
-                  style={styles.removeLandmark}
-                >
-                  <XIcon size={18} color={theme.textTertiary} />
-                </TouchableOpacity>
+                {/*
+                  No remove on the only field. Tapping it left the step with
+                  zero landmark inputs and a small "Add another" link, on the
+                  screen whose own copy advises saving three.
+                */}
+                {landmarks.length > 1 && (
+                  <TouchableOpacity
+                    onPress={() => removeLandmark(index)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Remove landmark ${index + 1}`}
+                    hitSlop={8}
+                    style={styles.removeLandmark}
+                  >
+                    <XIcon size={18} color={theme.textTertiary} />
+                  </TouchableOpacity>
+                )}
               </View>
             ))}
             {landmarks.length < MAX_LANDMARKS && (

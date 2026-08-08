@@ -136,8 +136,14 @@ function sanitizeLandmarks(landmarks: unknown): string[] {
  * disagree about what "valid" means.
  */
 function sanitize(p: SavedPlace): SavedPlace {
+  // Built explicitly rather than spread, so a stray key on a hand-edited or
+  // future-shaped file cannot ride along through every future write. A v2
+  // record carrying a leftover `note` used to round-trip forever with the
+  // text unreachable.
   return {
-    ...p,
+    id: p.id,
+    lat: p.lat,
+    lng: p.lng,
     // Trimmed here rather than at each input, so "Home " and "Home" cannot
     // become two entries and the spoken line never carries stray whitespace.
     label: p.label.trim(),
