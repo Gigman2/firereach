@@ -13,6 +13,7 @@ import { SafetyScreen } from "../screens/SafetyScreen";
 import { SettingsScreen } from "../screens/SettingsScreen";
 import { colors } from "../theme/colors";
 import { useTheme } from "../theme/ThemeContext";
+import { typography } from "../theme/typography";
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -25,9 +26,12 @@ export const TabNavigator = () => {
         headerShown: false,
         tabBarActiveTintColor: colors.brandPrimary,
         tabBarInactiveTintColor: theme.textTertiary,
+        // React Navigation renders these labels itself, so they never pass
+        // through the styled Text and would keep inheriting the device font.
+        // Family instead of fontWeight, for the faux-bold reason in typography.ts.
         tabBarLabelStyle: {
           fontSize: 11,
-          fontWeight: "600",
+          fontFamily: typography.fonts.semiBold,
         },
         tabBarStyle: {
           backgroundColor: theme.tabBarBg,

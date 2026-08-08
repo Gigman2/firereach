@@ -17,6 +17,7 @@ import {
 import { Text } from "../../components/ui/Text";
 import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
+import { typography } from "../../theme/typography";
 import { useNearestStation } from "../../hooks/useNearestStation";
 import { nearestStations } from "../../lib/geo";
 import { NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
@@ -308,6 +309,8 @@ const styles = StyleSheet.create({
     height: 48,
     paddingHorizontal: 12,
     fontSize: 16,
+    // TextInput does not go through the styled Text component.
+    fontFamily: typography.fonts.regular,
   },
   listContent: {
     paddingBottom: 100,

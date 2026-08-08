@@ -22,6 +22,7 @@ import {
 import { Text } from "../../components/ui/Text";
 import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
+import { typography } from "../../theme/typography";
 import { NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { GuidesStackParamList } from "../../navigation/types";
@@ -624,6 +625,8 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     paddingHorizontal: 20,
     fontSize: 16,
+    // TextInput does not go through the styled Text component.
+    fontFamily: typography.fonts.regular,
   },
   sendButton: {
     width: 44,

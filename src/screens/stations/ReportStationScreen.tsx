@@ -21,6 +21,7 @@ import { Text } from "../../components/ui/Text";
 import { Button } from "../../components/ui/Button";
 import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
+import { typography } from "../../theme/typography";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { StationsStackParamList } from "../../navigation/types";
 
@@ -299,6 +300,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 16,
     fontSize: 16,
+    // TextInput does not go through the styled Text component.
+    fontFamily: typography.fonts.regular,
   },
   coordsRow: {
     flexDirection: "row",
