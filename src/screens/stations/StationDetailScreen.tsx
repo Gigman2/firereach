@@ -12,8 +12,6 @@ import {
   BuildingsIcon,
   CompassIcon,
   PhoneIcon,
-  MapPinIcon,
-  MapTrifoldIcon,
   ArrowRightIcon,
 } from "phosphor-react-native";
 import { Text } from "../../components/ui/Text";
@@ -27,12 +25,6 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { StationsStackParamList } from "../../navigation/types";
 
 type Props = NativeStackScreenProps<StationsStackParamList, "StationDetail">;
-
-function formatCoords(lat: number, lng: number): string {
-  const ns = lat >= 0 ? "N" : "S";
-  const ew = lng >= 0 ? "E" : "W";
-  return `${Math.abs(lat).toFixed(4)}° ${ns}, ${Math.abs(lng).toFixed(4)}° ${ew}`;
-}
 
 export const StationDetailScreen = ({ navigation, route }: Props) => {
   const insets = useSafeAreaInsets();
@@ -69,13 +61,6 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
     Linking.openURL(`tel:${phone}`).catch((err) =>
       console.warn("[StationDetail] dial failed", err)
     );
-  };
-
-  const handleOpenMaps = () => {
-    if (!station) return;
-    Linking.openURL(
-      `https://maps.google.com/?q=${station.lat},${station.lng}`
-    ).catch((err) => console.warn("[StationDetail] open maps failed", err));
   };
 
   return (
@@ -209,41 +194,6 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
           </View>
         </View>
 
-        {/* Map Preview */}
-        <TouchableOpacity
-          style={styles.mapSection}
-          activeOpacity={0.8}
-          onPress={handleOpenMaps}
-          disabled={!station}
-        >
-          <View style={[styles.mapPreview, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-            <MapPinIcon
-              size={40}
-              color={colors.brandPrimary}
-              weight="fill"
-            />
-            {station && (
-              <View style={styles.coordsBadge}>
-                <Text
-                  variant="label"
-                  color="#FFFFFF"
-                  style={{ fontFamily: "monospace" }}
-                >
-                  {formatCoords(station.lat, station.lng)}
-                </Text>
-              </View>
-            )}
-          </View>
-          {station && (
-            <View style={styles.mapLink}>
-              <MapTrifoldIcon size={18} color={colors.brandPrimary} />
-              <Text variant="caption" weight="semiBold" color={colors.brandPrimary}>
-                Tap to open in Maps
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
-
         {/* Call CTA */}
         <View style={styles.ctaSection}>
           <Button
@@ -352,32 +302,6 @@ const styles = StyleSheet.create({
   phoneCaption: {
     paddingLeft: 32,
     paddingTop: 4,
-  },
-  mapSection: {
-    gap: 8,
-  },
-  mapPreview: {
-    height: 192,
-    borderRadius: 16,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-  coordsBadge: {
-    position: "absolute",
-    bottom: 8,
-    left: 8,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  mapLink: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
   },
   ctaSection: {
     paddingVertical: 8,
