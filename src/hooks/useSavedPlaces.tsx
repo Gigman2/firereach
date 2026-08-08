@@ -7,20 +7,40 @@ import React, {
   useState,
 } from "react";
 import {
-  readSavedPlaces,
+  readSavedPlacesResult,
   writeSavedPlaces,
   MAX_SAVED_PLACES,
   type SavedPlace,
 } from "../lib/savedPlaces";
 
-export type AddPlaceResult = { ok: true } | { ok: false; reason: "full" };
+/**
+ * Every mutation reports the same three outcomes, so no screen has to guess
+ * why nothing happened.
+ *
+ * `"storage"` was added because the alternative was worse than silence: the
+ * only failure a screen could previously distinguish was `"full"`, so a
+ * device that had run out of space showed "Your saved places are full" — a
+ * confident, wrong explanation that sends the user off deleting places that
+ * are not the problem. `AddPlaceResult` keeps its name for the callers that
+ * import it and is now just this type.
+ */
+export type MutationResult =
+  | { ok: true }
+  | { ok: false; reason: "full" | "storage" };
+export type AddPlaceResult = MutationResult;
 
 type Ctx = {
   places: SavedPlace[];
   isLoading: boolean;
+  /**
+   * True when the initial read of storage failed. `places` is then empty
+   * because nothing could be recovered, NOT because nothing is saved, and a
+   * screen must not tell the user they have no places on the strength of it.
+   */
+  loadFailed: boolean;
   addPlace: (p: SavedPlace) => Promise<AddPlaceResult>;
-  updatePlace: (p: SavedPlace) => Promise<void>;
-  removePlace: (id: string) => Promise<void>;
+  updatePlace: (p: SavedPlace) => Promise<MutationResult>;
+  removePlace: (id: string) => Promise<MutationResult>;
 };
 
 const SavedPlacesContext = createContext<Ctx | null>(null);
@@ -38,6 +58,7 @@ export function SavedPlacesProvider({
 }) {
   const [places, setPlaces] = useState<SavedPlace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
 
   /**
    * The authority for what is currently saved, as opposed to `places`, which
@@ -55,6 +76,20 @@ export function SavedPlacesProvider({
   const placesRef = useRef<SavedPlace[]>([]);
 
   /**
+   * Whether `placesRef.current` is known to reflect storage, as opposed to
+   * being the `[]` this provider starts life with.
+   *
+   * Not overwriting the ref on a failed read is only half the guard, and on
+   * its own it is no guard at all: at mount the ref is already `[]`, so a
+   * failed first read leaves it holding exactly the wrong answer that the
+   * failed read would have written. The read-modify-write that follows then
+   * saves one place over ten. So mutations refuse to build on a baseline that
+   * was never confirmed — they retry the read first, and give up rather than
+   * write on top of a list they cannot see.
+   */
+  const baselineKnown = useRef(false);
+
+  /**
    * Mutations run one at a time. The ref alone is not enough: between reading
    * it and the `await` inside `commit`, another mutation can interleave and
    * both would still race on the write. Chaining serialises them, so each one
@@ -70,13 +105,35 @@ export function SavedPlacesProvider({
     return run;
   }, []);
 
+  /**
+   * Pulls storage into the ref and into state. Returns whether the list can
+   * now be trusted as a baseline for a write.
+   */
+  const load = useCallback(async (): Promise<boolean> => {
+    const read = await readSavedPlacesResult();
+    if (!read.ok) return false;
+    placesRef.current = read.places;
+    setPlaces(read.places);
+    baselineKnown.current = true;
+    setLoadFailed(false);
+    return true;
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const loaded = await readSavedPlaces();
+      const read = await readSavedPlacesResult();
       if (cancelled) return;
-      placesRef.current = loaded;
-      setPlaces(loaded);
+      // On a failed read `places` stays empty — there is nothing to show —
+      // but the ref is left alone and `loadFailed` says why it is empty, so
+      // no screen claims the user has saved nothing and no write treats the
+      // emptiness as fact.
+      if (read.ok) {
+        placesRef.current = read.places;
+        setPlaces(read.places);
+        baselineKnown.current = true;
+      }
+      setLoadFailed(!read.ok);
       setIsLoading(false);
     })();
     return () => {
@@ -84,16 +141,53 @@ export function SavedPlacesProvider({
     };
   }, []);
 
-  // Write-through, then set state from what was read back, so what the screen
-  // shows is what is on disk rather than what we hoped to put there. No slice
-  // here: writeSavedPlaces caps to the NEWEST entries, and a front-slice at
-  // this layer would reintroduce exactly the bug that fix removed.
-  const commit = useCallback(async (next: SavedPlace[]) => {
-    await writeSavedPlaces(next);
-    const fresh = await readSavedPlaces();
-    placesRef.current = fresh;
-    setPlaces(fresh);
+  /**
+   * Write-through, then set state from what was read back, so what the screen
+   * shows is what is on disk rather than what we hoped to put there. No slice
+   * here: writeSavedPlaces caps to the NEWEST entries, and a front-slice at
+   * this layer would reintroduce exactly the bug that fix removed.
+   *
+   * Returns a result instead of rejecting. A rejected `setItem` used to
+   * propagate out through `commit` and `addPlace` to a screen that had set a
+   * busy flag and never cleared it, leaving Save spinning and disabled for
+   * the rest of the session. `placesRef.current` is untouched on failure, so
+   * the next attempt still starts from the last list we know landed.
+   */
+  const commit = useCallback(async (next: SavedPlace[]): Promise<MutationResult> => {
+    try {
+      await writeSavedPlaces(next);
+    } catch (err) {
+      console.warn("[useSavedPlaces] write failed", err);
+      return { ok: false, reason: "storage" };
+    }
+
+    const fresh = await readSavedPlacesResult();
+    if (!fresh.ok) {
+      // The write landed and the read-back did not. `next` is the closest
+      // honest account of what is on disk — blanking the list to the `[]`
+      // that a failed read carries would hide places that are saved.
+      placesRef.current = next;
+      setPlaces(next);
+      return { ok: true };
+    }
+
+    placesRef.current = fresh.places;
+    setPlaces(fresh.places);
+    baselineKnown.current = true;
+    setLoadFailed(false);
+    return { ok: true };
   }, []);
+
+  /** Every mutation runs this first: never write on top of an unread list. */
+  const withBaseline = useCallback(
+    async (work: () => Promise<MutationResult>): Promise<MutationResult> => {
+      if (!baselineKnown.current && !(await load())) {
+        return { ok: false, reason: "storage" };
+      }
+      return work();
+    },
+    [load]
+  );
 
   // Refuses rather than truncates: writeSavedPlaces would silently keep this
   // place and drop an old one instead, which is the right call when reading
@@ -101,33 +195,38 @@ export function SavedPlacesProvider({
   // the list is full and can hand the caller a result instead of a surprise.
   const addPlace = useCallback(
     (p: SavedPlace): Promise<AddPlaceResult> =>
-      enqueue(async () => {
-        if (placesRef.current.length >= MAX_SAVED_PLACES) {
-          return { ok: false, reason: "full" } as AddPlaceResult;
-        }
-        await commit([...placesRef.current, p]);
-        return { ok: true } as AddPlaceResult;
-      }),
-    [commit, enqueue]
+      enqueue(() =>
+        withBaseline(async () => {
+          if (placesRef.current.length >= MAX_SAVED_PLACES) {
+            return { ok: false, reason: "full" };
+          }
+          return commit([...placesRef.current, p]);
+        })
+      ),
+    [commit, enqueue, withBaseline]
   );
   const updatePlace = useCallback(
-    (p: SavedPlace): Promise<void> =>
-      enqueue(async () => {
-        await commit(placesRef.current.map((x) => (x.id === p.id ? p : x)));
-      }),
-    [commit, enqueue]
+    (p: SavedPlace): Promise<MutationResult> =>
+      enqueue(() =>
+        withBaseline(() =>
+          commit(placesRef.current.map((x) => (x.id === p.id ? p : x)))
+        )
+      ),
+    [commit, enqueue, withBaseline]
   );
   const removePlace = useCallback(
-    (id: string): Promise<void> =>
-      enqueue(async () => {
-        await commit(placesRef.current.filter((x) => x.id !== id));
-      }),
-    [commit, enqueue]
+    (id: string): Promise<MutationResult> =>
+      enqueue(() =>
+        withBaseline(() =>
+          commit(placesRef.current.filter((x) => x.id !== id))
+        )
+      ),
+    [commit, enqueue, withBaseline]
   );
 
   return (
     <SavedPlacesContext.Provider
-      value={{ places, isLoading, addPlace, updatePlace, removePlace }}
+      value={{ places, isLoading, loadFailed, addPlace, updatePlace, removePlace }}
     >
       {children}
     </SavedPlacesContext.Provider>

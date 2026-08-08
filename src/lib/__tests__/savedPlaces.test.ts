@@ -6,6 +6,7 @@ jest.mock("@react-native-async-storage/async-storage", () =>
 
 import {
   readSavedPlaces,
+  readSavedPlacesResult,
   writeSavedPlaces,
   MAX_SAVED_PLACES,
   DEFAULT_RADIUS_METERS,
@@ -138,6 +139,31 @@ describe("savedPlaces", () => {
     ]);
   });
 
+  it("drops entries with no usable label", async () => {
+    // "I'm at ." is not a sentence anyone can act on. Both editors now
+    // require a label; this is the guard for a file written before they did.
+    await AsyncStorage.setItem(
+      SAVED_PLACES_KEY,
+      JSON.stringify({
+        schemaVersion: SAVED_PLACES_VERSION,
+        places: [
+          place(),
+          place({ id: "blank", label: "" }),
+          place({ id: "spaces", label: "   " }),
+        ],
+      })
+    );
+    const got = await readSavedPlaces();
+    expect(got.map((p) => p.id)).toEqual(["p1"]);
+  });
+
+  it("trims the label, so 'Home ' and 'Home' are the same place", async () => {
+    await writeSavedPlaces([place({ label: "  Home  " })]);
+    const raw = await AsyncStorage.getItem(SAVED_PLACES_KEY);
+    const persisted = JSON.parse(raw as string) as { places: SavedPlace[] };
+    expect(persisted.places[0].label).toBe("Home");
+  });
+
   it("normalises radius and note on write, not just on read", async () => {
     await writeSavedPlaces([
       place({ id: "z", radiusMeters: -5, note: undefined as unknown as string }),
@@ -148,5 +174,73 @@ describe("savedPlaces", () => {
     const persisted = JSON.parse(raw as string) as { places: SavedPlace[] };
     expect(persisted.places[0].radiusMeters).toBe(DEFAULT_RADIUS_METERS);
     expect(persisted.places[0].note).toBe("");
+  });
+});
+
+/**
+ * `readSavedPlaces` cannot tell "nothing is saved" from "storage would not
+ * answer", and a caller that writes back what it read turns the second into
+ * permanent loss: read fails, list looks empty, one append later the file
+ * holds one place where ten used to be. These pin the distinction the result
+ * form exists to carry.
+ */
+describe("readSavedPlacesResult", () => {
+  it("reports ok with the places when storage answers", async () => {
+    await writeSavedPlaces([place()]);
+    const got = await readSavedPlacesResult();
+    expect(got.ok).toBe(true);
+    expect(got.places).toEqual([place()]);
+  });
+
+  it("reports ok with an empty list when nothing has been saved", async () => {
+    // Genuinely empty is a successful read. Refusing to write after one would
+    // mean a new install could never save its first place.
+    expect(await readSavedPlacesResult()).toEqual({ ok: true, places: [] });
+  });
+
+  it("reports NOT ok when getItem rejects, so a write cannot build on it", async () => {
+    // The exact failure behind the data-loss path: ten places on disk, one
+    // transient rejection, and the empty array that comes back is
+    // indistinguishable from the truth unless `ok` says otherwise.
+    await writeSavedPlaces(
+      Array.from({ length: MAX_SAVED_PLACES }, (_, i) => place({ id: `p${i}` }))
+    );
+    (AsyncStorage.getItem as jest.Mock).mockRejectedValueOnce(
+      new Error("storage unavailable")
+    );
+
+    const failed = await readSavedPlacesResult();
+    expect(failed.ok).toBe(false);
+    expect(failed.places).toEqual([]);
+
+    // And the data was never at risk — it is all still there on the next read.
+    const recovered = await readSavedPlacesResult();
+    expect(recovered.ok).toBe(true);
+    expect(recovered.places).toHaveLength(MAX_SAVED_PLACES);
+  });
+
+  it("reports NOT ok for unparseable JSON — storage spoke, but not in a known language", async () => {
+    await AsyncStorage.setItem(SAVED_PLACES_KEY, "{ not json");
+    const got = await readSavedPlacesResult();
+    expect(got.ok).toBe(false);
+    expect(got.places).toEqual([]);
+  });
+
+  it("reports ok for a version this build cannot carry forward", async () => {
+    // Not a storage failure: the file was read fine and simply is not a place
+    // list this build understands. Freezing writes forever over it would
+    // strand the user with a list they can neither see nor replace.
+    await AsyncStorage.setItem(
+      SAVED_PLACES_KEY,
+      JSON.stringify({ schemaVersion: 999, places: [place()] })
+    );
+    expect(await readSavedPlacesResult()).toEqual({ ok: true, places: [] });
+  });
+
+  it("keeps readSavedPlaces's never-throws contract intact", async () => {
+    (AsyncStorage.getItem as jest.Mock).mockRejectedValueOnce(
+      new Error("storage unavailable")
+    );
+    await expect(readSavedPlaces()).resolves.toEqual([]);
   });
 });
