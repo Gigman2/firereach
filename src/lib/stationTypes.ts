@@ -49,23 +49,28 @@ export type DialTarget = {
 };
 
 /**
- * Numbers to offer. The station's own hotlines lead; 192 is last and always
+ * Numbers to offer. The regional command lines lead; 192 is last and always
  * present.
  *
- * This ordering is a product decision, and it trades one real risk for
- * another. 192 is the only number that connects with zero credit, so leading
- * with a hotline means a caller with no airtime taps the primary action and
+ * These are NOT per-station direct lines, and no copy built on this function
+ * may imply otherwise. Across the 57 bundled stations there are 18 distinct
+ * non-192 numbers, none of them unique to a single station: every station in a
+ * region shares one set — all 15 Greater Accra stations dial 0302666576. See
+ * src/data/stations.bundled.NOTICE.md. Dialling the first target reaches a
+ * regional command centre that does not know which station you are near, which
+ * is the whole reason the caller must still say where they are.
+ *
+ * The ordering is a product decision and trades one real risk for another. 192
+ * is the only number that connects with zero credit, so leading with a
+ * chargeable line means a caller with no airtime taps the primary action and
  * nothing happens. Against that: 192 is a single national line, while the
- * station's own number reaches the people who actually roll. The second
- * consideration was judged to outweigh the first.
+ * regional line is a smaller queue closer to the responding district.
  *
- * Two properties keep the trade honest, and both are pinned by tests:
- * 192 never leaves the chain, so the free number is always one tap away; and
- * the chain is never empty, so the call button is never dead. Every station in
- * the bundled table has at least one hotline, so a resolved station always
- * yields a real station number in first position.
+ * Two properties keep the trade honest, and both are pinned by tests: 192
+ * never leaves the chain, so the free number is always one tap away; and the
+ * chain is never empty, so the call button is never dead.
  *
- * Hotline order among themselves is NOT a ranked likelihood of pickup. It
+ * Order among the regional lines is NOT a ranked likelihood of pickup. It
  * reproduces the publication order of a 2022 page and measures nothing.
  */
 export function dialTargets(station: CachedStation): DialTarget[] {

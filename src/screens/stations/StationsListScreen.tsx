@@ -19,7 +19,7 @@ import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
 import { useNearestStation } from "../../hooks/useNearestStation";
 import { nearestStations } from "../../lib/geo";
-import { dialTargets } from "../../lib/stationTypes";
+import { NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
 import { formatDistance } from "../../lib/format";
 import type { CachedStation } from "../../lib/stationTypes";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -109,13 +109,19 @@ export const StationsListScreen = ({ navigation }: Props) => {
       .filter((section) => section.data.length > 0);
   }, [sections, query]);
 
-  const dial = (station: CachedStation) => {
-    // The toll-free national number, for every row. Identifying which station
-    // is nearest matters for telling the dispatcher where you are — the
-    // dataset has only 19 distinct numbers across 57 stations, so picking a
-    // row was never really picking a number.
-    const phone = dialTargets(station)[0].phone;
-    Linking.openURL(`tel:${phone}`).catch((err) =>
+  const dial = (_station: CachedStation) => {
+    // Deliberately 192, not dialTargets()[0].
+    //
+    // Everywhere else the chain now leads with the chargeable regional line,
+    // and every one of those surfaces renders the number beside a "may cost
+    // airtime" tag. This control cannot: it is a bare phone icon in a dense
+    // row with no space for a label and no number on screen. An unlabelled
+    // one-tap dial has to be the number that always connects, or a caller with
+    // no airtime taps it during a fire and nothing happens.
+    //
+    // Nothing is lost by not offering the regional line here — the row itself
+    // opens the detail screen, which lists the full chain with cost tags.
+    Linking.openURL(`tel:${NATIONAL_EMERGENCY_PHONE}`).catch((err) =>
       console.warn("[StationsList] dial failed", err)
     );
   };

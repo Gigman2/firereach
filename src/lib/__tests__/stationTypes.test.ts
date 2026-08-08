@@ -98,3 +98,55 @@ describe("dialTargets", () => {
     expect(a[0].phone).toBe("0111111111");
   });
 });
+
+describe("dialTargets against the real bundled table", () => {
+  // The doc comment on dialTargets makes claims about the shipped data. These
+  // drive all 57 stations through the function so the claims cannot rot
+  // silently when the table is regenerated from the API's seed SQL.
+  const bundled: CachedStation[] = require("../../data/stations.bundled.json");
+
+  it("covers the whole table", () => {
+    expect(bundled.length).toBe(57);
+  });
+
+  it("always ends with 192, for every station", () => {
+    for (const s of bundled) {
+      const got = dialTargets(s);
+      expect(got[got.length - 1].phone).toBe(NATIONAL_EMERGENCY_PHONE);
+    }
+  });
+
+  it("leads with a chargeable line for every station, never 192", () => {
+    for (const s of bundled) {
+      const got = dialTargets(s);
+      expect(got.length).toBeGreaterThanOrEqual(2);
+      expect(got[0].tollFree).toBe(false);
+    }
+  });
+
+  it("lists 192 exactly once per station", () => {
+    for (const s of bundled) {
+      const n = dialTargets(s).filter(
+        (t) => t.phone === NATIONAL_EMERGENCY_PHONE
+      ).length;
+      expect(n).toBe(1);
+    }
+  });
+
+  it("confirms these are regional lines, not per-station ones", () => {
+    // The premise behind every string that describes what the caller is
+    // dialling. If a future dataset gives stations their own direct lines,
+    // this fails and the copy on four screens needs revisiting.
+    const owners = new Map<string, Set<string>>();
+    for (const s of bundled) {
+      for (const t of dialTargets(s)) {
+        if (t.tollFree) continue;
+        if (!owners.has(t.phone)) owners.set(t.phone, new Set());
+        owners.get(t.phone)!.add(s.id);
+      }
+    }
+    expect(owners.size).toBe(18);
+    const unique = [...owners.values()].filter((v) => v.size === 1);
+    expect(unique).toHaveLength(0);
+  });
+});

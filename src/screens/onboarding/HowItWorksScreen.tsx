@@ -26,22 +26,26 @@ type Props = NativeStackScreenProps<RootStackParamList, "HowItWorks">;
  * no call is needed taps and waits for help nobody summoned. A user who
  * believes their location was already sent will not say it on the call, and
  * saying it is the single most useful thing they can do.
+ *
+ * The numbers are regional command lines, not per-station direct lines — 18
+ * distinct numbers across 57 stations, none unique to one station. Nothing
+ * here may call them "the station's number". See stations.bundled.NOTICE.md.
  */
 const steps = [
   {
     Icon: MegaphoneIcon,
     title: "We find your nearest station",
-    body: "FireReach works out which fire station is closest to you and puts its number on one big button.",
+    body: "FireReach works out which fire station is closest to you, and gives you the command line for its region.",
   },
   {
     Icon: MapTrifoldIcon,
     title: "You make the call",
-    body: "Tap the button to dial. Tell them where you are — they cannot see your location, so describe it in your own words.",
+    body: "Tap the button to dial, then say where you are. The operator covers the whole region and cannot see your location.",
   },
   {
     Icon: FirstAidKitIcon,
     title: "It works without internet",
-    body: "Every station in Ghana is stored inside the app. If the line does not answer, 192 is always there and is free on any network.",
+    body: "Every station we know of is stored inside the app. If a line does not answer, 192 is always there and is free on any network.",
   },
 ];
 

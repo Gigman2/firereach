@@ -47,7 +47,7 @@ export const HomeScreen = ({ navigation }: Props) => {
   // when no station resolved and 192 is all there is.
   const primaryCostCaption = primary.tollFree
     ? "Free on any network — no credit needed"
-    : "Your nearest station — may cost airtime";
+    : "Regional command line — may cost airtime";
 
   const dial = (phone: string) => {
     Linking.openURL(`tel:${phone}`).catch((err) =>

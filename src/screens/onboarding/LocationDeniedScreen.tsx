@@ -51,8 +51,9 @@ export const LocationDeniedScreen = ({ navigation }: Props) => {
             style={styles.warningBody}
           >
             Without location we cannot pick the station nearest you, so the app
-            will offer 192 instead. To get station numbers, enable location in
-            your device settings.
+            will offer 192 instead. You can still browse every station and its
+            numbers from the Stations tab. To get the nearest one
+            automatically, enable location in your device settings.
           </Text>
           <TouchableOpacity onPress={handleOpenSettings} style={styles.settingsLink}>
             <Text variant="caption" weight="bold" color={colors.warning}>

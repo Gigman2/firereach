@@ -185,15 +185,24 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
               longer points at "the numbers below", which was wrong even
               before the station hotlines moved ahead of 192.
             */}
-            {targets.length > 0 && (
+            {/*
+              Gated on a chargeable line actually being present, not on the
+              chain being non-empty: the chain always contains 192, so
+              targets.length > 0 would print a sentence about regional command
+              lines above a list holding nothing but the free national number.
+              No bundled station has zero hotlines, but a network refresh could
+              produce one.
+            */}
+            {targets.some((t) => !t.tollFree) && (
               <Text
                 variant="caption"
                 color={theme.textTertiary}
                 style={styles.phoneCaption}
               >
-                Station hotlines were recorded in 2022 and may be out of date.
-                192 reaches the national fire service on any network, with no
-                credit.
+                These are regional command lines, not direct lines to this
+                station — every station in the region shares them. They were
+                recorded in 2022 and may be out of date. 192 reaches the
+                national fire service on any network, with no credit.
               </Text>
             )}
           </View>
@@ -207,6 +216,22 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
             onPress={() => dial(primaryPhone)}
             leftIcon={<PhoneIcon size={24} color="#FFFFFF" weight="fill" />}
           />
+          {/*
+            The button dialled free 192 until the chain was reordered; it now
+            leads with a chargeable line, so it needs the same cost tag the
+            home screen's button carries. Derived from tollFree rather than
+            position, so it stays right if the ordering changes again.
+          */}
+          <Text
+            variant="caption"
+            color={theme.textTertiary}
+            align="center"
+            style={styles.ctaCaption}
+          >
+            {targets[0]?.tollFree ?? true
+              ? "Free on any network — no credit needed"
+              : "Regional command line — may cost airtime"}
+          </Text>
         </View>
 
         {/* Report Link */}
@@ -310,6 +335,10 @@ const styles = StyleSheet.create({
   },
   ctaSection: {
     paddingVertical: 8,
+    gap: 8,
+  },
+  ctaCaption: {
+    paddingHorizontal: 16,
   },
   reportLink: {
     flexDirection: "row",

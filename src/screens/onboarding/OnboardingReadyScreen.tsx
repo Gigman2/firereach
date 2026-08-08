@@ -50,8 +50,8 @@ export const OnboardingReadyScreen = ({ navigation }: Props) => {
             there were no tips below.
           */}
           FireReach is ready to use. There is no account and no sign-up. Open
-          the app in an emergency and the nearest station's number is already
-          on screen.
+          the app in an emergency and there is a number on screen ready to
+          dial, with or without location and with or without internet.
         </Text>
       </View>
 
@@ -65,18 +65,14 @@ export const OnboardingReadyScreen = ({ navigation }: Props) => {
           <View style={styles.dotActive} />
         </View>
 
+        {/*
+          A "View Tutorials" link used to sit here with no onPress and no
+          destination — there is no tutorials content distinct from the Guides
+          tab, which is one tap away inside the app. A control that looks
+          tappable and does nothing is worse than no control, so it is gone
+          rather than pointed somewhere to justify itself.
+        */}
         <Button title="Go to App" onPress={handleGoToApp} />
-
-        <TouchableOpacity style={styles.tutorialsButton}>
-          <Text
-            variant="caption"
-            weight="medium"
-            color={theme.textSecondary}
-            align="center"
-          >
-            View Tutorials
-          </Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
