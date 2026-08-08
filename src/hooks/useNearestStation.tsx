@@ -23,8 +23,14 @@ import {
 import { nearestStations } from "../lib/geo";
 import { fetchAllStations } from "../lib/stationsApi";
 
-/** A last-known fix older than this is not trusted to pick a station. */
-const MAX_LAST_KNOWN_AGE_MS = 10 * 60 * 1000;
+/**
+ * A last-known fix older than this is not trusted to pick a station.
+ *
+ * Exported so LocationRequestScreen, which takes a fix of its own right after
+ * the permission grant, applies the same definition of "recent enough" rather
+ * than inventing a second one that could drift from this.
+ */
+export const MAX_LAST_KNOWN_AGE_MS = 10 * 60 * 1000;
 /**
  * Metres. A coarser last-known fix is ignored in favour of a live one.
  * Tightened from 5000: the three closest bundled station pairs are 826 m,
@@ -34,7 +40,7 @@ const MAX_LAST_KNOWN_AGE_MS = 10 * 60 * 1000;
  * still admits instant GPS/wifi fixes; nothing is lost by rejecting coarser
  * ones now that an unbounded last-known tier exists below as a final resort.
  */
-const MAX_LAST_KNOWN_ACCURACY_M = 2000;
+export const MAX_LAST_KNOWN_ACCURACY_M = 2000;
 /** Cold GPS on a low-end device can never lock. Settle rather than hang. */
 const POSITION_TIMEOUT_MS = 6000;
 /**
@@ -100,7 +106,12 @@ export type NearestStationState = {
   refresh: () => Promise<void>;
 };
 
-function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
+/**
+ * Resolves to `null` on timeout or rejection, never rejects. Exported for
+ * LocationRequestScreen's own post-grant fix attempt, so both bound their
+ * location calls the same way.
+ */
+export function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T | null> {
   return new Promise((resolve) => {
     const timer = setTimeout(() => resolve(null), ms);
     promise

@@ -4,7 +4,16 @@ export type RootStackParamList = {
   HowItWorks: undefined;
   LocationRequest: undefined;
   LocationDenied: undefined;
-  SavePlace: undefined;
+  /**
+   * The fix LocationRequestScreen obtained for itself immediately after the
+   * grant. Passed explicitly because that screen no longer routes here on the
+   * strength of the shared provider's `position` — see the note there — and
+   * without it this screen could be reached while the provider still holds
+   * null and would bounce the user out the moment they pressed Save, losing
+   * whatever they had typed. Optional: the provider's own position is used
+   * when there is no param.
+   */
+  SavePlace: { lat: number; lng: number } | undefined;
   OnboardingReady: undefined;
   MainTabs: undefined;
 };

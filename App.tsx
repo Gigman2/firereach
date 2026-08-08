@@ -19,13 +19,19 @@ export default function App() {
         It also sits OUTSIDE AppFonts, so the GPS request goes out on the first
         frame instead of queueing behind typography. Only the UI waits for the
         font; the work that decides which station to call does not.
+
+        SavedPlacesProvider is outside AppFonts for the same reason and mounted
+        beside this one for the same reason again — one instance, so two
+        screens cannot disagree about what is saved. Its read of storage is
+        part of answering "what do I say on the call", so it has no business
+        queueing behind a font either.
       */}
       <NearestStationProvider>
-        <AppFonts>
-          <SavedPlacesProvider>
+        <SavedPlacesProvider>
+          <AppFonts>
             <AppNavigator />
-          </SavedPlacesProvider>
-        </AppFonts>
+          </AppFonts>
+        </SavedPlacesProvider>
       </NearestStationProvider>
     </ThemeProvider>
   );

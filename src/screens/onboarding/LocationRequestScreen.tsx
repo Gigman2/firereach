@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { MapPinIcon, XIcon } from 'phosphor-react-native';
 import * as Location from 'expo-location';
@@ -7,36 +7,64 @@ import { Button } from '../../components/ui/Button';
 import { OnboardingDots } from '../../components/ui/OnboardingDots';
 import { colors } from '../../theme/colors';
 import { useTheme } from '../../theme/ThemeContext';
-import { useNearestStation } from '../../hooks/useNearestStation';
+import {
+  useNearestStation,
+  withTimeout,
+  MAX_LAST_KNOWN_AGE_MS,
+  MAX_LAST_KNOWN_ACCURACY_M,
+} from '../../hooks/useNearestStation';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LocationRequest'>;
 
+/**
+ * Bounds the post-grant fix attempt. Shorter than the provider's own 15 s
+ * resolution ceiling on purpose: this is a person on an onboarding screen
+ * watching a spinner, not a background refresh, and the cost of giving up is
+ * only that one optional step is skipped.
+ */
+const GRANT_FIX_TIMEOUT_MS = 8000;
+
+/**
+ * A fix taken by this screen, for this screen's decision.
+ *
+ * Both tiers are ones the provider would call trustworthy — a last-known fix
+ * inside `MAX_LAST_KNOWN_AGE_MS` / `MAX_LAST_KNOWN_ACCURACY_M`, then a live
+ * one. The provider's third, *unbounded* last-known tier is deliberately not
+ * used: its output is what the provider reports as `lastKnownStale`, and the
+ * only thing this screen does with a position is offer to save it as a place.
+ * A place saved from a three-day-old fix is a permanently wrong address that
+ * the "say this" card would then read aloud with confidence on every future
+ * call. Skipping the optional step is the cheaper mistake.
+ */
+async function fixAfterGrant(): Promise<{ lat: number; lng: number } | null> {
+  const recent = await withTimeout(
+    Location.getLastKnownPositionAsync({
+      maxAge: MAX_LAST_KNOWN_AGE_MS,
+      requiredAccuracy: MAX_LAST_KNOWN_ACCURACY_M,
+    }),
+    GRANT_FIX_TIMEOUT_MS
+  );
+  if (recent) {
+    return { lat: recent.coords.latitude, lng: recent.coords.longitude };
+  }
+
+  const live = await withTimeout(
+    Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }),
+    GRANT_FIX_TIMEOUT_MS
+  );
+  if (live) {
+    return { lat: live.coords.latitude, lng: live.coords.longitude };
+  }
+
+  return null;
+}
+
 export const LocationRequestScreen = ({ navigation }: Props) => {
   const { theme, isDark } = useTheme();
-  const { refresh, position, isResolving } = useNearestStation();
-  // Set the instant permission is granted, cleared once the resolution it
-  // triggers settles. `refresh()` writes `position`/`isResolving` through
-  // context state, which lands on this component's *next* render — not in
-  // the `handleAllowLocation` closure below, where `position` would still
-  // read whatever it was before the tap. The effect beneath this is what
-  // actually observes the resolved value and makes the SavePlace-vs-Ready
-  // decision from it.
+  const { refresh } = useNearestStation();
   const [awaitingFix, setAwaitingFix] = useState(false);
-
-  useEffect(() => {
-    if (!awaitingFix || isResolving) return;
-    setAwaitingFix(false);
-    // This is the whole gate: a position "actually resolved" means `position`
-    // is non-null once the resolution this tap triggered has settled — it
-    // covers a live fix, a bounded last-known fix, and even the unbounded
-    // last-known fallback (see useNearestStation's resolvePosition), and
-    // excludes denied/unavailable and a timeout with no last-known fix at
-    // all. A place with no coordinates can never match a radius, so anything
-    // short of a real position skips SavePlace and goes straight to Ready.
-    navigation.replace(position ? 'SavePlace' : 'OnboardingReady');
-  }, [awaitingFix, isResolving, position, navigation]);
 
   /**
    * The only place in the app that may raise the system location dialog from
@@ -44,20 +72,64 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
    * explains what location is for. The shared provider deliberately checks
    * permission without ever requesting it, so this tap is what turns a
    * `denied` provider state into a real position.
+   *
+   * The SavePlace-vs-Ready decision is made from a fix this screen requests
+   * itself, and nothing else. It used to be made from the provider's
+   * `position` once `isResolving` went false after calling `refresh()` — but
+   * `refresh()` early-returns while a resolution is already in flight, and on
+   * first launch one always is: the bundled table has `refreshedAt: null`, so
+   * the mount refresh runs, and it can hold `inFlight` for the full API
+   * timeout while the 2.5 s splash finishes. Grant inside that window and
+   * `refresh()` did nothing, the effect watching `isResolving` observed the
+   * *pre-grant* resolution settling — the one whose `resolvePosition` had
+   * already returned `denied`, before there was any permission to use — and
+   * routed to Ready. Permission granted, step never offered.
+   *
+   * `fixAfterGrant()` cannot observe a pre-grant result: its promises are
+   * created after `requestForegroundPermissionsAsync` has resolved
+   * `granted`, it has no in-flight dedupe to short-circuit it, and it returns
+   * its own value rather than reading a context field that some earlier
+   * resolution may have left behind. There is no path by which it answers
+   * with something that was computed before the grant.
+   *
+   * `refresh()` is still kicked off, unawaited, so the shared provider picks
+   * up the new permission for the rest of the app — but nothing here waits on
+   * it or reads its outcome.
    */
   const handleAllowLocation = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status === 'granted') {
-      // Now awaited via the effect above, not fire-and-forget: whether this
-      // screen offers SavePlace depends on whether a position resolves, so
-      // the transition has to wait for that answer. Still bounded — the
-      // provider caps the whole resolution at POSITION_RESOLUTION_TIMEOUT_MS
-      // (15 s) — and the button shows a spinner for it via `awaitingFix`
-      // rather than leaving the tap looking unresponsive.
-      setAwaitingFix(true);
-      void refresh();
-    } else {
+    if (awaitingFix) return;
+    setAwaitingFix(true);
+
+    // The permissions API can throw on OEM quirks, and an unhandled rejection
+    // here would leave the button spinning with no way forward at all. A
+    // permission we could not obtain is a permission we do not have, and the
+    // denied screen is the one that offers a route out of that.
+    let granted = false;
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      granted = status === 'granted';
+    } catch (err) {
+      console.warn('[LocationRequestScreen] permission request failed', err);
+    }
+
+    if (!granted) {
+      setAwaitingFix(false);
       navigation.replace('LocationDenied');
+      return;
+    }
+
+    void refresh();
+    const fix = await fixAfterGrant();
+    setAwaitingFix(false);
+
+    // The fix travels with the navigation rather than being looked up again
+    // on the next screen: SavePlace saves coordinates, and the provider may
+    // still be holding null when it mounts. A place with no coordinates could
+    // never match a radius, so no fix means no step.
+    if (fix) {
+      navigation.replace('SavePlace', fix);
+    } else {
+      navigation.replace('OnboardingReady');
     }
   };
 

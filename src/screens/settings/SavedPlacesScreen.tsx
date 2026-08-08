@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -23,11 +23,15 @@ import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
 import { typography } from "../../theme/typography";
 import { useNearestStation } from "../../hooks/useNearestStation";
-import { useSavedPlaces } from "../../hooks/useSavedPlaces";
+import {
+  useSavedPlaces,
+  type MutationResult,
+} from "../../hooks/useSavedPlaces";
 import {
   RADIUS_PRESETS,
   DEFAULT_RADIUS_METERS,
   MAX_SAVED_PLACES,
+  MAX_LABEL_LENGTH,
   newPlaceId,
   type SavedPlace,
 } from "../../lib/savedPlaces";
@@ -36,11 +40,18 @@ import type { SettingsStackParamList } from "../../navigation/types";
 
 type Props = NativeStackScreenProps<SettingsStackParamList, "SavedPlaces">;
 
-const LABEL_OPTIONS: { key: string; Icon: typeof HouseIcon }[] = [
-  { key: "Home", Icon: HouseIcon },
-  { key: "Work", Icon: BriefcaseIcon },
-  { key: "Other", Icon: DotsThreeIcon },
+/**
+ * Shortcuts that fill the label field, not a closed list of labels. Mirrors
+ * onboarding's SavePlaceScreen — see the note there for why the third one
+ * clears the field rather than filling in the word "Other".
+ */
+const LABEL_OPTIONS: { key: string; fill: string | null; Icon: typeof HouseIcon }[] = [
+  { key: "Home", fill: "Home", Icon: HouseIcon },
+  { key: "Work", fill: "Work", Icon: BriefcaseIcon },
+  { key: "Other", fill: null, Icon: DotsThreeIcon },
 ];
+
+const PRESET_FILLS = LABEL_OPTIONS.map((o) => o.fill).filter(Boolean);
 
 /** "300 m" below a kilometre, "1 km" / "2 km" at and above it. Mirrors the
  * formatting onboarding's SavePlaceScreen uses, so a radius reads the same
@@ -59,8 +70,9 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { position } = useNearestStation();
-  const { places, isLoading, addPlace, updatePlace, removePlace } =
+  const { places, isLoading, loadFailed, addPlace, updatePlace, removePlace } =
     useSavedPlaces();
+  const labelInput = useRef<TextInput>(null);
 
   const [form, setForm] = useState<FormState>(null);
   const [label, setLabel] = useState<string>("Home");
@@ -68,9 +80,10 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
   const [radiusMeters, setRadiusMeters] = useState<number>(
     DEFAULT_RADIUS_METERS
   );
-  const [saveError, setSaveError] = useState(false);
+  const [saveError, setSaveError] = useState<"full" | "storage" | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
+  const trimmedLabel = label.trim();
   const atCap = places.length >= MAX_SAVED_PLACES;
   const canAdd = !!position && !atCap;
 
@@ -87,7 +100,7 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
     setLabel("Home");
     setNote("");
     setRadiusMeters(DEFAULT_RADIUS_METERS);
-    setSaveError(false);
+    setSaveError(null);
     setForm({ mode: "add" });
   };
 
@@ -95,7 +108,7 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
     setLabel(place.label);
     setNote(place.note);
     setRadiusMeters(place.radiusMeters);
-    setSaveError(false);
+    setSaveError(null);
     setForm({ mode: "edit", place });
   };
 
@@ -103,8 +116,10 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
 
   const handleSave = async () => {
     if (!form) return;
-    setSaveError(false);
+    if (!trimmedLabel) return;
+    setSaveError(null);
 
+    let run: () => Promise<MutationResult>;
     if (form.mode === "add") {
       // Belt and braces: the Add control is disabled whenever there is no
       // position, but this reads shared state rather than a value captured
@@ -112,34 +127,45 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
       // provider re-resolving on foreground) is handled the same way as
       // never having had one — closing the form instead of writing a place
       // with no coordinates.
-      if (!position) {
+      const at = position;
+      if (!at) {
         closeForm();
         return;
       }
-      setIsSaving(true);
-      const result = await addPlace({
-        id: newPlaceId(),
-        label,
-        lat: position.lat,
-        lng: position.lng,
-        note,
-        radiusMeters,
-      });
-      setIsSaving(false);
-      if (result.ok) {
-        closeForm();
-      } else {
-        // `addPlace` refuses at the cap rather than assuming success — the
-        // disabled-Add guard above and this check are two separate defences,
-        // since the list can fill between opening the form and saving it.
-        setSaveError(true);
-      }
+      run = () =>
+        addPlace({
+          id: newPlaceId(),
+          label: trimmedLabel,
+          lat: at.lat,
+          lng: at.lng,
+          note,
+          radiusMeters,
+        });
     } else {
-      setIsSaving(true);
-      await updatePlace({ ...form.place, label, note, radiusMeters });
-      setIsSaving(false);
-      closeForm();
+      const existing = form.place;
+      run = () =>
+        updatePlace({ ...existing, label: trimmedLabel, note, radiusMeters });
     }
+
+    // `finally`, because a rejection that skipped it left the Save button
+    // spinning and permanently disabled — the form could never be submitted
+    // or dismissed by its own controls again. The provider now returns a
+    // result rather than rejecting; this is the second line of defence.
+    setIsSaving(true);
+    let result: MutationResult;
+    try {
+      result = await run();
+    } finally {
+      setIsSaving(false);
+    }
+
+    // Refusals are reported, never assumed away. "full" and "storage" are
+    // kept apart because telling someone to delete a place when the real
+    // problem is that the write failed sends them off destroying data for
+    // nothing. The disabled-Add guard and this check are separate defences:
+    // the list can fill between opening the form and saving it.
+    if (result.ok) closeForm();
+    else setSaveError(result.reason);
   };
 
   const handleDelete = (place: SavedPlace) => {
@@ -152,7 +178,24 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
           text: "Delete",
           style: "destructive",
           onPress: async () => {
-            await removePlace(place.id);
+            // A failed delete used to reject unhandled and leave the row
+            // sitting there, which reads as "it worked and then came back".
+            // The provider now reports rather than rejects; the catch is for
+            // anything that gets past it, since nothing else would ever see
+            // a rejection from this floating async handler.
+            let result: MutationResult;
+            try {
+              result = await removePlace(place.id);
+            } catch (err) {
+              console.warn("[SavedPlacesScreen] delete failed", err);
+              result = { ok: false, reason: "storage" };
+            }
+            if (!result.ok) {
+              Alert.alert(
+                "Could not delete",
+                `"${place.label}" is still saved — this phone would not write the change. Try again.`
+              );
+            }
           },
         },
       ]
@@ -200,13 +243,38 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
               <Text variant="caption" weight="bold" color={theme.textSecondary}>
                 Label
               </Text>
+              {/* The label is read aloud as a whole sentence — "I'm at Mum's
+                  house." — so it has to be the caller's own word for the
+                  place. The chips only fill this field. */}
+              <TextInput
+                ref={labelInput}
+                style={[
+                  styles.input,
+                  styles.labelInput,
+                  { borderColor: theme.border, color: theme.textPrimary, backgroundColor: theme.background },
+                ]}
+                placeholder="Home, Shop, Mum's house"
+                placeholderTextColor={theme.textTertiary}
+                value={label}
+                onChangeText={setLabel}
+                maxLength={MAX_LABEL_LENGTH}
+                autoCapitalize="sentences"
+                returnKeyType="done"
+                accessibilityLabel="Name for this place"
+              />
               <View style={styles.chipRow}>
                 {LABEL_OPTIONS.map((option) => {
-                  const isSelected = label === option.key;
+                  const isSelected = option.fill
+                    ? trimmedLabel === option.fill
+                    : trimmedLabel.length > 0 &&
+                      !PRESET_FILLS.includes(trimmedLabel);
                   return (
                     <TouchableOpacity
                       key={option.key}
-                      onPress={() => setLabel(option.key)}
+                      onPress={() => {
+                        setLabel(option.fill ?? "");
+                        if (!option.fill) labelInput.current?.focus();
+                      }}
                       activeOpacity={0.7}
                       style={[
                         styles.labelChip,
@@ -280,10 +348,16 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
               </View>
             </View>
 
-            {saveError && (
+            {saveError === "full" && (
               <Text variant="caption" color={colors.error} align="center">
                 Your saved places are full, so this could not be added. Delete
                 another place first, then try again.
+              </Text>
+            )}
+            {saveError === "storage" && (
+              <Text variant="caption" color={colors.error} align="center">
+                This phone would not save the change, so nothing was altered.
+                Try again.
               </Text>
             )}
           </ScrollView>
@@ -298,6 +372,7 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
               title={form.mode === "add" ? "Save" : "Save changes"}
               onPress={handleSave}
               loading={isSaving}
+              disabled={!trimmedLabel || isSaving}
             />
             <TouchableOpacity onPress={closeForm} style={styles.cancelButton}>
               <Text variant="caption" weight="medium" color={theme.textSecondary}>
@@ -312,19 +387,37 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
           >
+            {/* textSecondary, not textTertiary: #9CA3AF on white is 2.54:1,
+                under the 4.5:1 floor, and this app is read outdoors in
+                daylight. The same swap is made at every user-facing string
+                on this screen. */}
             {isLoading ? (
               <Text
                 variant="caption"
-                color={theme.textTertiary}
+                color={theme.textSecondary}
                 align="center"
                 style={styles.emptyText}
               >
                 Loading your places…
               </Text>
+            ) : loadFailed ? (
+              // Not "no saved places yet" — that is a claim about the user's
+              // data made on the strength of a read that failed. Whatever is
+              // saved is still saved; we just cannot see it.
+              <Text
+                variant="caption"
+                color={theme.textSecondary}
+                align="center"
+                style={styles.emptyText}
+              >
+                Your saved places could not be read on this phone. They have
+                not been lost, and adding one will try reading them again
+                first — nothing will be written over them.
+              </Text>
             ) : places.length === 0 ? (
               <Text
                 variant="caption"
-                color={theme.textTertiary}
+                color={theme.textSecondary}
                 align="center"
                 style={styles.emptyText}
               >
@@ -352,7 +445,7 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
                   </View>
                   <Text
                     variant="caption"
-                    color={place.note.trim() ? theme.textSecondary : theme.textTertiary}
+                    color={theme.textSecondary}
                     style={styles.placeNote}
                   >
                     {place.note.trim() || "No landmark saved"}
@@ -397,7 +490,7 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
             {addDisabledReason && (
               <Text
                 variant="caption"
-                color={theme.textTertiary}
+                color={theme.textSecondary}
                 align="center"
                 style={styles.disabledReason}
               >
@@ -513,6 +606,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     // TextInput does not go through the styled Text component.
     fontFamily: typography.fonts.regular,
+  },
+  labelInput: {
+    // Single line, so it needs its own comfortable tap height — `textarea`
+    // below is what gives the multi-line note field its size.
+    minHeight: 52,
+    paddingVertical: 12,
   },
   textarea: {
     minHeight: 72,
