@@ -48,6 +48,24 @@ function usable(p: unknown): p is SavedPlace {
 }
 
 /**
+ * Normalises the fields that are optional or easy to corrupt (a missing
+ * note, a negative or absent radius) so a place is always valid the moment
+ * it is persisted, not just after it happens to pass back through
+ * `readSavedPlaces`. Shared by both directions so disk and memory can never
+ * disagree about what "valid" means.
+ */
+function sanitize(p: SavedPlace): SavedPlace {
+  return {
+    ...p,
+    note: typeof p.note === "string" ? p.note : "",
+    radiusMeters:
+      Number.isFinite(p.radiusMeters) && p.radiusMeters > 0
+        ? p.radiusMeters
+        : DEFAULT_RADIUS_METERS,
+  };
+}
+
+/**
  * Never throws and never rejects. A place list that cannot be read is an empty
  * list: the card falls back to district and bearing, which is a degraded
  * answer rather than a crash on the screen someone opens during a fire.
@@ -59,17 +77,7 @@ export async function readSavedPlaces(): Promise<SavedPlace[]> {
     const parsed = JSON.parse(raw) as SavedPlacesFile;
     if (parsed?.schemaVersion !== SAVED_PLACES_VERSION) return [];
     if (!Array.isArray(parsed.places)) return [];
-    return parsed.places
-      .filter(usable)
-      .slice(0, MAX_SAVED_PLACES)
-      .map((p) => ({
-        ...p,
-        note: typeof p.note === "string" ? p.note : "",
-        radiusMeters:
-          Number.isFinite(p.radiusMeters) && p.radiusMeters > 0
-            ? p.radiusMeters
-            : DEFAULT_RADIUS_METERS,
-      }));
+    return parsed.places.filter(usable).slice(0, MAX_SAVED_PLACES).map(sanitize);
   } catch {
     return [];
   }
@@ -78,7 +86,17 @@ export async function readSavedPlaces(): Promise<SavedPlace[]> {
 export async function writeSavedPlaces(places: SavedPlace[]): Promise<void> {
   const file: SavedPlacesFile = {
     schemaVersion: SAVED_PLACES_VERSION,
-    places: places.filter(usable).slice(0, MAX_SAVED_PLACES),
+    // Keep the newest entries, not the oldest. The only way to add a place is
+    // read-modify-write — read the current list, append the new one, write it
+    // back — so a just-added place always sits at the end of the array. A
+    // front slice (`slice(0, MAX)`) would silently discard exactly that place
+    // the instant the list is full, with no error and nothing for a caller to
+    // catch, since this function returns void. Slicing from the back instead
+    // guarantees an appended place always survives, and the place that ages
+    // out is the oldest one — which is also the behaviour `addPlace` in
+    // `useSavedPlaces` now refuses to reach, since it stops the write before
+    // the list would grow past `MAX_SAVED_PLACES` in the first place.
+    places: places.filter(usable).map(sanitize).slice(-MAX_SAVED_PLACES),
   };
   await AsyncStorage.setItem(SAVED_PLACES_KEY, JSON.stringify(file));
 }

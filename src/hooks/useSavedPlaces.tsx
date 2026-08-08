@@ -12,10 +12,12 @@ import {
   type SavedPlace,
 } from "../lib/savedPlaces";
 
+export type AddPlaceResult = { ok: true } | { ok: false; reason: "full" };
+
 type Ctx = {
   places: SavedPlace[];
   isLoading: boolean;
-  addPlace: (p: SavedPlace) => Promise<void>;
+  addPlace: (p: SavedPlace) => Promise<AddPlaceResult>;
   updatePlace: (p: SavedPlace) => Promise<void>;
   removePlace: (id: string) => Promise<void>;
 };
@@ -57,8 +59,18 @@ export function SavedPlacesProvider({
     setPlaces(await readSavedPlaces());
   }, []);
 
+  // Refuses rather than truncates: writeSavedPlaces would silently keep this
+  // place and drop an old one instead, which is the right call when reading
+  // a possibly-stale file, but the wrong one here, where we know exactly why
+  // the list is full and can hand the caller a result instead of a surprise.
   const addPlace = useCallback(
-    async (p: SavedPlace) => commit([...places, p]),
+    async (p: SavedPlace): Promise<AddPlaceResult> => {
+      if (places.length >= MAX_SAVED_PLACES) {
+        return { ok: false, reason: "full" };
+      }
+      await commit([...places, p]);
+      return { ok: true };
+    },
     [places, commit]
   );
   const updatePlace = useCallback(
