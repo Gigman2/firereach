@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import {
@@ -38,11 +39,43 @@ export function SavedPlacesProvider({
   const [places, setPlaces] = useState<SavedPlace[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  /**
+   * The authority for what is currently saved, as opposed to `places`, which
+   * is whatever the last render captured.
+   *
+   * Mutations used to close over the `places` snapshot from their render. Two
+   * fired before React re-rendered — a double-tapped Save, or two screens
+   * sharing this single instance — both computed from the same stale list and
+   * the second overwrote the first, losing a place with no error and an
+   * `{ok:true}` returned to the caller who lost it. That is the same
+   * "the place I just added vanished" symptom the store-level cap fix closed,
+   * arriving by a different road. `useNearestStation` solves its own version
+   * of this with a ref for the same reason.
+   */
+  const placesRef = useRef<SavedPlace[]>([]);
+
+  /**
+   * Mutations run one at a time. The ref alone is not enough: between reading
+   * it and the `await` inside `commit`, another mutation can interleave and
+   * both would still race on the write. Chaining serialises them, so each one
+   * reads a ref that already reflects its predecessor.
+   */
+  const queue = useRef<Promise<unknown>>(Promise.resolve());
+
+  const enqueue = useCallback(<T,>(work: () => Promise<T>): Promise<T> => {
+    // Swallow the predecessor's rejection for sequencing purposes only — the
+    // original caller still receives it from its own promise.
+    const run = queue.current.catch(() => undefined).then(work);
+    queue.current = run.catch(() => undefined);
+    return run;
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const loaded = await readSavedPlaces();
       if (cancelled) return;
+      placesRef.current = loaded;
       setPlaces(loaded);
       setIsLoading(false);
     })();
@@ -51,12 +84,15 @@ export function SavedPlacesProvider({
     };
   }, []);
 
-  // Write-through, then set state from what was written, so what the screen
-  // shows is what is on disk rather than what we hoped to put there.
+  // Write-through, then set state from what was read back, so what the screen
+  // shows is what is on disk rather than what we hoped to put there. No slice
+  // here: writeSavedPlaces caps to the NEWEST entries, and a front-slice at
+  // this layer would reintroduce exactly the bug that fix removed.
   const commit = useCallback(async (next: SavedPlace[]) => {
-    const capped = next.slice(0, MAX_SAVED_PLACES);
-    await writeSavedPlaces(capped);
-    setPlaces(await readSavedPlaces());
+    await writeSavedPlaces(next);
+    const fresh = await readSavedPlaces();
+    placesRef.current = fresh;
+    setPlaces(fresh);
   }, []);
 
   // Refuses rather than truncates: writeSavedPlaces would silently keep this
@@ -64,22 +100,29 @@ export function SavedPlacesProvider({
   // a possibly-stale file, but the wrong one here, where we know exactly why
   // the list is full and can hand the caller a result instead of a surprise.
   const addPlace = useCallback(
-    async (p: SavedPlace): Promise<AddPlaceResult> => {
-      if (places.length >= MAX_SAVED_PLACES) {
-        return { ok: false, reason: "full" };
-      }
-      await commit([...places, p]);
-      return { ok: true };
-    },
-    [places, commit]
+    (p: SavedPlace): Promise<AddPlaceResult> =>
+      enqueue(async () => {
+        if (placesRef.current.length >= MAX_SAVED_PLACES) {
+          return { ok: false, reason: "full" } as AddPlaceResult;
+        }
+        await commit([...placesRef.current, p]);
+        return { ok: true } as AddPlaceResult;
+      }),
+    [commit, enqueue]
   );
   const updatePlace = useCallback(
-    async (p: SavedPlace) => commit(places.map((x) => (x.id === p.id ? p : x))),
-    [places, commit]
+    (p: SavedPlace): Promise<void> =>
+      enqueue(async () => {
+        await commit(placesRef.current.map((x) => (x.id === p.id ? p : x)));
+      }),
+    [commit, enqueue]
   );
   const removePlace = useCallback(
-    async (id: string) => commit(places.filter((x) => x.id !== id)),
-    [places, commit]
+    (id: string): Promise<void> =>
+      enqueue(async () => {
+        await commit(placesRef.current.filter((x) => x.id !== id));
+      }),
+    [commit, enqueue]
   );
 
   return (

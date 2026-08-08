@@ -72,6 +72,17 @@ describe("whatToSay", () => {
     expect(got.lines.join(" ")).not.toContain("undefined");
   });
 
+  it("breaks exact distance ties deterministically, not by array order", () => {
+    // haversineMeters rounds to whole metres, so two places really can tie.
+    const at = { lat: 5.6091, lng: -0.2112 };
+    const a = { ...HOME, id: "zzz", label: "Zebra" };
+    const b = { ...HOME, id: "aaa", label: "Apple" };
+    const one = whatToSay(at, [a, b], STATION);
+    const two = whatToSay(at, [b, a], STATION);
+    expect(one.kind === "savedPlace" && one.label).toBe("Apple");
+    expect(two.kind === "savedPlace" && two.label).toBe("Apple");
+  });
+
   it("says nothing for a non-finite position", () => {
     // Some Android OEMs hand back a partial fix during a lock failure. The
     // contract is "none" — not a derived sentence built on NaN. Without this,

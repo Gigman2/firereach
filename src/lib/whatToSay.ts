@@ -39,7 +39,10 @@ export function whatToSay(
       d: haversineMeters(position.lat, position.lng, p.lat, p.lng),
     }))
     .filter(({ p, d }) => Number.isFinite(d) && d <= p.radiusMeters)
-    .sort((a, b) => a.d - b.d);
+    // Tie-broken on id, matching nearestStations in geo.ts. haversineMeters
+    // rounds to whole metres, so two places genuinely can tie; without this
+    // the winner depends on the order the array happens to be stored in.
+    .sort((a, b) => (a.d !== b.d ? a.d - b.d : a.p.id.localeCompare(b.p.id)));
 
   if (matches.length > 0) {
     const { p } = matches[0];
