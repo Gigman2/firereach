@@ -32,7 +32,7 @@ export const HomeScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { isOnline } = useConnectivity();
-  const { nearest, table, positionSource, refresh, isResolving } =
+  const { nearest, table, positionSource, stationOrigin, refresh, isResolving } =
     useNearestStation();
 
   const targets = nearest
@@ -66,8 +66,20 @@ export const HomeScreen = ({ navigation }: Props) => {
    */
   const isFinding = isResolving && !nearest;
 
+  /**
+   * What the answer on screen rests on.
+   *
+   * The fallback origins are checked before the `positionSource` branches
+   * because they describe the thing the caller is actually looking at. Saying
+   * "LOCATION OUTSIDE GHANA" above a named station and a live call button
+   * would be reporting a fact about a fix that no longer decides anything —
+   * true, and the least useful true thing available. Why the fix was not used
+   * moves to the freshness line under the card, where it belongs.
+   */
   const statusLabel = isFinding
     ? "FINDING YOUR LOCATION"
+    : stationOrigin === "snapshot"
+    ? "USING LAST KNOWN AREA"
     : positionSource === "denied"
     ? "LOCATION OFF"
     : positionSource === "unavailable"
@@ -82,7 +94,8 @@ export const HomeScreen = ({ navigation }: Props) => {
 
   const statusColor = isFinding
     ? theme.textTertiary
-    : positionSource === "denied" ||
+    : stationOrigin === "snapshot" ||
+      positionSource === "denied" ||
       positionSource === "unavailable" ||
       positionSource === "implausible" ||
       positionSource === "lastKnownStale"
@@ -92,11 +105,13 @@ export const HomeScreen = ({ navigation }: Props) => {
     : colors.warning;
 
   /**
-   * Only reached when there is no station to name. Ordered so the honest
-   * answer to "why is there no station?" comes first: still looking, then
-   * refused, then permitted-but-no-fix, then a fix that is nowhere near
-   * Ghana. The last branch is unreachable while the station table is
-   * non-empty (a cache invariant), and is kept as a safe default.
+   * Only reached when there is no station to name — which now means
+   * `stationOrigin === "none"`: no fix, no single saved place and no
+   * remembered ranking, all at once. Ordered so the honest answer to "why is
+   * there no station?" comes first: still looking, then refused, then
+   * permitted-but-no-fix, then a fix that is nowhere near Ghana. The last
+   * branch is unreachable while the station table is non-empty (a cache
+   * invariant), and is kept as a safe default.
    */
   const noStationHeading = isFinding
     ? "Finding nearest station…"
@@ -129,11 +144,42 @@ export const HomeScreen = ({ navigation }: Props) => {
    * Once a resolution has finished with no fix at all, this stops saying
    * "Locating…" — that badge contradicted a pill already reporting failure.
    */
+  /**
+   * Under the card, where the caller reads it after the station name rather
+   * than instead of it. This is where "the fix was not usable" now lives: the
+   * status pill reports what the answer rests on, and this says why it is not
+   * resting on a live position.
+   *
+   * Only shown alongside a station. With no station the heading and help lines
+   * above are already saying the same thing in more detail.
+   */
+  const freshnessNote =
+    isFinding || !nearest
+      ? null
+      : stationOrigin === "snapshot" || positionSource === "lastKnownStale"
+      ? "Based on where your phone last had a location fix — if you have travelled, check the station name and distance before calling."
+      : null;
+
+  /**
+   * The one thing the caller can actually do about it, and only in the state
+   * where doing it would change anything. Sits under `freshnessNote` rather
+   * than replacing it: a fallback station plus "turn on location" is a better
+   * screen than either alone, and it is the reason a denied permission no
+   * longer costs the caller a station.
+   */
+  const locationCta =
+    nearest && positionSource === "denied"
+      ? "Turn on location for a station near where you are now."
+      : null;
+
   const rawDistance = nearest ? formatDistance(nearest.distanceMeters) : null;
-  const distanceLabel =
-    rawDistance && positionSource === "lastKnownStale"
-      ? `${rawDistance} (from your last known location)`
-      : rawDistance;
+  const distanceLabel = !rawDistance
+    ? null
+    : stationOrigin === "snapshot"
+    ? `${rawDistance} (from where your phone last had a fix)`
+    : positionSource === "lastKnownStale"
+    ? `${rawDistance} (from your last known location)`
+    : rawDistance;
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -237,14 +283,23 @@ export const HomeScreen = ({ navigation }: Props) => {
           </View>
         </View>
 
-        {positionSource === "lastKnownStale" && (
+        {freshnessNote && (
           <Text
             variant="caption"
             color={theme.textTertiary}
             style={styles.freshness}
           >
-            Based on where your phone last had a location fix — if you have
-            travelled, check the station name and distance before calling.
+            {freshnessNote}
+          </Text>
+        )}
+
+        {locationCta && (
+          <Text
+            variant="caption"
+            color={theme.textTertiary}
+            style={styles.freshness}
+          >
+            {locationCta}
           </Text>
         )}
 

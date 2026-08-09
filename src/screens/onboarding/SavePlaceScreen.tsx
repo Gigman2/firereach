@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  KeyboardAvoidingView,
 } from "react-native";
 import {
   HouseIcon,
@@ -152,7 +153,20 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
 
   return (
     <View style={[onboarding.screen, { backgroundColor: theme.background }]}>
-      <View style={onboarding.fill}>
+      {/*
+        Six inputs and a Save button on a screen whose keyboard covers the
+        lower half of it. `behavior="padding"` on Android as well as iOS, not
+        the `undefined` that usually appears there: passing undefined leaves
+        the work to the manifest's `adjustResize`, and this app is
+        edge-to-edge (`edgeToEdgeEnabled=true`), so the window is no longer
+        resized to make room for the keyboard and nothing moved at all.
+
+        Padding shrinks this container, and the ScrollView inside it is the
+        only child that flexes, so the shrink comes out of the scrollable
+        middle — leaving Save and the progress dots sitting above the
+        keyboard rather than behind it.
+      */}
+      <KeyboardAvoidingView style={onboarding.fill} behavior="padding">
         <View style={onboarding.headerSplit}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -361,7 +375,7 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
         <View style={onboarding.dotsRow}>
           <OnboardingDots total={5} step={4} />
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </View>
   );
 };

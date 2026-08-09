@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -246,7 +247,16 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
     : "Edit place";
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    // The edit form on this screen is the same label-and-landmarks form as
+    // onboarding's SavePlaceScreen, so it wants the same treatment: "padding"
+    // on Android too, because edge-to-edge means the manifest's
+    // `adjustResize` no longer resizes the window for the keyboard. Wrapping
+    // the whole screen rather than just the form branch is harmless — with no
+    // keyboard up, the padding is zero and the list renders unchanged.
+    <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: theme.background }]}
+      behavior="padding"
+    >
       {/* Header */}
       <View
         style={[
@@ -588,7 +598,7 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
           </View>
         </>
       )}
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -57,7 +58,15 @@ export const ReportStationScreen = ({ navigation, route }: Props) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    // Five inputs above a pinned Submit button. "padding" on Android as well
+    // as iOS: this app is edge-to-edge, so the manifest's `adjustResize` no
+    // longer resizes the window and deferring to it moves nothing. The
+    // ScrollView is the only flexing child, so the shrink comes out of it and
+    // Submit stays above the keyboard.
+    <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: theme.background }]}
+      behavior="padding"
+    >
       {/* Header */}
       <View
         style={[
@@ -220,7 +229,7 @@ export const ReportStationScreen = ({ navigation, route }: Props) => {
       <View style={[styles.footer, { paddingBottom: insets.bottom + 16, borderTopColor: theme.border, backgroundColor: theme.background }]}>
         <Button title="Submit Report" onPress={handleSubmit} />
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

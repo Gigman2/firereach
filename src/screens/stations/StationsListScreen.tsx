@@ -42,15 +42,22 @@ export const StationsListScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const [search, setSearch] = useState("");
-  const { table, position, positionSource, isResolving, refresh } =
+  const { table, positionSource, stationOrigin, rankFrom, isResolving, refresh } =
     useNearestStation();
 
-  // A fix that puts the caller nowhere near Ghana produces distances that are
-  // arithmetically true and practically useless ("~11746.0 km" on every row),
-  // and an ordering derived from them is meaningless. The home screen already
-  // refuses to name a station in that case; this list refuses to rank by it,
-  // and falls back to the same presentation as having no fix at all.
-  const usablePosition = positionSource === "implausible" ? null : position;
+  // Whatever the home screen ranked its answer from — a live fix, the one
+  // saved place, or the remembered ranking position — and null when it could
+  // rank from nothing at all.
+  //
+  // This used to be `positionSource === "implausible" ? null : position`,
+  // which independently re-derived a rule the provider was already applying,
+  // and could only ever say "usable" or "nothing". A fix that puts the caller
+  // nowhere near Ghana still produces distances that are arithmetically true
+  // and practically useless ("~11746.0 km" on every row) — the provider now
+  // rejects it centrally, and offers a fallback in its place, so this screen
+  // reads one value instead of reconstructing the decision and drifting from
+  // it.
+  const usablePosition = rankFrom;
 
   const sections = useMemo<Section[]>(() => {
     const stations = table.stations;
@@ -237,14 +244,13 @@ export const StationsListScreen = ({ navigation }: Props) => {
         }
         ListHeaderComponent={
           /*
-           * Three header states, not two. A `lastKnownStale` position is
-           * usable — the rows keep their distance chips and their ordering —
-           * but it came from an unbounded-age last-known fix, so the ordering
-           * this screen presents may describe where the phone was days ago.
-           * The home screen has always said so; this screen showed exact
-           * per-row distances with no caveat at all, which is the more
-           * misleading of the two because a list reads as a survey of facts.
+           * A caveat for every ordering not built on a fix taken just now.
+           * Each of these positions is usable — the rows keep their distance
+           * chips and their ordering — but none of them is a present-tense
+           * measurement, and a list reads as a survey of facts, so an
+           * uncaveated one is more misleading here than on the home screen.
            */
+          stationOrigin === "snapshot" ||
           positionSource === "lastKnownStale" ? (
             <Text
               variant="caption"

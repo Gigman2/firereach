@@ -22,6 +22,11 @@ import {
 } from "../lib/stationCache";
 import { nearestStations } from "../lib/geo";
 import { fetchAllStations } from "../lib/stationsApi";
+import {
+  readStationSnapshot,
+  writeStationSnapshot,
+  type StationSnapshot,
+} from "../lib/stationSnapshot";
 
 /**
  * A last-known fix older than this is not trusted to pick a station.
@@ -94,6 +99,31 @@ export type PositionSource =
   | "unavailable"
   | "implausible";
 
+/**
+ * What the station answer rests on — deliberately separate from
+ * `PositionSource`, which describes only where a *measurement* came from.
+ *
+ * These were one fact for as long as stations were ranked from `position` and
+ * nothing else, and that conflation is what made a single bad fix wipe out the
+ * whole answer: lose the measurement, lose the station. They are two questions
+ * — "where is this phone" and "who should this person call" — and only the
+ * first of them needs a live fix to answer.
+ *
+ *  - `live`     — ranked from a position this session actually measured.
+ *  - `snapshot` — ranked from where stations were last ranked successfully,
+ *                 remembered across launches. See `stationSnapshot.ts`.
+ *  - `none`     — nothing to rank from. 192 and nothing else.
+ *
+ * Both are measurements; the list is ordered by how recent, not by kind. A
+ * saved place is deliberately NOT among them. It is a declaration about where
+ * the caller is, and it answers a different question — what to say on the call
+ * — through `whatToSay` and `WhatToSayCard`. Ranking stations from one would
+ * let a guess ("they are probably at Home") outrank a real fix taken an hour
+ * ago somewhere else, which is the wrong way round, and would put a station on
+ * screen chosen by an assumption the caller was never asked to confirm.
+ */
+export type StationOrigin = "live" | "snapshot" | "none";
+
 export type NearestStationState = {
   nearest: RankedStation | null;
   /** The next-nearest stations, for "other stations near you". */
@@ -101,6 +131,16 @@ export type NearestStationState = {
   table: StationTable;
   position: ResolvedPosition | null;
   positionSource: PositionSource;
+  stationOrigin: StationOrigin;
+  /** When the snapshot was taken (ISO), when `stationOrigin` is `snapshot`. */
+  stationsRankedAt: string | null;
+  /**
+   * The coordinates `nearest` and `alternatives` were actually ranked from,
+   * whatever the origin. The one thing a screen needs to show its own
+   * distances without re-deriving the precedence below and drifting from it.
+   * Null only when nothing could be ranked at all.
+   */
+  rankFrom: ResolvedPosition | null;
   isResolving: boolean;
   hasError: boolean;
   refresh: () => Promise<void>;
@@ -194,6 +234,35 @@ async function resolvePosition(): Promise<{
   return { position: null, source: "unavailable" };
 }
 
+/**
+ * Whether a candidate fix is close enough to a known station to be worth
+ * believing, by the same `MAX_PLAUSIBLE_DISTANCE_METERS` rule the render-time
+ * guard applies to whatever position is being displayed.
+ *
+ * Used to decide whether to *accept* a fix, not merely how to present one. A
+ * fix that puts the nearest station on another continent is worse evidence
+ * than no fix at all, and `refresh` already declines to let "no fix" overwrite
+ * a good position — so it must not let this overwrite one either.
+ *
+ * An empty table cannot refute anything, so it does not: with nothing to rank
+ * against, the fix is accepted and the render-time guard (which also requires
+ * a ranked station before declaring anything implausible) stays the single
+ * place that decides what the user is told.
+ */
+function isPlausibleFix(
+  position: ResolvedPosition,
+  table: StationTable
+): boolean {
+  const ranked = nearestStations<CachedStation>(
+    table.stations,
+    position.lat,
+    position.lng,
+    1
+  );
+  if (ranked.length === 0) return true;
+  return ranked[0].distanceMeters <= MAX_PLAUSIBLE_DISTANCE_METERS;
+}
+
 function isStale(table: StationTable): boolean {
   if (!table.refreshedAt) return true;
   const age = Date.now() - Date.parse(table.refreshedAt);
@@ -232,6 +301,10 @@ export function NearestStationProvider({
   const [hasError, setHasError] = useState(false);
   const inFlight = useRef(false);
 
+  // Read once on mount, below. Null until that read settles, and null again
+  // for good once it comes back empty or expired.
+  const [snapshot, setSnapshot] = useState<StationSnapshot | null>(null);
+
   // Mirrors `position` synchronously. `refresh` is a `useCallback` with `[]`
   // deps, so its closed-over `position` is frozen at `null` forever — the ref
   // is what lets the "keep the last good fix" guard below see the latest
@@ -264,19 +337,67 @@ export function NearestStationProvider({
         (r) => r ?? { position: null, source: "unavailable" as PositionSource }
       );
 
-      if (resolved.position) {
-        // A real fix always wins and becomes the new answer.
-        positionRef.current = resolved.position;
-        setPosition(resolved.position);
+      // A real fix wins — but only a believable one. This used to accept any
+      // fix at all, on the grounds that a real reading beats a remembered
+      // one, and the plausibility rule was applied a hundred lines later at
+      // render. That ordering meant a single garbage reading destroyed a good
+      // position before anything had judged it: the guard below would decline
+      // to let a *missing* fix blank out the answer on screen, while a fix
+      // claiming the user was on another continent replaced it unchallenged.
+      // The absurd reading is the weaker evidence of the two, so it is now
+      // held to the same bar before it is allowed to overwrite anything.
+      const usable =
+        resolved.position && isPlausibleFix(resolved.position, localTable)
+          ? resolved.position
+          : null;
+
+      if (usable) {
+        positionRef.current = usable;
+        setPosition(usable);
         setPositionSource(resolved.source);
+
+        // Remember where this ranking was taken, for launches that cannot
+        // produce a fix of their own. `isPlausibleFix` has already established
+        // that this position ranks near a real station, which is the only
+        // property the snapshot needs of the coordinates themselves.
+        //
+        // But only from a fix of KNOWN age. `lastKnownStale` is the unbounded
+        // tier — it may be days and a city old — and stamping it with
+        // `rankedAt: now` would relabel that as current. Worse, it would do so
+        // on every foreground, so a phone that can never lock would refresh
+        // its own expiry forever and SNAPSHOT_MAX_AGE_MS would never once
+        // bite. The two tiers admitted here are bounded by construction: a
+        // live fix is from seconds ago, and `lastKnown` by
+        // MAX_LAST_KNOWN_AGE_MS.
+        //
+        // Deliberately not awaited — the answer is already on screen and a
+        // write that has not landed yet must not hold up the network refresh
+        // below. `writeStationSnapshot` swallows its own failures.
+        if (resolved.source === "live" || resolved.source === "lastKnown") {
+          void writeStationSnapshot(usable);
+        }
       } else if (!positionRef.current) {
-        // No fix now, and none before — report honestly. There is nothing
-        // to protect: the visible answer was already "no position".
+        // No usable fix now, and none before — report honestly. There is
+        // nothing to protect: the visible answer was already "no position".
+        //
+        // An implausible fix is still stored here, with no earlier position
+        // to prefer over it, so the render-time guard can distinguish "your
+        // phone put you outside the country" from "your phone has no idea
+        // where you are". Those read very differently to someone deciding
+        // what to tell an operator, and this is the only branch where the
+        // difference survives.
+        if (resolved.position) {
+          positionRef.current = resolved.position;
+          setPosition(resolved.position);
+        }
         setPositionSource(resolved.source);
       } else {
-        // Had a fix, lost it this round. Keep the position — a slightly old
-        // position still names a real nearby station, and a lost GPS lock
-        // must not blank out an answer already on screen — but stop claiming
+        // Had a usable fix, and this round produced none — either no fix at
+        // all, or one rejected as implausible above. Both mean the same thing
+        // here: what we hold is the best evidence available. Keep the
+        // position — a slightly old position still names a real nearby
+        // station, and neither a lost GPS lock nor one bad reading must blank
+        // out an answer already on screen — but stop claiming
         // it is current. Whatever it was when obtained, what it is *now* is a
         // last-known fix of unknown age, and reporting it as `live` kept the
         // status pill green over a position that was quietly ageing. This is
@@ -355,6 +476,22 @@ export function NearestStationProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Read alongside the first resolution rather than after it. The whole point
+  // of the snapshot is the cold start where no fix is coming, and waiting for
+  // that resolution to fail — up to POSITION_RESOLUTION_TIMEOUT_MS — before
+  // even looking would leave the screen empty for the entire wait.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const stored = await readStationSnapshot();
+      if (cancelled) return;
+      setSnapshot(stored);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   useEffect(() => {
     const sub = AppState.addEventListener("change", (state) => {
       // Re-resolve on foreground. A user who travelled while the app was
@@ -365,27 +502,83 @@ export function NearestStationProvider({
     return () => sub.remove();
   }, [refresh]);
 
-  // Derived, never persisted — recomputed whenever the table or position
-  // changes, so a station is never "assigned" and never goes stale.
-  const allRanked: RankedStation[] = position
-    ? nearestStations<CachedStation>(table.stations, position.lat, position.lng, 3)
-    : [];
+  // Derived, never assigned — recomputed whenever the table, the position,
+  // the saved places or the snapshot change, so a station never goes stale
+  // behind the inputs it was built from.
+  const rankAround = (from: ResolvedPosition): RankedStation[] =>
+    nearestStations<CachedStation>(table.stations, from.lat, from.lng, 3);
 
-  // A fix that puts the nearest station beyond Ghana's own extent is not a
-  // usable answer. Report it as implausible rather than offering to dial a
-  // station on another continent.
-  const implausible =
-    allRanked.length > 0 &&
-    allRanked[0].distanceMeters > MAX_PLAUSIBLE_DISTANCE_METERS;
+  // A ranking whose own nearest station is beyond Ghana's extent is not an
+  // answer, whichever input produced it. Applied to the fallbacks too: a place
+  // saved while the caller was abroad would otherwise be presented with all
+  // the confidence of one saved at home.
+  const tooFar = (r: RankedStation[]) =>
+    r.length > 0 && r[0].distanceMeters > MAX_PLAUSIBLE_DISTANCE_METERS;
 
-  const ranked = implausible ? [] : allRanked;
+  const liveRanked = position ? rankAround(position) : [];
+
+  // Unchanged in meaning and still the thing that makes `positionSource`
+  // report "implausible": this is a statement about the *fix*, and it stays
+  // true and visible even when a fallback below goes on to supply a station.
+  const implausible = tooFar(liveRanked);
+
+  /**
+   * Which input the station answer is built from. Most recent measurement
+   * first; the first one that ranks to a real station wins.
+   *
+   *  1. The live fix. Nothing beats a measurement taken just now.
+   *  2. The remembered ranking position — the last place a bounded-age fix
+   *     put us. The only one of the two that survives a cold start, and so
+   *     the only thing that can answer on a launch where no fix is coming.
+   *
+   * Saved places are not on this list, on purpose. See `StationOrigin`.
+   */
+  type Answer = {
+    origin: StationOrigin;
+    from: ResolvedPosition | null;
+    ranked: RankedStation[];
+    rankedAt: string | null;
+  };
+
+  const candidates: Answer[] = [];
+
+  if (position && !implausible && liveRanked.length > 0) {
+    candidates.push({
+      origin: "live",
+      from: position,
+      ranked: liveRanked,
+      rankedAt: null,
+    });
+  }
+
+  if (snapshot) {
+    const r = rankAround(snapshot.from);
+    if (r.length > 0 && !tooFar(r)) {
+      candidates.push({
+        origin: "snapshot",
+        from: snapshot.from,
+        ranked: r,
+        rankedAt: snapshot.rankedAt,
+      });
+    }
+  }
+
+  const answer: Answer = candidates[0] ?? {
+    origin: "none",
+    from: null,
+    ranked: [],
+    rankedAt: null,
+  };
 
   const value: NearestStationState = {
-    nearest: ranked[0] ?? null,
-    alternatives: ranked.slice(1),
+    nearest: answer.ranked[0] ?? null,
+    alternatives: answer.ranked.slice(1),
     table,
     position,
     positionSource: implausible ? "implausible" : positionSource,
+    stationOrigin: answer.origin,
+    stationsRankedAt: answer.rankedAt,
+    rankFrom: answer.from,
     isResolving,
     hasError,
     refresh,

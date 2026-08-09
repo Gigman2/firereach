@@ -18,11 +18,13 @@ import {
   PhoneIcon,
   TrashIcon,
   CaretRightIcon,
+  ArrowCounterClockwiseIcon,
 } from "phosphor-react-native";
 import { Text } from "../../components/ui/Text";
 import { colors } from "../../theme/colors";
 import { useTheme, type ThemeMode } from "../../theme/ThemeContext";
 import { clearStationCache } from "../../lib/stationCache";
+import { resetAllAppData } from "../../lib/devReset";
 import { NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
 import { useSavedPlaces } from "../../hooks/useSavedPlaces";
 import appConfig from "../../../app.json";
@@ -102,6 +104,34 @@ export const SettingsHomeScreen = ({ navigation }: Props) => {
               "Done",
               "Cached station data cleared. The app will use its built-in station list until it can refresh."
             );
+          },
+        },
+      ]
+    );
+  };
+
+  const handleResetAllData = () => {
+    Alert.alert(
+      "Reset all app data",
+      "Deletes your saved places, theme and cached stations, then starts the app again at onboarding. Development builds only.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Reset",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // No success alert: this remounts the app, so the confirmation
+              // is landing back on the first onboarding screen. An alert
+              // would be queued against a screen that no longer exists.
+              await resetAllAppData();
+            } catch (err) {
+              console.warn("[Settings] reset failed", err);
+              Alert.alert(
+                "Reset failed",
+                "Storage could not be cleared. Reinstall the app to start over."
+              );
+            }
           },
         },
       ]
@@ -271,6 +301,43 @@ export const SettingsHomeScreen = ({ navigation }: Props) => {
             </View>
           </TouchableOpacity>
         </View>
+
+        {/*
+          Development only — stripped from release builds, where the nearest
+          equivalent is Android's "Clear storage" or deleting the app on iOS.
+        */}
+        {__DEV__ && (
+          <>
+            <SectionHeader title="Developer" />
+            <View
+              style={[
+                styles.card,
+                { backgroundColor: theme.background, borderColor: theme.border },
+              ]}
+            >
+              <TouchableOpacity style={styles.row} onPress={handleResetAllData}>
+                <View style={styles.rowLeft}>
+                  <ArrowCounterClockwiseIcon
+                    size={22}
+                    color={colors.brandPrimary}
+                  />
+                  <View style={styles.rowLabel}>
+                    <Text
+                      variant="bodyMedium"
+                      weight="medium"
+                      color={colors.brandPrimary}
+                    >
+                      Reset all app data
+                    </Text>
+                    <Text variant="label" color={theme.textTertiary}>
+                      Wipes storage and restarts onboarding
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
       </ScrollView>
     </View>
   );
@@ -340,6 +407,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+  },
+  /** Lets a two-line label wrap inside the row instead of overflowing it. */
+  rowLabel: {
+    flex: 1,
   },
   divider: {
     height: StyleSheet.hairlineWidth,

@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
-  Platform,
   Linking,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -348,7 +347,11 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
 
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        // Android gets "padding" too. The usual `: undefined` there defers to
+        // the manifest's `adjustResize`, which stopped resizing the window
+        // once this app went edge-to-edge — so the composer sat behind the
+        // keyboard with no way to see what you were typing.
+        behavior="padding"
         keyboardVerticalOffset={0}
       >
         <FlatList

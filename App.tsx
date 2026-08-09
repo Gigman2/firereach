@@ -3,10 +3,20 @@ import { NearestStationProvider } from './src/hooks/useNearestStation';
 import { SavedPlacesProvider } from './src/hooks/useSavedPlaces';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { AppFonts } from './src/components/AppFonts';
+import { useDevRemount } from './src/lib/devReset';
 
 export default function App() {
+  /*
+    Changes only when the development-only "Reset all app data" in Settings
+    fires, and remounts everything below it. The providers each cache what
+    they read at launch and the navigator picks its initial route once, so
+    emptying storage underneath them is not on its own enough to send anyone
+    back to onboarding. Constant in production.
+  */
+  const generation = useDevRemount();
+
   return (
-    <ThemeProvider>
+    <ThemeProvider key={generation}>
       {/*
         One position resolution for the whole process. Mounted here — inside
         the theme provider, outside the navigator and therefore outside every
@@ -25,6 +35,11 @@ export default function App() {
         screens cannot disagree about what is saved. Its read of storage is
         part of answering "what do I say on the call", so it has no business
         queueing behind a font either.
+
+        The order of these two is deliberately NOT load-bearing. Neither reads
+        the other: stations are ranked from measurements only, and a saved
+        place answers what to say rather than who to call. Anything that makes
+        one depend on the other has re-merged two facts this app keeps apart.
       */}
       <NearestStationProvider>
         <SavedPlacesProvider>

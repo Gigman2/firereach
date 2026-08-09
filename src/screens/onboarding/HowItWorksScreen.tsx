@@ -39,12 +39,12 @@ const steps = [
   {
     Icon: MegaphoneIcon,
     title: "We find your nearest station",
-    body: "FireReach works out which fire station is closest to you, and gives you the command line for its region.",
+    body: "FireReach works out which fire station is closest to you, and gives you the command line.",
   },
   {
     Icon: MapTrifoldIcon,
     title: "You make the call",
-    body: "Tap the button to dial, then say where you are. The operator covers the whole region and cannot see your location.",
+    body: "Tap the button to dial, then say where you are. Firemen are trained to locate areas by landmarks.",
   },
   {
     Icon: FirstAidKitIcon,
@@ -111,7 +111,7 @@ export const HowItWorksScreen = ({ navigation }: Props) => {
                   <step.Icon
                     size={24}
                     color={colors.brandPrimary}
-                    weight="fill"
+                    weight="duotone"
                   />
                 </View>
                 <View style={styles.stepText}>
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     marginTop: 8,
-    marginBottom: 40,
+    marginBottom: 20,
   },
   steps: {
     gap: 28,

@@ -194,7 +194,7 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
               { backgroundColor: isDark ? "#431C00" : "#FFF7ED" },
             ]}
           >
-            <MapPinIcon size={48} color="#F97316" weight="fill" />
+            <MapPinIcon size={48} color="#F97316" weight="duotone" />
           </View>
 
           <Text

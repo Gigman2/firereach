@@ -56,8 +56,9 @@ function linesForPlace(place: SavedPlace): string[] {
  * early returns, because they overlap:
  *
  *  - `positionSource === "implausible"` — the provider has already rejected
- *    this fix and the screen above says so out loud. Nothing derived from it
- *    can be true, so the card renders nothing at all.
+ *    this fix and the screen above says so out loud. Nothing *derived* from it
+ *    can be true, so there are no derived lines; but the caller can still be
+ *    asked, and this is the state where asking is worth the most.
  *  - `positionSource === "lastKnownStale"` — a last-known fix of *unbounded*
  *    age (see `resolvePosition`), which is the ordinary offline cold start:
  *    indoors, no wifi, GPS unable to lock. The fix may be three days and a
@@ -65,10 +66,11 @@ function linesForPlace(place: SavedPlace): string[] {
  *    not be spoken as a present-tense claim.
  *  - no position at all — nothing to derive from in the first place.
  *
- * In each of the latter two the caller themselves is the better sensor: they
+ * In every one of the three the caller themselves is the better sensor: they
  * can see out of a window. So if they have saved places, the card stops
  * asserting and asks — "Which of these are you at?" — and only if there are
- * none does it fall back to the derived lines, led by `STALE_FIX_CAVEAT`.
+ * none does it fall back to the derived lines, led by `STALE_FIX_CAVEAT`, or
+ * to nothing at all where even those cannot be trusted.
  *
  * A pick is an answer to "no trustworthy fix right now", so it lasts exactly
  * as long as that condition, and it is always reversible: mis-taps happen on
@@ -85,12 +87,18 @@ export function WhatToSayCard() {
 
   const isRejected = positionSource === "implausible";
   const isStale = positionSource === "lastKnownStale";
-  // No fix, or one we may not speak in the present tense.
-  const cannotAssert = isStale || result.kind === "none";
+  // No fix, none we may speak in the present tense, or one already rejected.
+  const cannotAssert = isStale || isRejected || result.kind === "none";
 
-  // Asking beats guessing — but only when there is something to ask about,
-  // and never for a fix already rejected, where the honest card is no card.
-  const canPick = !isRejected && cannotAssert && places.length > 0;
+  // Asking beats guessing, whenever there is something to ask about.
+  //
+  // A rejected fix used to suppress this too, on the reasoning that nothing
+  // derived from a bad fix can be true. That is right about the derived lines
+  // below and wrong about the picker: a pick is the caller's own answer and is
+  // not derived from the fix at all. Suppressing it meant the one state where
+  // the app is least sure where the caller is was also the one state where it
+  // refused to let them say.
+  const canPick = cannotAssert && places.length > 0;
   const picked = canPick
     ? places.find((p) => p.id === selectedId) ?? null
     : null;
@@ -110,8 +118,6 @@ export function WhatToSayCard() {
     coords?: string;
     canChooseAgain: boolean;
   } => {
-    if (isRejected) return { mode: "nothing", lines: [], canChooseAgain: false };
-
     if (canPick) {
       return picked
         ? {
@@ -121,6 +127,11 @@ export function WhatToSayCard() {
           }
         : { mode: "picker", lines: [], canChooseAgain: false };
     }
+
+    // Below the picker, not above it. A rejected fix still cannot produce a
+    // spoken line — everything past this point is derived from the position —
+    // so with nothing to ask about, the honest card remains no card.
+    if (isRejected) return { mode: "nothing", lines: [], canChooseAgain: false };
 
     if (result.kind === "none") {
       return { mode: "nothing", lines: [], canChooseAgain: false };
