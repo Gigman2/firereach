@@ -18,6 +18,7 @@ import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
 import { NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
 import { itemBySlug, badgeText, effectiveState } from "../../lib/safetyContent";
+import { SUBCATEGORY_META, NEUTRAL_ACCENT } from "./GuidesHubScreen";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { GuidesStackParamList } from "../../navigation/types";
 
@@ -55,7 +56,11 @@ export const GuideDetailScreen = ({ navigation, route }: Props) => {
         >
           This guide has been withdrawn or is not in this version of the app.
         </Text>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: 20 }}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.goBackButton}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
           <Text variant="caption" weight="bold" color={colors.brandPrimary}>
             Go back
           </Text>
@@ -64,10 +69,15 @@ export const GuideDetailScreen = ({ navigation, route }: Props) => {
     );
   }
 
+  // Category colour band, not the emergency red reserved for call/emergency
+  // actions. Falls back to a neutral grey if this item's subcategory is
+  // somehow missing from SUBCATEGORY_META.
+  const headerColor = SUBCATEGORY_META[item.subcategory]?.accent ?? NEUTRAL_ACCENT;
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Amber Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+      {/* Category-coloured header */}
+      <View style={[styles.header, { backgroundColor: headerColor, paddingTop: insets.top + 8 }]}>
         <View style={styles.headerRow}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -231,7 +241,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    backgroundColor: "#D97706",
     paddingHorizontal: 16,
     paddingBottom: 20,
   },
@@ -273,6 +282,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 4,
+  },
+  goBackButton: {
+    marginTop: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
   },
   disclaimer: {
     flexDirection: "row",
