@@ -39,11 +39,12 @@ type Props = NativeStackScreenProps<RootStackParamList, "SavePlace">;
 /**
  * Shortcuts that fill the label field, not a closed list of labels.
  *
- * The third one used to fill the literal word "Other", and the card read the
- * label back verbatim: "I'm at Other." — said to an operator who covers a
- * whole region and cannot see the caller. It now clears the field and puts
- * the cursor in it, because the only useful answer to "somewhere else" is the
- * caller's own word for the place. `fill: null` is what marks it.
+ * The third one used to fill the literal word "Other", leaving the caller a
+ * place called "Other" to recognise later — and, back when the label was read
+ * out, "I'm around Other." said to an operator who covers a whole region and
+ * cannot see them. It now clears the field and puts the cursor in it, because
+ * the only useful answer to "somewhere else" is the caller's own word for the
+ * place. `fill: null` is what marks it.
  */
 const LABEL_OPTIONS: {
   key: string;
@@ -86,8 +87,9 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
    * the shared provider's: it is a bounded-freshness fix from seconds ago on
    * this exact screen flow, whereas the provider may still be holding null,
    * or may have fallen back to its unbounded last-known tier. Saving a place
-   * at coordinates the caller was at days ago would make every later reading
-   * of "I'm at Home" a wrong address.
+   * at coordinates the caller was at days ago would put its radius around the
+   * wrong spot, so every later match of it — and the landmarks read out on the
+   * strength of that match — would describe somewhere the caller is not.
    */
   const savePosition = route.params ?? position;
 
@@ -217,8 +219,8 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
             <Text variant="caption" weight="bold" color={theme.textSecondary}>
               Label
             </Text>
-            {/* The label is read aloud as a whole sentence — "I'm at Mum's
-              house." — so it has to be the caller's own word for the place.
+            {/* How the caller will recognise this place in the app — it heads
+              the "say this" card — so it has to be their own word for it.
               The chips only fill this field; they no longer replace it. */}
             <TextInput
               ref={labelInput}

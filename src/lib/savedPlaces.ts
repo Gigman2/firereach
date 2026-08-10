@@ -13,10 +13,18 @@ export const RADIUS_PRESETS = [100, 300, 1000, 2000] as const;
 export const DEFAULT_RADIUS_METERS = 300;
 
 /**
- * Cap on what the label inputs accept. The label is read aloud as a whole
- * sentence — "I'm at Mum's house." — so it wants to be a name, not a
- * paragraph. Not enforced on read: a longer label already on disk is the
- * user's own word for a place and truncating it would change what they say.
+ * Cap on what the label inputs accept.
+ *
+ * The label is how the caller recognises this place in the app — it heads
+ * `WhatToSayCard` so they can see at a glance which place is being spoken for
+ * — so it wants to be a name, not a paragraph. It is no longer part of the
+ * spoken sentence, which is built from the landmarks (see `savedPlaceLines`),
+ * with one exception: a place saved with no landmarks has nothing else to say,
+ * and falls back to the label.
+ *
+ * Not enforced on read: a longer label already on disk is the user's own word
+ * for a place and truncating it would change what they see and, in that one
+ * fallback, what they say.
  */
 export const MAX_LABEL_LENGTH = 24;
 
@@ -95,9 +103,11 @@ function usable(p: unknown): p is SavedPlace {
   return (
     !!q &&
     typeof q.id === "string" &&
-    // A blank label is not a place, it is the sentence "I'm at ." read to a
-    // dispatcher. Both editors now require one, so this only ever catches a
-    // file that was written before they did or corrupted since.
+    // A blank label is not a place: it leaves the caller a nameless row to
+    // choose between, and a landmark-less one falls back to speaking it, which
+    // makes it the sentence "I'm around ." read to a dispatcher. Both editors
+    // now require one, so this only ever catches a file that was written
+    // before they did or corrupted since.
     typeof q.label === "string" &&
     q.label.trim().length > 0 &&
     Number.isFinite(q.lat) &&

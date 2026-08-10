@@ -290,9 +290,9 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
               <Text variant="caption" weight="bold" color={theme.textSecondary}>
                 Label
               </Text>
-              {/* The label is read aloud as a whole sentence — "I'm at Mum's
-                  house." — so it has to be the caller's own word for the
-                  place. The chips only fill this field. */}
+              {/* How the caller will recognise this place in the app — it
+                  heads the "say this" card — so it has to be their own word
+                  for it. The chips only fill this field. */}
               <TextInput
                 ref={labelInput}
                 style={[

@@ -33,7 +33,7 @@ describe("whatToSay", () => {
     expect(JSON.stringify(got)).toContain("3rd gate AFTER the mosque, blue roof");
   });
 
-  it("pushes each landmark as its own line, in order, after the 'I'm at' line", () => {
+  it("joins every landmark into one spoken sentence, in order", () => {
     const many = {
       ...HOME,
       landmarks: ["near the blue kiosk", "opposite the pharmacy", "behind the mosque"],
@@ -42,27 +42,45 @@ describe("whatToSay", () => {
     expect(got.kind).toBe("savedPlace");
     if (got.kind !== "savedPlace") return;
     expect(got.lines).toEqual([
-      "I'm at Home.",
-      "near the blue kiosk",
-      "opposite the pharmacy",
-      "behind the mosque",
+      "I'm around near the blue kiosk, opposite the pharmacy and behind the mosque.",
     ]);
   });
 
-  it("skips blank landmarks without leaving an empty line", () => {
+  it("joins two landmarks with 'and' and no comma", () => {
+    const two = { ...HOME, landmarks: ["Airport west hotel", "close to Fedex"] };
+    const got = whatToSay({ lat: 5.6091, lng: -0.2112 }, [two], STATION);
+    expect(got.kind === "savedPlace" && got.lines).toEqual([
+      "I'm around Airport west hotel and close to Fedex.",
+    ]);
+  });
+
+  it("skips blank landmarks without leaving a dangling comma", () => {
     const withBlank = { ...HOME, landmarks: ["near the blue kiosk", "   ", ""] };
     const got = whatToSay({ lat: 5.6091, lng: -0.2112 }, [withBlank], STATION);
     expect(got.kind).toBe("savedPlace");
     if (got.kind !== "savedPlace") return;
-    expect(got.lines).toEqual(["I'm at Home.", "near the blue kiosk"]);
+    expect(got.lines).toEqual(["I'm around near the blue kiosk."]);
   });
 
-  it("still gives the 'I'm at' line for a place with no landmarks", () => {
+  it("does not double up punctuation a landmark already ends with", () => {
+    const punctuated = {
+      ...HOME,
+      landmarks: ["Opposite frigo.", "close to Fedex,"],
+    };
+    const got = whatToSay({ lat: 5.6091, lng: -0.2112 }, [punctuated], STATION);
+    expect(got.kind === "savedPlace" && got.lines).toEqual([
+      "I'm around Opposite frigo and close to Fedex.",
+    ]);
+  });
+
+  it("falls back to the label when a place has no landmarks at all", () => {
+    // The label says little to a regional operator, but it is the only thing
+    // there is to say, and it is still the caller's own word for the place.
     const bare = { ...HOME, landmarks: [] };
     const got = whatToSay({ lat: 5.6091, lng: -0.2112 }, [bare], STATION);
     expect(got.kind).toBe("savedPlace");
     if (got.kind !== "savedPlace") return;
-    expect(got.lines).toEqual(["I'm at Home."]);
+    expect(got.lines).toEqual(["I'm around Home."]);
   });
 
   it("does not claim a place the caller is outside the radius of", () => {

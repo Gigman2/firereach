@@ -141,8 +141,10 @@ describe("savedPlaces", () => {
   });
 
   it("drops entries with no usable label", async () => {
-    // "I'm at ." is not a sentence anyone can act on. Both editors now
-    // require a label; this is the guard for a file written before they did.
+    // A nameless place is one the caller cannot pick out of a list, and with
+    // no landmarks it speaks as "I'm around ." — not a sentence anyone can act
+    // on. Both editors now require a label; this is the guard for a file
+    // written before they did.
     await AsyncStorage.setItem(
       SAVED_PLACES_KEY,
       JSON.stringify({
