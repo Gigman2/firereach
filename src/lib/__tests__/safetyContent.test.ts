@@ -280,3 +280,88 @@ describe("the shipped content", () => {
     expect(typeof SAFETY_CONTENT_VERSION).toBe("number");
   });
 });
+
+// Fix round 1: the database refuses to store a `reviewed` row without a
+// reviewer name, a review date, and an approved-content hash (migration
+// 000006, safety_content_reviewed_requires_provenance). Before this round,
+// effectiveState only checked review.state and the hash comparison, so any
+// of the four gaps below produced a badge that claimed a review nobody
+// performed — the exact hardcoded-badge falsehood this module exists to
+// remove, reappearing inside the mechanism built to prevent it. Each case
+// here reproduces one gap directly, bypassing the SafetyItem type where
+// necessary (`as unknown as string`) because the bug is precisely that
+// malformed JSON reaches fromJson() without shape validation — see
+// safetyContent.ts's comment on why fromJson stays unvalidated.
+describe("provenance gate: a reviewed claim requires all of it, or none of it", () => {
+  const reviewedBase = {
+    state: "reviewed" as const,
+    reviewerName: "A. Mensah",
+    reviewerCredential: "Ghana Health Service",
+    reviewedAt: "2026-08-12",
+    contentHash: "hash-current",
+  };
+
+  it("does not render the Unix epoch when reviewedAt is null", () => {
+    const item = {
+      ...base,
+      review: { ...reviewedBase, reviewedAt: null as unknown as string },
+    };
+    expect(effectiveState(item)).not.toBe("reviewed");
+    const text = badgeText(item);
+    expect(text).not.toMatch(/Last reviewed/);
+    expect(text).not.toContain("1970");
+  });
+
+  it("does not render the literal string 'undefined' when reviewedAt is absent", () => {
+    const { reviewedAt, ...withoutDate } = reviewedBase;
+    const item = { ...base, review: withoutDate };
+    expect(effectiveState(item)).not.toBe("reviewed");
+    const text = badgeText(item);
+    expect(text).not.toMatch(/Last reviewed/);
+    expect(text).not.toContain("undefined");
+  });
+
+  it("does not claim review when reviewedAt is not a parseable date", () => {
+    const item = { ...base, review: { ...reviewedBase, reviewedAt: "not-a-date" } };
+    expect(effectiveState(item)).not.toBe("reviewed");
+    expect(badgeText(item)).not.toMatch(/Last reviewed/);
+  });
+
+  it("does not claim review with a blank reviewer name", () => {
+    const item = { ...base, review: { ...reviewedBase, reviewerName: "   " } };
+    expect(effectiveState(item)).not.toBe("reviewed");
+    expect(badgeText(item)).not.toMatch(/Last reviewed/);
+  });
+
+  // "" === "" is true, so a naive equality check on the two hash fields
+  // reads a row where neither hash was ever populated as a match.
+  it("does not treat two blank content hashes as matching", () => {
+    const item = {
+      ...base,
+      contentHash: "",
+      review: { ...reviewedBase, contentHash: "" },
+    };
+    expect(effectiveState(item)).not.toBe("reviewed");
+    expect(badgeText(item)).not.toMatch(/Last reviewed/);
+  });
+
+  // Nullish coalescing (`??`) only catches null/undefined, not "", so a
+  // blank publisher used to slip through to "Sourced from  · awaiting
+  // review" — a visible double space where an organisation name should be.
+  it("treats a blank publisher as missing, not as an empty name", () => {
+    const item = { ...base, sources: [{ ...base.sources[0], publisher: "" }] };
+    expect(badgeText(item)).toBe("Sourced from an external standard · awaiting review");
+  });
+
+  it("still shows the reviewed badge for a fixture with genuinely complete provenance", () => {
+    const item = { ...base, review: { ...reviewedBase } };
+    expect(effectiveState(item)).toBe("reviewed");
+    expect(badgeText(item)).toBe("Last reviewed: 12 Aug 2026 · A. Mensah, Ghana Health Service");
+  });
+
+  it("still shows every real shipped item as sourced-but-awaiting-review", () => {
+    for (const item of visibleItems()) {
+      expect(badgeText(item)).toMatch(/^Sourced from .+ · awaiting review$/);
+    }
+  });
+});

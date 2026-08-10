@@ -75,27 +75,72 @@ function fromJson(raw: any): SafetyItem {
 
 const BUNDLED: SafetyItem[] = (bundled as any[]).map(fromJson);
 
+function isBlank(value?: string | null): boolean {
+  return value == null || value.trim().length === 0;
+}
+
+const BARE_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+/** Bare `YYYY-MM-DD` is always a real calendar date if it's not blank; anything else must round-trip through Date to prove it parses. */
+function isValidReviewDate(value?: string | null): boolean {
+  if (isBlank(value)) return false;
+  if (BARE_DATE.test(value!)) return true;
+  return !Number.isNaN(new Date(value!).getTime());
+}
+
 /**
- * The badge is derived, never stored. A review is only a review while the
- * text still hashes to what the reviewer approved — this function computes
- * no hash itself, it only compares the two strings the data already carries
- * (item.contentHash, the hash of the text as it stands now, and
- * item.review.contentHash, the hash of the text as the reviewer read it).
- * That comparison is the entire mechanism behind the reviewer packet's
- * promise that an edited item automatically reverts to "awaiting review".
+ * Mirrors, on purpose, the database's own gate on this same claim —
+ * `safety_content_reviewed_requires_provenance` in
+ * api/migrations/000006_alter_safety_content_review.up.sql, which refuses
+ * to *store* a `reviewed` row without a reviewer name, a review date, and
+ * an approved-content hash. This function is the app's half of that
+ * promise: it must refuse to *render* what the database refuses to store,
+ * or the two drift and the badge starts making claims the database itself
+ * wouldn't allow.
+ *
+ * Every check below fails closed. Before this existed, `review.state ===
+ * "reviewed"` plus a bare hash comparison was enough to badge a review that
+ * never happened: `reviewedAt: null` parses as the Unix epoch and slid past
+ * the old NaN guard ("Last reviewed: 1 Jan 1970"), a missing `reviewedAt`
+ * rendered the literal string "undefined", two never-populated hashes are
+ * both "" and "" === "" is true, and a `reviewed` row with no reviewer name
+ * rendered a claim with nobody attached to it. Each is the same failure —
+ * a provenance claim with nothing behind it — which is the precise defect
+ * this project exists to remove from a hardcoded UI badge in the first
+ * place.
  */
 export function effectiveState(item: SafetyItem): EffectiveState {
   if (item.review.state === "withdrawn") return "withdrawn";
   if (item.review.state !== "reviewed") return "pending";
-  if (item.review.contentHash !== item.contentHash) return "stale";
-  return "reviewed";
+
+  const hasReviewer = !isBlank(item.review.reviewerName);
+  const hasDate = isValidReviewDate(item.review.reviewedAt);
+  const hasBothHashes = !isBlank(item.review.contentHash) && !isBlank(item.contentHash);
+  if (!hasReviewer || !hasDate || !hasBothHashes) return "pending";
+
+  return item.review.contentHash === item.contentHash ? "reviewed" : "stale";
 }
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-function formatReviewDate(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
+/**
+ * Bare `YYYY-MM-DD` — the only form the build pipeline writes today — is
+ * parsed as calendar-date digits directly, never through `new Date()`. A
+ * full ISO timestamp near midnight in a non-UTC offset converts to a
+ * different UTC calendar day (`2026-08-12T23:00:00-05:00` is
+ * `2026-08-13T04:00:00Z`), which would silently print "13 Aug 2026" for a
+ * date a reviewer would call the 12th. Nothing today writes that form, but
+ * nothing stops it either, so the common case is handled without ever
+ * routing through Date's timezone conversion at all.
+ */
+function formatReviewDate(value: string): string {
+  const bare = BARE_DATE.exec(value);
+  if (bare) {
+    const [, year, month, day] = bare;
+    return `${Number(day)} ${MONTHS[Number(month) - 1]} ${year}`;
+  }
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return value;
   return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 
@@ -120,13 +165,24 @@ function truncate(text: string, max: number): string {
  */
 export function badgeText(item: SafetyItem): string {
   if (effectiveState(item) === "reviewed") {
+    // effectiveState already guarantees reviewerName is non-blank whenever
+    // this branch runs, so `who` can never be empty in practice — the
+    // isBlank filter (not plain Boolean, which lets "   " through) and the
+    // conditional separator below are defensive anyway: a formatter that
+    // can render "Last reviewed: 12 Aug 2026 · " with nothing after the
+    // separator is one refactor away from doing it for real.
     const who = [item.review.reviewerName, item.review.reviewerCredential]
-      .filter(Boolean)
+      .filter((s): s is string => !isBlank(s))
       .join(", ");
-    return `Last reviewed: ${formatReviewDate(item.review.reviewedAt!)} · ${who}`;
+    const attribution = who ? ` · ${who}` : "";
+    return `Last reviewed: ${formatReviewDate(item.review.reviewedAt!)}${attribution}`;
   }
 
-  const publisher = item.sources[0]?.publisher ?? "an external standard";
+  // `??` only catches null/undefined, not "" — a blank publisher used to
+  // slip through as "Sourced from  · awaiting review" (visible double
+  // space). Blank is treated as absent, same as a missing field.
+  const rawPublisher = item.sources[0]?.publisher;
+  const publisher = isBlank(rawPublisher) ? "an external standard" : rawPublisher!;
   return `Sourced from ${truncate(publisher, 48)} · awaiting review`;
 }
 
