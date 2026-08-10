@@ -23,6 +23,7 @@ import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
 import { typography } from "../../theme/typography";
 import { NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
+import { askAI } from "../../lib/aiApi";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { GuidesStackParamList } from "../../navigation/types";
 
@@ -60,78 +61,17 @@ const SUGGESTED_QUESTIONS = [
   "My house is on fire!",
 ];
 
-// Mock responses matched to suggested questions
-const MOCK_RESPONSES: Record<string, Omit<Message, "id">> = {
-  "How do I treat a minor burn?": {
-    role: "assistant",
-    type: "steps",
-    content: "Here's how to treat a minor burn:",
-    steps: [
-      {
-        title: "Cool the burn",
-        body: "Hold the area under cool (not cold) running water for 10–20 minutes.",
-      },
-      {
-        title: "Remove jewelry",
-        body: "Gently take off rings, watches, or tight items near the burn before swelling starts.",
-      },
-      {
-        title: "Don't pop blisters",
-        body: "If blisters form, leave them intact. They protect the skin underneath.",
-      },
-      {
-        title: "Cover loosely",
-        body: "Apply a sterile, non-stick bandage or clean cloth over the area.",
-      },
-      {
-        title: "Take pain relief",
-        body: "Over-the-counter ibuprofen or paracetamol can help with pain and swelling.",
-      },
-    ],
-  },
-  "Can I use water on an electrical fire?": {
-    role: "assistant",
-    type: "warning",
-    content:
-      "Never use water on an electrical fire. Water conducts electricity and can cause electrocution or make the fire spread.\n\nInstead:\n• Unplug the device or cut power at the breaker if safe to do so\n• Use a Class C or CO₂ fire extinguisher\n• If you can't control it, evacuate immediately and call 192",
-  },
-  "What's the emergency number in Ghana?": {
-    role: "assistant",
-    type: "fact",
-    content: "The Ghana National Fire Service emergency number is:",
-    factLabel: "Fire Emergency Number",
-    factValue: "192",
-  },
-  "My house is on fire!": {
-    role: "assistant",
-    type: "emergency",
-    content:
-      "Get out of the building NOW. Do not stop to collect belongings.\n\n• Stay low — smoke rises, cleaner air is near the floor\n• Feel doors before opening — if hot, use another exit\n• Once outside, move away from the building\n• Call 192 immediately from a safe location\n• Do NOT go back inside for any reason",
-  },
-};
-
-const getResponse = (text: string): Omit<Message, "id"> => {
-  const match = MOCK_RESPONSES[text];
-  if (match) return match;
-
-  return {
-    role: "assistant",
-    type: "outOfScope",
-    content:
-      "I'm specifically trained to help with fire safety, burn first aid, and emergency response in Ghana. I can't help with that topic, but try asking me about:\n\n• Fire prevention tips\n• Burn treatment steps\n• Evacuation procedures\n• Emergency contacts",
-  };
-};
-
 export const GuidesChatScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
   const { theme, isDark } = useTheme();
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
-  const handleSend = (text?: string) => {
+  const handleSend = async (text?: string) => {
     const messageText = text || input.trim();
-    if (!messageText) return;
+    if (!messageText || isLoading) return;
 
     const userMsg: Message = {
       id: Date.now().toString(),
@@ -140,18 +80,32 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
       content: messageText,
     };
 
-    const response = getResponse(messageText);
-    const aiMsg: Message = {
-      ...response,
-      id: (Date.now() + 1).toString(),
-    };
-
-    setMessages((prev) => [...prev, userMsg, aiMsg]);
+    setMessages((prev) => [...prev, userMsg]);
     setInput("");
+    setIsLoading(true);
 
-    setTimeout(() => {
-      flatListRef.current?.scrollToEnd({ animated: true });
-    }, 100);
+    try {
+      const answer = await askAI(messageText);
+      setMessages((prev) => [
+        ...prev,
+        { id: `${Date.now() + 1}`, role: "assistant", type: "text", content: answer },
+      ]);
+    } catch (err) {
+      console.warn("[GuidesChat] ask failed", err);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `${Date.now() + 1}`,
+          role: "assistant",
+          type: "warning",
+          content:
+            "I couldn't reach the safety assistant. The written guides work offline — go back and open any topic.",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+    }
   };
 
   const renderSteps = (steps: Step[]) => (
@@ -311,6 +265,30 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
             renderFactCard(item.factLabel, item.factValue)}
           {item.type === "emergency" && renderEmergencyCard(item.content)}
           {item.type === "outOfScope" && renderOutOfScopeCard(item.content)}
+
+          {item.role === "assistant" && (
+            <View style={styles.aiDisclaimer}>
+              <Text variant="label" color={theme.textTertiary}>
+                AI-generated · Not medical advice
+              </Text>
+              <Text variant="label" color={theme.textTertiary} style={{ marginTop: 2, lineHeight: 15 }}>
+                This is general guidance only. In an active emergency, call your nearest fire station immediately.
+              </Text>
+              <TouchableOpacity
+                style={styles.callShortcut}
+                onPress={() =>
+                  Linking.openURL(`tel:${NATIONAL_EMERGENCY_PHONE}`).catch((err) =>
+                    console.warn("[GuidesChat] dial failed", err)
+                  )
+                }
+              >
+                <PhoneIcon size={12} color={colors.brandPrimary} weight="fill" />
+                <Text variant="label" weight="bold" color={colors.brandPrimary}>
+                  Call {NATIONAL_EMERGENCY_PHONE}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
     );
@@ -595,6 +573,18 @@ const styles = StyleSheet.create({
   aiContent: {
     borderWidth: 1,
     borderBottomLeftRadius: 4,
+  },
+  aiDisclaimer: {
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(128,128,128,0.2)",
+  },
+  callShortcut: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 6,
   },
   suggestions: {
     gap: 8,
