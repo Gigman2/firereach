@@ -3,43 +3,43 @@
 **Slug:** `hazard-seasonal`  
 **Section:** Hazard — seasonal  
 **Current state:** pending_review  
-**Content hash:** `0cb1f79adbbd883707bc70b6583b8d5f760359444087ff2b5941acc4c6158636`
+**Content hash:** `770e0bcc1d077535ebedad020569ecdc2cdd13dca122c8c0d291f1d24c809a2d`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
 > reverts this item to "awaiting review".
 
-_Harmattan brings dry grass and wind. What the law says about bush fires, and how to protect your place._
+_Starting a bushfire is a criminal offence in Ghana, and so is failing to report one. What the law requires._
 
 ## Text as the user sees it
 
-In the dry harmattan months the air is dry and the wind is strong, and grass, bush, and farm waste catch easily. A fire that starts in the bush can reach homes, farms, fuel stores, and market sheds quickly. The guidance below comes from Ghanaian law and from GNFS and NFPA fire safety advice.
+In the dry harmattan months the air is dry and the wind is strong, and grass, farm waste and bush catch easily. A fire that starts in the bush can reach homes, farms, fuel stores and market sheds quickly.
 
-What the law says. Under the Control and Prevention of Bushfires Act, 1990 (P.N.D.C.L. 229):
+The law. Ghana's Control and Prevention of Bushfires Act, 1990 (P.N.D.C.L. 229), made on 1 March 1990, says:
 
-- Except as otherwise provided under the Act, it is unlawful for any person to start a bushfire for any purpose.
-- A person starts a bushfire if an action of that person results in the uncontrolled burning of any farm, forest, or grassland.
-- A Bushfire Control Subcommittee is established in each district. It may make by-laws for the control of bushfires, indicate burning seasons, and draw up burning programmes.
-- Before any burning, find out what your district's by-laws and burning season allow. Do not assume.
+- **Section 1, Prohibition of Bushfires:** "Except as otherwise provided under this Act, it is unlawful for any person to start a bushfire for any purpose."
+- **Section 2, Meaning of Starting a Bushfire:** "For the purposes of this Act, a person starts a bushfire if an action of that person results in the uncontrolled burning of any farm, forest or grassland." You do not have to intend the spread to have committed the offence.
+- **Section 8, Control of Fire:** "A person who starts a fire permitted by this Act shall control the spread of the fire." A permitted burn is still yours to control. Do not walk away from one.
+- **Section 6(1)(b):** each District's Bushfire Control Sub-committee must "specify the period or periods in the year, and thereafter yearly, within which the burning of farm slash, grass, herbage and dead wood shall be prohibited." Burning seasons are set district by district, so ask your District Assembly what applies where you are before you burn anything.
+- **Section 12, Duty to Report Bushfire:** it is an offence to become aware of a bushfire and, without good cause, fail to report it — to a fire volunteer squad member, a member of the bushfire control Sub-committee, a police officer, or the traditional authority. Reporting a bush fire is a legal duty here, not a favour.
+- **Section 11, Offences:** contravening the Act carries a fine, or imprisonment or community labour not exceeding twelve months, or both, and more for a repeat offence.
 
-Around your home, farm, shop, or shed:
-
-- GNFS says to keep your area free of waste paper, trash, and other items that can easily catch fire.
-- NFPA's rule for the stovetop applies outdoors too: keep anything that can catch fire away from any open flame.
-- NFPA says to check that escape routes are clear and that doors and windows can be opened easily.
+**How this law text was checked:** the Parliament of Ghana repository returns an error to automated requests, so the section text above was read on GhanaLegal, a third-party legal portal, and cross-checked against the FAO ECOLEX record of the Act. It has not been confirmed against a government-published copy. This source is marked unverified for that reason, and a Ghanaian reviewer should confirm the wording and check for any later amendment.
 
 If a bush or grass fire starts near you:
 
 - Call 192 straight away. GNFS says to call for help before attempting to extinguish a serious fire.
-- GNFS says not to attempt to put out a fire where it is emitting toxic smoke. If you suspect the smoke is toxic, or simply do not know, leave it to the professionals.
-- GNFS says to check that all other people are out and assembled at a safe meeting point.
+- GNFS says not to attempt to put out a fire where it is emitting toxic smoke, and that if you suspect or simply do not know if the smoke is toxic, leave it to the professionals.
+- GNFS says to check that all other people are out and that they are all assembled at a safe meeting point.
 - NFPA says to choose an outside meeting place a safe distance in front of the building.
+
+**Not covered yet:** firebreaks and cleared strips around buildings, whether to burn on windy harmattan days, what time of day is safer, and keeping water or sand to hand. These are real questions and no Ghanaian source for them could be reached, so they have been left out rather than written from memory.
 
 ## Sources cited
 
-- Control and Prevention of Bushfires Act, 1990 (P.N.D.C.L. 229) — Republic of Ghana, 1990. <https://www.ecolex.org/details/legislation/control-and-prevention-of-bushfires-act-1990-pndcl-229-lex-faoc040958/>
+- Control and Prevention of Bushfires Act, 1990 (P.N.D.C.L. 229) — sections 1, 2, 6, 8, 11 and 12. Section text read on GhanaLegal, a third-party legal portal, because the Parliament of Ghana repository returns HTTP 403. Not confirmed against a government-published copy, and not checked for later amendment. — Republic of Ghana (text read via GhanaLegal), 1990. <https://ghanalegal.com/laws_subdomain/acts/id/506/control-and-prevention-of-bushfires-act/> **⚠ UNVERIFIED — please confirm or replace**
+- Control and Prevention of Bushfires Act, 1990 (P.N.D.C.L. 229) — FAOLEX record — Food and Agriculture Organization of the United Nations (ECOLEX/FAOLEX), 1990. <https://www.ecolex.org/details/legislation/control-and-prevention-of-bushfires-act-1990-pndcl-229-lex-faoc040958/>
 - How to Use a Fire Extinguisher (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php>
-- Fire Safety Tips for the Workplace (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107114316/https://www.gnfs.gov.gh/fire-safety-tips-workplace.php>
 - How to make a home fire escape plan — National Fire Protection Association, . <https://www.nfpa.org/education-and-research/home-fire-safety/escape-planning>
 
 ## Sign-off

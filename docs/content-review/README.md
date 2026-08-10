@@ -48,4 +48,10 @@ sourced-but-unreviewed. Your signature is what changes that.
 
 ## Unverified citations needing attention
 
-- firstaid-extinguisher-pass: NFPA 10, Standard for Portable Fire Extinguishers
+- hazard-electrical: Applied instruction — "run a generator in the open air, never in a closed room". No source states this rule; it is FireReach's application of WHO's carbon monoxide findings. Needs GNFS/GHS confirmation.
+- hazard-cooking: Applied instruction — "never bring a coalpot into a closed room". No source states this rule; it is FireReach's application of WHO's carbon monoxide findings. Needs GNFS/GHS confirmation.
+- hazard-home: Applied instructions — extending NFPA's stovetop rule to lamps, candles and coalpots, and NFPA's security-bars rule to compound gates. Both are FireReach's extensions, not NFPA's words. Also: "most homes here have no smoke alarm" is FireReach's statement of local conditions, with no source. Needs GNFS/GHS confirmation.
+- hazard-seasonal: Control and Prevention of Bushfires Act, 1990 (P.N.D.C.L. 229) — sections 1, 2, 6, 8, 11 and 12. Section text read on GhanaLegal, a third-party legal portal, because the Parliament of Ghana repository returns HTTP 403. Not confirmed against a government-published copy, and not checked for later amendment.
+- firstaid-burns: OPEN QUESTION for the clinical reviewer — cooling duration for infants, small children and large-area burns. ANZCOR/ERC say at least 20 minutes; WHO warns against prolonged cooling without defining it. FireReach has NOT chosen between them. Please decide whether to name a shorter duration or an observable stop-signal. See step 14.
+- firstaid-evacuation: Gap flagged for the reviewer — this guide does not tell the reader to check a door for heat before opening it. No source among those cited states it, so it was left out rather than written from memory. Please advise whether to add it.
+- firstaid-extinguisher-pass: NFPA 10, Standard for Portable Fire Extinguishers — cited at document level only. The standard's text is paywalled, so the clause containing PASS was never read and no section number or edition year is given. PASS itself is quoted from GNFS and from NFPA's free public-education page, so nothing in this guide depends on NFPA 10.

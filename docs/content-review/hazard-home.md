@@ -3,7 +3,7 @@
 **Slug:** `hazard-home`  
 **Section:** Hazard — home  
 **Current state:** pending_review  
-**Content hash:** `d66e7333ce987e7ad398b5cd93c5169f01709090674a62665de02f673d2a810e`
+**Content hash:** `3d6c209019da7a7f7489a665d5b8884913984ef8add26c6353b88ce644907f42`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -13,34 +13,38 @@ _Cut the risk at home, and make sure everyone can get out in the two minutes a f
 
 ## Text as the user sees it
 
-Most home fire deaths come down to how fast smoke spreads and how little time there is to get out. NFPA says fire can spread rapidly through your home, leaving you as little as one or two minutes to escape safely once the smoke alarm sounds. The guidance below comes from NFPA, the Ghana National Fire Service, and WHO.
+NFPA says fire can spread rapidly through your home, leaving you as little as one or two minutes to escape safely once the smoke alarm sounds. **Most homes here have no smoke alarm.** Without one there is no early warning at all, so the clock starts only when somebody happens to notice — which means less time, not more.
+
+Smoke alarms. NFPA says to install smoke alarms in every sleeping room, outside each sleeping area, and on every level of the home. Where alarms are fitted, NFPA says that when one sounds they should all sound. If you have no alarm, treat every other precaution below as more important, not less.
 
 Reduce the risk:
 
 - GNFS says to keep your space free of waste paper, trash, and other items that can easily catch fire.
 - NFPA says to have all electrical work done by a qualified electrician.
-- NFPA says only one heat-producing appliance should be plugged into a socket at a time.
+- NFPA says only one heat-producing appliance should be plugged into a receptacle outlet at a time.
 - GNFS says to turn off electrical appliances when they are not in use.
-- NFPA's rule for the stovetop applies to any open flame: keep anything that can catch fire away from it. That includes kerosene lamps, candles, and coalpots near curtains, mats, or mattresses.
+- NFPA's rule for the stovetop is to keep anything that can catch fire away from it. FireReach applies the same rule to any open flame — kerosene lamps, candles, and coalpots near curtains, mats, or mattresses. NFPA states the stovetop rule; extending it to other flames is FireReach's step, flagged below.
 
 Be ready to get out. NFPA says:
 
 - Walk through your home and inspect all possible exits and escape routes, marking two ways out of each room, including windows and doors.
-- Check that escape routes are clear and that doors and windows can be opened easily.
+- When you walk through your plan, check to make sure the escape routes are clear and doors and windows can be opened easily.
 - Choose an outside meeting place a safe distance in front of your home where everyone can meet after they have escaped.
-- If windows or doors have security bars, make sure the bars have emergency release devices inside so they can be opened immediately in an emergency. The same principle applies to a shared compound: the way out must open immediately, not be padlocked shut.
-- Make sure everyone in the household knows the emergency number by heart, so anyone can call from a neighbour's phone once safely outside. In Ghana that number is 192, toll-free on all networks.
-- Practise the plan twice a year, and make arrangements for anyone in the home who has a disability, and for infants and older adults.
-- A closed door may slow the spread of smoke, heat, and fire. Close doors on your way out.
+- If windows or doors in your home have security bars, make sure that the bars have emergency release devices inside so that they can be opened immediately in an emergency. FireReach applies the same principle to a shared compound gate: it must open immediately, not be padlocked shut. NFPA states the security-bars rule; extending it to compound gates is FireReach's step, flagged below.
+- Have everyone memorize the emergency phone number of the fire department, so any member of the household can call from a neighbour's home or a mobile phone once safely outside. In Ghana that number is 192, toll-free on all networks.
+- If there are infants, older adults, or family members with mobility limitations, make sure that someone is assigned to assist them in the fire drill and in the event of an emergency. Assign a backup person too.
+- Practise your home fire escape plan twice a year.
+- A closed door may slow the spread of smoke, heat and fire. Close doors on your way out.
 
-Smoke inside the home is its own hazard. WHO reports that around 2.1 billion people cook using open fires or inefficient stoves fuelled by kerosene, biomass, and coal. WHO also reports that in poorly ventilated dwellings, indoor smoke can have levels of fine particles 100 times higher than acceptable.
+Items that block doors and windows could keep you from escaping, so NFPA says to unblock your exits.
 
 ## Sources cited
 
 - How to make a home fire escape plan — National Fire Protection Association, . <https://www.nfpa.org/education-and-research/home-fire-safety/escape-planning>
 - Electrical Home Fire Safety — National Fire Protection Association, . <https://www.nfpa.org/education-and-research/home-fire-safety/electrical-safety-in-the-home>
+- Safety with cooking equipment — National Fire Protection Association, . <https://www.nfpa.org/education-and-research/home-fire-safety/cooking>
 - Fire Safety Tips for the Workplace (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107114316/https://www.gnfs.gov.gh/fire-safety-tips-workplace.php>
-- Household air pollution (fact sheet) — World Health Organization, 2025. <https://www.who.int/news-room/fact-sheets/detail/household-air-pollution-and-health>
+- Applied instructions — extending NFPA's stovetop rule to lamps, candles and coalpots, and NFPA's security-bars rule to compound gates. Both are FireReach's extensions, not NFPA's words. Also: "most homes here have no smoke alarm" is FireReach's statement of local conditions, with no source. Needs GNFS/GHS confirmation. — FireReach — not an external source, . <> **⚠ UNVERIFIED — please confirm or replace**
 
 ## Sign-off
 

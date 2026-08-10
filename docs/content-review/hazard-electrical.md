@@ -3,7 +3,7 @@
 **Slug:** `hazard-electrical`  
 **Section:** Hazard — electrical  
 **Current state:** pending_review  
-**Content hash:** `585ff185f61190f5cc68d27d0d4384a3f6c63849528bb7023c0a3b2f18a9aa90`
+**Content hash:** `f1767460a5201d375e3e4def5b38a6b90d8162b58f9ceef11301a21db32f5a47`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -13,7 +13,7 @@ _How to spot bad wiring, overloaded sockets, and generator risks before they sta
 
 ## Text as the user sees it
 
-Electrical faults are a common cause of fires in homes and workplaces. Extension boards, long runs of flex, and standby generators all add risk. The precautions below come from the National Fire Protection Association (NFPA) and the Ghana National Fire Service (GNFS).
+Electrical faults start a lot of fires. NFPA reports that in 2020–2024, home fires involving an electrical failure or malfunction, or electrical equipment involved in ignition, caused an annual average of 527 deaths and 1,580 injuries in the United States. Extension boards, long runs of flex, and standby generators all add risk.
 
 In the house, shop, or office:
 
@@ -27,16 +27,18 @@ In the house, shop, or office:
 - GNFS says to turn off electrical appliances at the end of each day, or when they are not in use.
 - GNFS says to keep heat-producing equipment away from anything that might burn.
 
-NFPA says to call a qualified electrician or your landlord if you notice any of these warning signs:
+NFPA says to call a qualified electrician or your landlord if you have any of these:
 
-- Fuses blowing or circuit breakers tripping often.
+- Frequent problems with blowing fuses or tripping circuit breakers.
 - A tingling feeling when you touch an electrical appliance.
-- Discoloured or warm wall sockets.
+- Discoloured or warm wall outlets.
 - A burning or rubbery smell coming from an appliance.
-- Lights flickering or dimming.
-- Sparks from a socket.
+- Flickering or dimming lights.
+- Sparks from an outlet.
 
-Generators burn fuel and give off smoke. WHO reports that in poorly ventilated dwellings, indoor smoke can have levels of fine particles 100 times higher than acceptable. Run a generator in the open air, never in a closed room or a shut-in corner of a compound.
+Generators and carbon monoxide. WHO's indoor air quality guidelines describe carbon monoxide as "a colourless, non-irritant, odourless and tasteless toxic gas", produced by "the incomplete combustion of carbonaceous fuels such as wood, petrol, coal, natural gas and kerosene". WHO says it binds to haemoglobin in place of oxygen, so that less haemoglobin is left to carry oxygen, and the result is arterial hypoxaemia. You cannot see it or smell it, and a generator that is barely smoking is still producing it.
+
+**On this basis FireReach advises running a generator in the open air, never in a closed room or a shut-in corner of a compound.** That specific instruction is not itself a quotation from WHO, which describes the hazard but does not give this rule. It is flagged for GNFS or Ghana Health Service to confirm or correct.
 
 If a fire starts, get everyone out and call 192. GNFS says to call for help before attempting to deal with a serious fire yourself.
 
@@ -44,8 +46,9 @@ If a fire starts, get everyone out and call 192. GNFS says to call for help befo
 
 - Electrical Home Fire Safety — National Fire Protection Association, . <https://www.nfpa.org/education-and-research/home-fire-safety/electrical-safety-in-the-home>
 - Fire Safety Tips for the Workplace (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107114316/https://www.gnfs.gov.gh/fire-safety-tips-workplace.php>
-- Household air pollution (fact sheet) — World Health Organization, 2025. <https://www.who.int/news-room/fact-sheets/detail/household-air-pollution-and-health>
+- Carbon monoxide, in WHO Guidelines for Indoor Air Quality: Selected Pollutants — World Health Organization, 2010. <https://www.ncbi.nlm.nih.gov/books/NBK138710/>
 - How to Use a Fire Extinguisher (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php>
+- Applied instruction — "run a generator in the open air, never in a closed room". No source states this rule; it is FireReach's application of WHO's carbon monoxide findings. Needs GNFS/GHS confirmation. — FireReach — not an external source, . <> **⚠ UNVERIFIED — please confirm or replace**
 
 ## Sign-off
 
