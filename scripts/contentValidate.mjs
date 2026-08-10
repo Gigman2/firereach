@@ -24,6 +24,11 @@ export const SUBCATEGORIES = Object.freeze({
 
 const VALID_STATES = new Set(["draft", "pending_review", "reviewed", "withdrawn"]);
 
+// `!field` treats "   " as truthy content, so a whitespace-only title or
+// body — or a citation of empty strings — sails through every presence
+// check below. blank() is what actually enforces "has something to say."
+const blank = (v) => typeof v !== "string" || v.trim() === "";
+
 export function validateContent(items) {
   const errors = [];
   const seen = new Set();
@@ -35,8 +40,8 @@ export function validateContent(items) {
     if (seen.has(item.slug)) errors.push(`${at}: duplicate slug.`);
     seen.add(item.slug);
 
-    if (!item.title) errors.push(`${at}: missing title.`);
-    if (!item.body) errors.push(`${at}: missing body.`);
+    if (blank(item.title)) errors.push(`${at}: missing title.`);
+    if (blank(item.body)) errors.push(`${at}: missing body.`);
 
     const tab = SUBCATEGORIES[item.subcategory];
     if (!tab) {
@@ -47,10 +52,33 @@ export function validateContent(items) {
 
     if (!Array.isArray(item.sources) || item.sources.length === 0) {
       errors.push(`${at}: needs at least one source. Every clinical claim must be traceable.`);
+    } else {
+      // title + publisher are what let a human actually verify a citation.
+      // url is deliberately not required — a printed GHS/GNFS/WHO standard
+      // may have no public link, and demanding one invites a fabricated URL,
+      // which is the one thing this project can never tolerate.
+      item.sources.forEach((source, i) => {
+        if (blank(source?.title) || blank(source?.publisher)) {
+          errors.push(
+            `${at}: source ${i + 1} has no title or publisher — a citation a reviewer cannot check is not a citation.`
+          );
+        }
+      });
     }
 
-    if (item.category === "first_aid" && (!item.steps || item.steps.length === 0)) {
-      errors.push(`${at}: first_aid items need at least one step.`);
+    if (item.category === "first_aid") {
+      if (!item.steps || item.steps.length === 0) {
+        errors.push(`${at}: first_aid items need at least one step.`);
+      } else {
+        // A step with an empty title/body renders as a bare number in the
+        // UI — "1." with nothing after it — which is worse mid-emergency
+        // than having no step at all.
+        item.steps.forEach((step, i) => {
+          if (blank(step?.title) || blank(step?.body)) {
+            errors.push(`${at}: step ${i + 1} has no title or body.`);
+          }
+        });
+      }
     }
 
     const review = item.review ?? {};
