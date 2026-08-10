@@ -67,10 +67,18 @@ describe("loadContent", () => {
 });
 
 describe("refreshContent", () => {
-  it("caches a valid response", async () => {
+  // A short/partial server response must never leave the app with less
+  // content than it shipped with (H2). refreshContent unions the response
+  // with the bundled set by slug: the fetched hazard-cooking item overrides
+  // the bundled one of the same slug, and the other eight bundled guides —
+  // absent from this one-item response — survive untouched.
+  it("unions a valid response with the bundled floor by slug, rather than replacing it", async () => {
     (apiGet as jest.Mock).mockResolvedValue([wireItem()]);
     await refreshContent();
-    expect(await loadContent()).toHaveLength(1);
+    const items = await loadContent();
+    expect(items).toHaveLength(9);
+    const updated = items.find((i) => i.slug === "hazard-cooking");
+    expect(updated?.title).toBe("Cooking Fire Safety (updated)");
   });
 
   // A server compromise or a bad seed must not be able to push unreviewed

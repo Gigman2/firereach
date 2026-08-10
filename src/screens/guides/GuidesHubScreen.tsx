@@ -66,6 +66,18 @@ export const NEUTRAL_ACCENT = "#6B7280";
 
 const TAB_FOR_CATEGORY = { hazard: "Hazards", first_aid: "First Aid" } as const;
 
+// With OTA (Task 13), an item can arrive with a subcategory this build of
+// the app has never heard of. GuideDetailScreen already guards the same
+// lookup with `?? NEUTRAL_ACCENT`; this map logs each unknown subcategory
+// once (not once per render/item) so a real drift is still visible without
+// spamming the console every time the hub re-renders.
+const loggedUnknownSubcategories = new Set<string>();
+function warnUnknownSubcategoryOnce(subcategory: string): void {
+  if (loggedUnknownSubcategories.has(subcategory)) return;
+  loggedUnknownSubcategories.add(subcategory);
+  console.warn(`[GuidesHubScreen] unknown subcategory "${subcategory}" — skipping card`);
+}
+
 export const GuidesHubScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
@@ -166,6 +178,10 @@ export const GuidesHubScreen = ({ navigation }: Props) => {
 
         {filtered.map((item) => {
           const meta = SUBCATEGORY_META[item.subcategory];
+          if (!meta) {
+            warnUnknownSubcategoryOnce(item.subcategory);
+            return null;
+          }
           return (
             <TouchableOpacity
               key={item.slug}
