@@ -110,7 +110,7 @@
     "subcategory": "home",
     "title": "Home Fire Safety",
     "summary": "Cut the risk at home, and make sure everyone can get out in the minute or two a fire gives you.",
-    "body": "Fire spreads fast. Once it takes hold you may have only a minute or two to get out. Most homes here have no smoke alarm, so no one gets an early warning — the clock starts only when somebody notices.\n\nSmoke alarms:\n\n- Fit an alarm in every bedroom, outside each sleeping area, and on every floor.\n- If you have no alarm, nothing will wake you in the night. Plan and practise your way out.\n\nReduce the risk:\n\n- Keep your space clear of waste paper, rubbish, and anything else that catches easily.\n- Let a qualified electrician do all electrical work.\n- Plug only one heat-producing appliance into a socket at a time.\n- Switch appliances off when you are not using them.\n- Keep anything that burns well away from any open flame. Curtains, mats, and mattresses do not belong near a kerosene lamp, a candle, or a coalpot.\n\nBe ready to get out:\n\n- Walk through your home and find two ways out of every room. Count windows, not just doors.\n- Check that both ways out are clear, and that the doors and windows open easily.\n- Agree on a meeting place outside, a safe distance in front of the house, where everyone gathers.\n- Burglar bars need a release catch on the inside that opens immediately. A compound gate must open immediately too — never padlocked shut at night.\n- Make sure everyone knows to call 192, so anyone can call from a neighbour's phone once they are outside.\n- Decide now who helps the babies, the elderly, and anyone who cannot move quickly. Name a second person too, in case the first one is out.\n- Practise the plan twice a year.\n- Close doors behind you as you leave. A closed door slows the fire and buys you time.\n- Never block a door or window with furniture, stock, or goods.",
+    "body": "Fire spreads fast. Once it takes hold you may have only a minute or two to get out. Most homes here have no smoke alarm, so no one gets an early warning — the clock starts only when somebody notices.\n\nSmoke alarms:\n\n- Fit an alarm in every bedroom, outside each sleeping area, and on every floor.\n\nReduce the risk:\n\n- Keep your space clear of waste paper, rubbish, and anything else that catches easily.\n- Let a qualified electrician do all electrical work.\n- Plug only one heat-producing appliance into a socket at a time.\n- Switch appliances off when you are not using them.\n- Keep anything that burns well away from any open flame. Curtains, mats, and mattresses do not belong near a kerosene lamp, a candle, or a coalpot.\n\nBe ready to get out:\n\n- Walk through your home and find two ways out of every room. Count windows, not just doors.\n- Check that both ways out are clear, and that the doors and windows open easily.\n- Agree on a meeting place outside, a safe distance in front of the house, where everyone gathers.\n- Burglar bars need a release catch on the inside that opens immediately. A compound gate must open immediately too — never padlocked shut at night.\n- Make sure everyone knows to call 192, so anyone can call from a neighbour's phone once they are outside.\n- Decide now who helps the babies, the elderly, and anyone who cannot move quickly. Name a second person too, in case the first one is out.\n- Practise the plan twice a year.\n- Close doors behind you as you leave. A closed door slows the fire and buys you time.\n- Never block a door or window with furniture, stock, or goods.",
     "steps": [],
     "tags": [
       "home",
@@ -151,7 +151,7 @@
         "url": "https://web.archive.org/web/20251107114316/https://www.gnfs.gov.gh/fire-safety-tips-workplace.php"
       }
     ],
-    "content_hash": "bf17ea8a9fe0ca3efc6e1f26fb4465f1ca70e2bd2a6c3e3ed6209bdbcd65c932",
+    "content_hash": "0e59a9d4e1322117f5d494f99223eea2afe270446a885c690322ff9046ffdd9c",
     "review": {
       "state": "pending_review"
     },
@@ -204,7 +204,7 @@
     "category": "hazard",
     "subcategory": "seasonal",
     "title": "Dry Season and Bush Fire Safety",
-    "summary": "Starting a bushfire is a criminal offence in Ghana, and so is failing to report one.",
+    "summary": "Starting a bushfire is an offence in Ghana except where the law allows it, and failing to report one can be an offence too.",
     "body": "In the dry harmattan months the air is dry and the wind is strong. Grass, farm waste, and bush catch quickly and burn fast. A fire that starts out in the bush can reach homes, farms, fuel stores, and market sheds within minutes.\n\nWhat the law says:\n\n- Starting a bushfire is a criminal offence in Ghana, except in the few cases the law specifically allows.\n- It counts as starting one if what you did ends in a farm, forest, or grassland burning out of control. You do not have to have meant it to spread.\n- If you light a fire you are allowed to light, controlling it is your responsibility. Never walk away from it.\n- Every district sets its own periods when burning farm slash, grass, and dead wood is banned. Ask your District Assembly what applies where you are before you burn anything.\n- If you know about a bushfire, report it. Failing to report one without good reason is an offence in itself.\n- Report it to a fire volunteer, someone on your district's bushfire committee, a police officer, or your traditional authority.\n- Breaking this law can mean a fine, or imprisonment or community labour of up to twelve months, or both.\n\nIf a bush or grass fire starts near you:\n\n- Call 192 straight away. Call for help before you try to put out a serious fire.\n- Do not try to put out a fire that is giving off toxic smoke. If you think the smoke is toxic, or you simply do not know, leave it to the professionals.\n- Check that everyone is out and gathered at a safe meeting point.\n- Keep that meeting point outside, a safe distance in front of the building.\n\nThis guide does not cover firebreaks, whether to burn on windy days, what time of day is safer, or keeping water or sand to hand.",
     "steps": [],
     "tags": [
@@ -247,7 +247,7 @@
         "url": "https://www.nfpa.org/education-and-research/home-fire-safety/escape-planning"
       }
     ],
-    "content_hash": "64508bc142cb03e4250e6a82f765465d7114bdbea82f77b9f5b96e04f8f4bf20",
+    "content_hash": "8017e5855fb178a54e9512d91b4c55dc56ad816066f34e1b02e8563b154fcd34",
     "review": {
       "state": "pending_review"
     },
@@ -286,11 +286,7 @@
       },
       {
         "title": "Keep them warm",
-        "body": "Do this while you are cooling, not afterwards. Cover every part of the body that is not burnt, and keep the person warm. This matters most with a small child, who can get dangerously cold very quickly. Cool the burn — do not let the whole person get cold."
-      },
-      {
-        "title": "Babies and large burns",
-        "body": "Take extra care with a baby, a small child, or a burn that covers a large area. Cooling these burns can chill the whole person. Keep every part of the body that is not burnt covered, and watch that they do not get cold — a small child gets cold very fast. Keep cooling the burn itself."
+        "body": "Do this while you are cooling, not afterwards. Cover every part of the body that is not burnt and keep the person warm. A baby, a small child, or anyone with a burn over a large area chills fastest — watch that they do not get cold. Keep cooling the burn itself."
       },
       {
         "title": "If you were delayed",
@@ -364,7 +360,7 @@
         "url": "https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php"
       }
     ],
-    "content_hash": "c469e9b53d8235eee929c48149c1c219694fcf469c439b78fedaeb2ebedeb847",
+    "content_hash": "d9a9d082067c2d83b7aa7d03c3091ba5fea512b3909978a0e3228643ee122d6f",
     "review": {
       "state": "pending_review"
     },

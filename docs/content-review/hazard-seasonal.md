@@ -3,13 +3,13 @@
 **Slug:** `hazard-seasonal`  
 **Section:** Hazard — seasonal  
 **Current state:** pending_review  
-**Content hash:** `64508bc142cb03e4250e6a82f765465d7114bdbea82f77b9f5b96e04f8f4bf20`
+**Content hash:** `8017e5855fb178a54e9512d91b4c55dc56ad816066f34e1b02e8563b154fcd34`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
 > reverts this item to "awaiting review".
 
-_Starting a bushfire is a criminal offence in Ghana, and so is failing to report one._
+_Starting a bushfire is an offence in Ghana except where the law allows it, and failing to report one can be an offence too._
 
 ## Text as the user sees it
 

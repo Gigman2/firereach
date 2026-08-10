@@ -3,7 +3,7 @@
 **Slug:** `hazard-home`  
 **Section:** Hazard — home  
 **Current state:** pending_review  
-**Content hash:** `bf17ea8a9fe0ca3efc6e1f26fb4465f1ca70e2bd2a6c3e3ed6209bdbcd65c932`
+**Content hash:** `0e59a9d4e1322117f5d494f99223eea2afe270446a885c690322ff9046ffdd9c`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -18,7 +18,6 @@ Fire spreads fast. Once it takes hold you may have only a minute or two to get o
 Smoke alarms:
 
 - Fit an alarm in every bedroom, outside each sleeping area, and on every floor.
-- If you have no alarm, nothing will wake you in the night. Plan and practise your way out.
 
 Reduce the risk:
 
