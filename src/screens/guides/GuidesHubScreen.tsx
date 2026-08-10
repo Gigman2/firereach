@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -17,6 +17,8 @@ import {
 import { Text } from "../../components/ui/Text";
 import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
+import { useConnectivity } from "../../hooks/useConnectivity";
+import { visibleItems } from "../../lib/safetyContent";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { GuidesStackParamList } from "../../navigation/types";
 
@@ -24,89 +26,39 @@ type Props = NativeStackScreenProps<GuidesStackParamList, "GuidesHub">;
 
 const TABS = ["All", "Hazards", "First Aid"] as const;
 
-interface Category {
-  id: string;
-  label: string;
-  Icon: typeof LightningIcon;
-  accentColor: string;
-  tab: "Hazards" | "First Aid";
-}
+/**
+ * Presentation only. Which tab a topic belongs to comes from the content's
+ * own `category` field, not from this map — the previous hardcoded array had
+ * Smoke, Evacuation, and Extinguisher under Hazards, contradicting §S5.
+ */
+export const SUBCATEGORY_META: Record<string, { label: string; Icon: typeof LightningIcon }> = {
+  electrical:   { label: "Electrical",   Icon: LightningIcon },
+  cooking:      { label: "Cooking",      Icon: CookingPotIcon },
+  home:         { label: "Home",         Icon: HouseIcon },
+  workplace:    { label: "Workplace",    Icon: BuildingsIcon },
+  seasonal:     { label: "Seasonal",     Icon: CalendarIcon },
+  burns:        { label: "Burns",        Icon: FirstAidKitIcon },
+  smoke:        { label: "Smoke",        Icon: WindIcon },
+  evacuation:   { label: "Evacuation",   Icon: SignOutIcon },
+  extinguisher: { label: "Extinguisher", Icon: FireExtinguisherIcon },
+};
 
-const CATEGORIES: Category[] = [
-  {
-    id: "electrical",
-    label: "Electrical",
-    Icon: LightningIcon,
-    accentColor: colors.brandPrimary,
-    tab: "Hazards",
-  },
-  {
-    id: "cooking",
-    label: "Cooking",
-    Icon: CookingPotIcon,
-    accentColor: colors.brandPrimary,
-    tab: "Hazards",
-  },
-  {
-    id: "home",
-    label: "Home",
-    Icon: HouseIcon,
-    accentColor: colors.brandPrimary,
-    tab: "Hazards",
-  },
-  {
-    id: "workplace",
-    label: "Workplace",
-    Icon: BuildingsIcon,
-    accentColor: colors.brandPrimary,
-    tab: "Hazards",
-  },
-  {
-    id: "seasonal",
-    label: "Seasonal",
-    Icon: CalendarIcon,
-    accentColor: colors.brandPrimary,
-    tab: "Hazards",
-  },
-  {
-    id: "burns",
-    label: "Burns",
-    Icon: FirstAidKitIcon,
-    accentColor: colors.brandPrimary,
-    tab: "First Aid",
-  },
-  {
-    id: "smoke",
-    label: "Smoke",
-    Icon: WindIcon,
-    accentColor: colors.brandPrimary,
-    tab: "Hazards",
-  },
-  {
-    id: "evacuation",
-    label: "Evacuation",
-    Icon: SignOutIcon,
-    accentColor: colors.brandPrimary,
-    tab: "Hazards",
-  },
-  {
-    id: "extinguisher",
-    label: "Extinguisher",
-    Icon: FireExtinguisherIcon,
-    accentColor: colors.brandPrimary,
-    tab: "Hazards",
-  },
-];
+const TAB_FOR_CATEGORY = { hazard: "Hazards", first_aid: "First Aid" } as const;
 
 export const GuidesHubScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
+  const { isOnline } = useConnectivity();
   const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>("All");
 
-  const filtered =
-    activeTab === "All"
-      ? CATEGORIES
-      : CATEGORIES.filter((c) => c.tab === activeTab);
+  const items = useMemo(() => visibleItems(), []);
+  const filtered = useMemo(
+    () =>
+      activeTab === "All"
+        ? items
+        : items.filter((i) => TAB_FOR_CATEGORY[i.category] === activeTab),
+    [items, activeTab]
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -161,52 +113,67 @@ export const GuidesHubScreen = ({ navigation }: Props) => {
         showsVerticalScrollIndicator={false}
       >
         {/* AI Ask Bar */}
-        <TouchableOpacity
-          style={[styles.askBar, { backgroundColor: theme.surface }]}
-          activeOpacity={0.7}
-          onPress={() => navigation.navigate("GuidesChat")}
-        >
-          <BrainIcon size={20} color={colors.brandPrimary} weight="fill" />
-          <Text
-            variant="caption"
-            color={theme.textTertiary}
-            style={styles.askBarText}
-          >
-            Ask a fire safety question...
-          </Text>
-          <View style={styles.askBarArrow}>
-            <ArrowRightIcon size={14} color="#FFFFFF" />
-          </View>
-        </TouchableOpacity>
-
-        {filtered.map((cat) => (
-          <TouchableOpacity
-            key={cat.id}
-            style={[
-              styles.card,
-              { backgroundColor: theme.background, borderColor: theme.border },
-            ]}
-            activeOpacity={0.7}
-            onPress={() =>
-              navigation.navigate("GuideDetail", { guideId: cat.id })
-            }
-          >
-            <View
-              style={[
-                styles.cardIcon,
-                { backgroundColor: `${cat.accentColor}14` },
-              ]}
+        {isOnline === false ? (
+          <View style={[styles.askBar, { backgroundColor: theme.surface }]}>
+            <Text
+              variant="caption"
+              color={theme.textTertiary}
+              style={styles.askBarText}
             >
-              <cat.Icon size={22} color={cat.accentColor} weight="fill" />
-            </View>
-            <Text variant="caption" weight="bold" numberOfLines={1}>
-              {cat.label}
+              AI tips unavailable offline
             </Text>
-            <View
-              style={[styles.cardAccent, { backgroundColor: cat.accentColor }]}
-            />
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={[styles.askBar, { backgroundColor: theme.surface }]}
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate("GuidesChat")}
+          >
+            <BrainIcon size={20} color={colors.brandPrimary} weight="fill" />
+            <Text
+              variant="caption"
+              color={theme.textTertiary}
+              style={styles.askBarText}
+            >
+              Ask a fire safety question...
+            </Text>
+            <View style={styles.askBarArrow}>
+              <ArrowRightIcon size={14} color="#FFFFFF" />
+            </View>
           </TouchableOpacity>
-        ))}
+        )}
+
+        {filtered.map((item) => {
+          const meta = SUBCATEGORY_META[item.subcategory];
+          return (
+            <TouchableOpacity
+              key={item.slug}
+              style={[
+                styles.card,
+                { backgroundColor: theme.background, borderColor: theme.border },
+              ]}
+              activeOpacity={0.7}
+              onPress={() =>
+                navigation.navigate("GuideDetail", { guideId: item.slug })
+              }
+            >
+              <View
+                style={[
+                  styles.cardIcon,
+                  { backgroundColor: `${colors.brandPrimary}14` },
+                ]}
+              >
+                <meta.Icon size={22} color={colors.brandPrimary} weight="fill" />
+              </View>
+              <Text variant="caption" weight="bold" numberOfLines={1}>
+                {meta.label}
+              </Text>
+              <View
+                style={[styles.cardAccent, { backgroundColor: colors.brandPrimary }]}
+              />
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
     </View>
   );
