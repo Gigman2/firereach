@@ -3,7 +3,7 @@
 **Slug:** `hazard-electrical`  
 **Section:** Hazard — electrical  
 **Current state:** pending_review  
-**Content hash:** `a3ee8b1644bd1c3d4d9c4ed9fdfb4cd145cee4bc57921599919e43216503f6f2`
+**Content hash:** `c2a9e57b67e3e5cccfe94541afc150c5c5a3f2cdeb1a30f141610756259295a6`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -13,7 +13,7 @@ _Spot bad wiring, overloaded sockets, and generator danger before they start a f
 
 ## Text as the user sees it
 
-Bad wiring and overloaded sockets start a lot of fires. Faulty electrical equipment is one of the most common causes of house and shop fires.
+Faulty wiring, overloaded sockets, and damaged cords all start fires. Work through the checks below, and call an electrician for anything you are unsure about.
 
 In the house, shop, or office:
 

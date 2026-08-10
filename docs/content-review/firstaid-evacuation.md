@@ -3,7 +3,7 @@
 **Slug:** `firstaid-evacuation`  
 **Section:** First Aid — evacuation  
 **Current state:** pending_review  
-**Content hash:** `8e8d50a61582dfa5ebed444f46ed9cde298847d4904149e62fe220d45cfeb5b2`
+**Content hash:** `d62b1aa191895d3a6209d3cb57e3adc1e22d67b74929240493e4ceb8bd10a4b1`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -24,7 +24,7 @@ Getting everyone out comes first — before belongings, and before trying to put
 5. **Never use lifts** — Use the stairs. Never take a lift during a fire.
 6. **Meet at assembly point** — Go to the place you agreed in advance — outside the building, and well away from the danger.
 7. **Count everyone** — Count heads and make sure nobody is missing. If someone is, tell the firefighters immediately. Never go back inside to look for them yourself; they have the training and equipment for it.
-8. **If you are trapped** — If smoke or fire blocks your way out, shut yourself into a room away from the fire. Close every door between you and the fire. Block the gaps under the doors with towels or cloth, and cover any vents, to keep the smoke out. Open the window at the top and the bottom if you can, for fresh air. Call 192 and say exactly which room and which floor you are on. Wave a torch or a light-coloured cloth at the window so they can see where you are.
+8. **If you are trapped** — If smoke or fire blocks your way out, shut yourself into a room away from the fire. Close every door between you and the fire. Seal the cracks around the doors with tape or towels, and cover any air vents, to keep the smoke out. Open the window at the top and the bottom if you can, for fresh air. Call 192 and say exactly which room and which floor you are on. Wave a torch or a light-coloured cloth at the window so they can see where you are.
 9. **Plan it beforehand** — Find two ways out of every room, counting windows as well as doors. Check they are clear and that the doors and windows open easily, and never block them with furniture or goods. Practise twice a year. Decide who helps the babies, the elderly, and anyone who cannot move fast, and name a backup in case that person is out.
 
 ## Sources cited

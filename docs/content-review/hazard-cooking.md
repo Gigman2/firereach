@@ -3,7 +3,7 @@
 **Slug:** `hazard-cooking`  
 **Section:** Hazard — cooking  
 **Current state:** pending_review  
-**Content hash:** `ea16f4d6ef3ad47c4bfdb18b7c39c8cbb85f745425d2686432254eed8abe22dd`
+**Content hash:** `ddacb06957201e6b3f0c410ef5670980f5c7b7064cf0a624ab7dfa5632a6f903`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -13,7 +13,7 @@ _Charcoal, firewood, and hot oil — and what to do when a pan catches fire._
 
 ## Text as the user sees it
 
-Cooking causes more home fires than anything else. Most of them start when food is left unattended.
+Cooking is a leading cause of home fires, injuries, and deaths. About one in four home cooking fires starts with food or equipment left unattended, and those fires cause half of the deaths.
 
 While you cook:
 

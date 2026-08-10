@@ -3,7 +3,7 @@
 **Slug:** `hazard-seasonal`  
 **Section:** Hazard — seasonal  
 **Current state:** pending_review  
-**Content hash:** `0e77f9dfcfb8950b8dc39ac7eca04ac6af512a94591ba172814b40bf7237b494`
+**Content hash:** `64508bc142cb03e4250e6a82f765465d7114bdbea82f77b9f5b96e04f8f4bf20`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -17,11 +17,11 @@ In the dry harmattan months the air is dry and the wind is strong. Grass, farm w
 
 What the law says:
 
-- Starting a bushfire is a criminal offence in Ghana.
+- Starting a bushfire is a criminal offence in Ghana, except in the few cases the law specifically allows.
 - It counts as starting one if what you did ends in a farm, forest, or grassland burning out of control. You do not have to have meant it to spread.
 - If you light a fire you are allowed to light, controlling it is your responsibility. Never walk away from it.
 - Every district sets its own periods when burning farm slash, grass, and dead wood is banned. Ask your District Assembly what applies where you are before you burn anything.
-- If you know about a bushfire, you must report it. Failing to report one is an offence in itself.
+- If you know about a bushfire, report it. Failing to report one without good reason is an offence in itself.
 - Report it to a fire volunteer, someone on your district's bushfire committee, a police officer, or your traditional authority.
 - Breaking this law can mean a fine, or imprisonment or community labour of up to twelve months, or both.
 

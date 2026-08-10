@@ -3,7 +3,7 @@
 **Slug:** `hazard-workplace`  
 **Section:** Hazard — workplace  
 **Current state:** pending_review  
-**Content hash:** `f27d22fa01032eddd68a27dca1f87e6ab1e336c86c2121e26b0aa1dd0dcdb649`
+**Content hash:** `164d5d34235307802e66d24d3eba8c847679d5bf6f338d4fa35c0f7c0e9d2c13`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -36,7 +36,7 @@ If fire breaks out:
 
 Only pick up an extinguisher if the fire is small and not spreading, everyone else is out, 192 has been called, and the room is not full of smoke.
 
-Preparation protects your staff far better than anything you can do once a fire has started. Talk to your team about it, or ask your local fire station to come and teach them.
+Preventing fires and preparing for them is the best way to keep your staff safe. Talk to your team about it, or ask your local fire station to come and teach them.
 
 ## Sources cited
 

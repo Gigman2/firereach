@@ -3,7 +3,7 @@
 **Slug:** `firstaid-extinguisher-pass`  
 **Section:** First Aid — extinguisher  
 **Current state:** pending_review  
-**Content hash:** `05c11b88cf05b3ea2d8bd79dcfb3b46974351bb05fcc6e86c2d85b7ce173e3bd`
+**Content hash:** `5d97189bcab7e556b6d58d407daa00c36c2453158adb3cd2a81c64dfbe6f5d1b`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -27,7 +27,7 @@ Use an extinguisher only on a small fire that is not spreading. Call for help be
 8. **Squeeze the lever** — Squeeze the handle slowly and evenly. Letting go stops the spray, so keep it held down.
 9. **Sweep across** — Sweep the nozzle from side to side across the base of the fire. Stand a few metres back — an extinguisher is made to be used from a distance. Stop once the fire is out, and watch in case it starts again.
 10. **Know when to go** — An extinguisher holds only about ten seconds of spray. If the fire is still going once it is empty, get out fast. If the room fills with smoke, get out.
-11. **After the fire** — Do not leave the area — a fire can start again without warning. Let the fire service check that it is properly out. Replace a used extinguisher straight away, because an empty one on the wall is worse than none: people believe it works.
+11. **After the fire** — Do not leave the area — a fire can start again without warning. Let the fire service check that it is properly out. Replace a used extinguisher straight away: an empty one left on the wall gives the false impression that it still works.
 12. **Keep children away** — Never let a child use an extinguisher or try to control a fire. Children should be taught to get out and stay out, not to fight fires.
 
 ## Sources cited
