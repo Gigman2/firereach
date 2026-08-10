@@ -34,9 +34,18 @@ you didn't read.
 Until you sign off, every item below displays to the public as
 sourced-but-unreviewed. Your signature is what changes that.
 
-0 item(s) awaiting or holding review.
+9 item(s) awaiting or holding review.
 
+- [Electrical Fire Safety](hazard-electrical.md) — pending_review
+- [Cooking Fire Safety](hazard-cooking.md) — pending_review
+- [Home Fire Safety](hazard-home.md) — pending_review
+- [Workplace Fire Safety](hazard-workplace.md) — pending_review
+- [Dry Season and Bush Fire Safety](hazard-seasonal.md) — pending_review
+- [Burns](firstaid-burns.md) — pending_review
+- [Smoke Inhalation](firstaid-smoke-inhalation.md) — pending_review
+- [Getting Everyone Out](firstaid-evacuation.md) — pending_review
+- [Using a Fire Extinguisher (PASS)](firstaid-extinguisher-pass.md) — pending_review
 
 ## Unverified citations needing attention
 
-_None._
+- firstaid-extinguisher-pass: NFPA 10, Standard for Portable Fire Extinguishers
