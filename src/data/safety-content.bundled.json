@@ -1,0 +1,34 @@
+[
+  {
+    "slug": "hazard-cooking",
+    "category": "hazard",
+    "subcategory": "cooking",
+    "title": "Cooking Fire Safety",
+    "summary": "Placeholder — replaced in Task 7.",
+    "body": "Placeholder body. Replaced with sourced content in Task 7.",
+    "steps": [],
+    "tags": ["cooking"],
+    "contextual_trigger": null,
+    "sources": [
+      {"title": "Placeholder", "publisher": "Placeholder", "year": "2026", "url": "https://example.org", "unverified": true}
+    ],
+    "content_hash": "",
+    "review": {"state": "draft"}
+  },
+  {
+    "slug": "firstaid-burns",
+    "category": "first_aid",
+    "subcategory": "burns",
+    "title": "Burns",
+    "summary": "Placeholder — replaced in Task 7.",
+    "body": "Placeholder body. Replaced with sourced content in Task 7.",
+    "steps": [{"title": "Placeholder step", "body": "Replaced in Task 7."}],
+    "tags": ["burns"],
+    "contextual_trigger": null,
+    "sources": [
+      {"title": "Placeholder", "publisher": "Placeholder", "year": "2026", "url": "https://example.org", "unverified": true}
+    ],
+    "content_hash": "",
+    "review": {"state": "draft"}
+  }
+]
