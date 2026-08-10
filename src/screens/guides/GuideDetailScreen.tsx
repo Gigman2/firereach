@@ -17,44 +17,52 @@ import { Text } from "../../components/ui/Text";
 import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
 import { NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
+import { itemBySlug, badgeText, effectiveState } from "../../lib/safetyContent";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { GuidesStackParamList } from "../../navigation/types";
 
 type Props = NativeStackScreenProps<GuidesStackParamList, "GuideDetail">;
 
-// Mock data — in production from API/local DB
-const GUIDE = {
-  title: "Burns Treatment",
-  badge: "FIRST AID",
-  headerColor: "#D97706",
-  reviewed: "Last reviewed: Jan 2026",
-  steps: [
-    {
-      title: "Remove from heat",
-      body: "Move the person away from the heat source immediately and extinguish any flames.",
-    },
-    {
-      title: "Cool with water",
-      body: "Run cool (not cold) tap water over the burn for at least 10-20 minutes. Do not use ice.",
-    },
-    {
-      title: "No ice/butter",
-      body: "Avoid applying ice, butter, ointments, or home remedies which can damage the tissue further.",
-    },
-    {
-      title: "Cover loosely",
-      body: "Apply a loose sterile dressing or clean plastic wrap to protect the area from infection.",
-    },
-    {
-      title: "Seek medical attention",
-      body: "Call for emergency help if the burn is large, deep, or affects the face, hands, or airways.",
-    },
-  ],
-};
-
-export const GuideDetailScreen = ({ navigation }: Props) => {
+export const GuideDetailScreen = ({ navigation, route }: Props) => {
   const insets = useSafeAreaInsets();
   const { theme, isDark } = useTheme();
+
+  const item = itemBySlug(route.params.guideId);
+  const state = item ? effectiveState(item) : "pending";
+  const isReviewed = state === "reviewed";
+  const isFirstAid = item?.category === "first_aid";
+
+  if (!item) {
+    return (
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: theme.background,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 24,
+          },
+        ]}
+      >
+        <Text variant="bodyLarge" weight="bold">
+          Guide unavailable
+        </Text>
+        <Text
+          variant="caption"
+          color={theme.textSecondary}
+          style={{ marginTop: 8, textAlign: "center" }}
+        >
+          This guide has been withdrawn or is not in this version of the app.
+        </Text>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: 20 }}>
+          <Text variant="caption" weight="bold" color={colors.brandPrimary}>
+            Go back
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -73,11 +81,11 @@ export const GuideDetailScreen = ({ navigation }: Props) => {
             style={styles.headerTitle}
             numberOfLines={1}
           >
-            {GUIDE.title}
+            {item.title}
           </Text>
           <View style={styles.headerBadge}>
             <Text variant="label" color="#FFFFFF">
-              {GUIDE.badge}
+              {isFirstAid ? "FIRST AID" : "HAZARD"}
             </Text>
           </View>
         </View>
@@ -96,48 +104,81 @@ export const GuideDetailScreen = ({ navigation }: Props) => {
         <View
           style={[
             styles.metaBadge,
-            {
-              backgroundColor: isDark ? "#451A03" : "#FEF3C7",
-              borderColor: isDark ? "#78350F" : "#FDE68A",
-            },
+            isReviewed
+              ? {
+                  backgroundColor: isDark ? "#451A03" : "#FEF3C7",
+                  borderColor: isDark ? "#78350F" : "#FDE68A",
+                }
+              : { backgroundColor: theme.surface, borderColor: theme.border },
           ]}
         >
-          <CalendarIcon size={14} color={isDark ? "#FDE68A" : "#92400E"} />
-          <Text variant="label" color={isDark ? "#FDE68A" : "#92400E"}>
-            {GUIDE.reviewed}
+          <CalendarIcon
+            size={14}
+            color={isReviewed ? (isDark ? "#FDE68A" : "#92400E") : theme.textTertiary}
+          />
+          <Text
+            variant="label"
+            color={isReviewed ? (isDark ? "#FDE68A" : "#92400E") : theme.textTertiary}
+          >
+            {badgeText(item)}
           </Text>
         </View>
 
-        {/* Steps */}
-        <View style={styles.steps}>
-          {GUIDE.steps.map((step, index) => (
-            <View
-              key={index}
-              style={[
-                styles.stepCard,
-                { backgroundColor: theme.background, borderColor: theme.border },
-              ]}
+        {/* First-aid disclaimer — above step 1, not below the steps */}
+        {isFirstAid && (
+          <View
+            style={[
+              styles.disclaimer,
+              { backgroundColor: theme.surface, borderColor: theme.border },
+            ]}
+          >
+            <WarningCircleIcon size={16} color={theme.textSecondary} />
+            <Text
+              variant="caption"
+              color={theme.textSecondary}
+              style={{ flex: 1, lineHeight: 18 }}
             >
-              <View style={styles.stepNumber}>
-                <Text variant="bodyMedium" weight="bold" color="#FFFFFF">
-                  {index + 1}
-                </Text>
+              General first aid guidance. Not a substitute for professional medical care.
+            </Text>
+          </View>
+        )}
+
+        {/* Steps or body, by category */}
+        {isFirstAid ? (
+          <View style={styles.steps}>
+            {item.steps.map((step, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.stepCard,
+                  { backgroundColor: theme.background, borderColor: theme.border },
+                ]}
+              >
+                <View style={styles.stepNumber}>
+                  <Text variant="bodyMedium" weight="bold" color="#FFFFFF">
+                    {index + 1}
+                  </Text>
+                </View>
+                <View style={styles.stepContent}>
+                  <Text variant="bodyLarge" weight="bold">
+                    {step.title}
+                  </Text>
+                  <Text
+                    variant="caption"
+                    color={theme.textSecondary}
+                    style={styles.stepBody}
+                  >
+                    {step.body}
+                  </Text>
+                </View>
               </View>
-              <View style={styles.stepContent}>
-                <Text variant="bodyLarge" weight="bold">
-                  {step.title}
-                </Text>
-                <Text
-                  variant="caption"
-                  color={theme.textSecondary}
-                  style={styles.stepBody}
-                >
-                  {step.body}
-                </Text>
-              </View>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        ) : (
+          <Text variant="bodyMedium" color={theme.textSecondary} style={{ lineHeight: 24 }}>
+            {item.body}
+          </Text>
+        )}
       </ScrollView>
 
       {/* Emergency Footer */}
@@ -232,6 +273,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 4,
+  },
+  disclaimer: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 10,
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
   },
   steps: {
     gap: 12,
