@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { toSql } from "../../../scripts/build-safety-content-seed.mjs";
+import { toSql } from "../../../scripts/safetyContentSeed.mjs";
 import { contentHash } from "../../../scripts/contentHash.mjs";
 
 const item = {
