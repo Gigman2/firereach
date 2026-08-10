@@ -197,7 +197,7 @@ export function badgeText(item: SafetyItem): string {
   // that same source to the public as provenance is the same
   // claim-without-backing this project exists to remove, one layer down.
   // If every source is unverified, say so plainly instead of naming one.
-  const verifiedSource = item.sources.find((s) => !s.unverified);
+  const verifiedSource = item.sources.find((s) => s && !s.unverified);
   if (!verifiedSource) {
     return "Sourced from published guidance · awaiting review";
   }
@@ -285,6 +285,17 @@ function isAcceptable(item: SafetyItem): boolean {
   // same check contentValidate.mjs makes at authoring time.
   if (item.steps.some((step) => isBlank(step?.title) || isBlank(step?.body))) return false;
 
+  // Same defect class as the steps check above, closed for sources too (N1):
+  // `sources: [null]` has a truthy `.length` and passes every check before
+  // this one, then gets cached, and badgeText's `item.sources.find(...)`
+  // throws "Cannot read properties of null" on every subsequent open of that
+  // guide — surviving relaunches because the bad payload is already in
+  // AsyncStorage. Each source entry must be an object with a non-blank
+  // publisher, the one field badgeText actually reads off it.
+  if (item.sources.some((source) => !source || typeof source !== "object" || isBlank(source.publisher))) {
+    return false;
+  }
+
   // H1: reject a "reviewed" claim outright for anything that arrived over
   // the wire (a fresh OTA fetch, or a previously-cached OTA payload read
   // back on the next launch). The app has no SHA-256 — contentHash.mjs says
@@ -311,6 +322,49 @@ function isAcceptable(item: SafetyItem): boolean {
 }
 
 /**
+ * N3: partitions a batch of raw wire/cache items into the ones that pass
+ * isAcceptable and the ones that don't, logging the rejected slugs once
+ * instead of a bare warning. Both callers below used to discard the entire
+ * payload — `items.every(isAcceptable)` — the moment a single item failed.
+ * H1 makes any `reviewed` item fail unconditionally, and the union in
+ * refreshContent below writes bundled rows straight into the cache, so the
+ * day a bundled guide is genuinely reviewed, every launch reads a cache
+ * containing that one reviewed item and the old code rejected the whole
+ * batch, falling back to bundled and silently killing OTA at exactly the
+ * moment the clinical review lands. Filtering per item instead means one bad
+ * (or genuinely-reviewed-and-therefore-untrusted-over-the-wire) item is
+ * dropped on its own; H1's protection is unchanged, it just no longer
+ * poisons its neighbours.
+ */
+function partitionAcceptable<T>(
+  rawItems: T[],
+  toItem: (raw: T) => SafetyItem,
+  context: string
+): { acceptedRaw: T[]; acceptedItems: SafetyItem[] } {
+  const acceptedRaw: T[] = [];
+  const acceptedItems: SafetyItem[] = [];
+  const rejectedSlugs: string[] = [];
+
+  for (const raw of rawItems) {
+    const item = toItem(raw);
+    if (isAcceptable(item)) {
+      acceptedRaw.push(raw);
+      acceptedItems.push(item);
+    } else {
+      rejectedSlugs.push(item.slug || "(no slug)");
+    }
+  }
+
+  if (rejectedSlugs.length > 0) {
+    console.warn(
+      `[safetyContent] ${context}: dropped ${rejectedSlugs.length} item(s) failing validation: ${rejectedSlugs.join(", ")}`
+    );
+  }
+
+  return { acceptedRaw, acceptedItems };
+}
+
+/**
  * Bundled is the floor, cache is preferred, any failure degrades silently —
  * the same precedence as stationCache.ts:47-55.
  */
@@ -323,10 +377,12 @@ export async function loadContent(): Promise<SafetyItem[]> {
     if (parsed.schemaVersion !== SAFETY_CONTENT_VERSION) return visibleItems();
     if (!Array.isArray(parsed.items) || parsed.items.length === 0) return visibleItems();
 
-    const items = parsed.items.map(fromJson);
-    if (!items.every(isAcceptable)) return visibleItems();
+    // N3: keep whichever cached items are individually acceptable; only fall
+    // back to bundled if the cache has nothing usable left at all.
+    const { acceptedItems } = partitionAcceptable(parsed.items, fromJson, "cached payload");
+    if (acceptedItems.length === 0) return visibleItems();
 
-    return items.filter((i: SafetyItem) => effectiveState(i) !== "withdrawn");
+    return acceptedItems.filter((i) => effectiveState(i) !== "withdrawn");
   } catch {
     return visibleItems();
   }
@@ -350,15 +406,18 @@ export async function refreshContent(): Promise<void> {
     const raw = await apiGet<any[] | null>("/v1/content");
     if (!Array.isArray(raw) || raw.length === 0) return;
 
-    const items = raw.map(fromJson);
-    if (!items.every(isAcceptable)) {
-      console.warn("[safetyContent] rejected OTA payload: failed validation");
+    // N3: drop individual items that fail validation rather than discarding
+    // the whole response over one of them. Only bail out if nothing in the
+    // response survived.
+    const { acceptedRaw } = partitionAcceptable(raw, fromJson, "OTA payload");
+    if (acceptedRaw.length === 0) {
+      console.warn("[safetyContent] rejected OTA payload: no items passed validation");
       return;
     }
 
     const bySlug = new Map<string, any>();
     for (const b of bundled as any[]) bySlug.set(b.slug, b);
-    for (const r of raw) bySlug.set(r.slug, r);
+    for (const r of acceptedRaw) bySlug.set(r.slug, r);
     const merged = Array.from(bySlug.values());
 
     await AsyncStorage.setItem(

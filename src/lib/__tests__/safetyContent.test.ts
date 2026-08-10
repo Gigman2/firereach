@@ -14,6 +14,7 @@ import {
   itemBySlug,
   SAFETY_CONTENT_VERSION,
   type SafetyItem,
+  type SafetySource,
 } from "../safetyContent";
 
 // Build-time-only algorithm, imported here (never from safetyContent.ts) to
@@ -113,6 +114,17 @@ describe("badgeText", () => {
       },
     };
     expect(badgeText(item)).not.toMatch(/Last reviewed/);
+  });
+
+  // N1: `item.sources.find((s) => !s.unverified)` threw "Cannot read
+  // properties of null" the instant a null landed in `sources` — the same
+  // defect class M2 already closed for `steps` but not `sources`. badgeText
+  // must be null-safe on its own terms, regardless of what upstream
+  // validation does or fails to do.
+  it("does not throw when a source entry is null", () => {
+    const item = { ...base, sources: [null as unknown as SafetySource] };
+    expect(() => badgeText(item)).not.toThrow();
+    expect(badgeText(item)).toBe("Sourced from published guidance · awaiting review");
   });
 
   // Truncation must cut at a space, not mid-word — "Sourced from Nationa…"

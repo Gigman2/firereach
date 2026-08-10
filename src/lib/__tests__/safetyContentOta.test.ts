@@ -103,9 +103,80 @@ describe("refreshContent", () => {
     expect(await loadContent()).toHaveLength(9);
   });
 
+  // N1: `sources: [null]` has a truthy `.length`, so a length-only shape
+  // check let it through isAcceptable before this fix; it would then be
+  // written into the cache and crash badgeText's `item.sources.find(...)`
+  // on every subsequent open of that guide, surviving relaunches because
+  // the bad payload was already in AsyncStorage. Each source entry must now
+  // be validated element-wise, the same way `steps` already is.
+  it("rejects an item whose sources array contains a null entry", async () => {
+    (apiGet as jest.Mock).mockResolvedValue([wireItem({ sources: [null] })]);
+    await refreshContent();
+    const items = await loadContent();
+    expect(items).toHaveLength(9);
+    const item = items.find((i) => i.slug === "hazard-cooking");
+    expect(item?.title).not.toBe("Cooking Fire Safety (updated)");
+  });
+
   it("keeps bundled content when the network fails", async () => {
     (apiGet as jest.Mock).mockRejectedValue(new Error("offline"));
     await expect(refreshContent()).resolves.toBeUndefined();
     expect(await loadContent()).toHaveLength(9);
+  });
+
+  // N2 (client-side confirmation): the server now includes withdrawn rows
+  // in /v1/content precisely so the client receives the tombstone. Once a
+  // withdrawn item lands in the cache via the bundled-floor union, it must
+  // still come out filtered here — the withdrawal must not be undone by the
+  // union resurrecting the bundled (non-withdrawn) copy of the same slug.
+  it("does not resurrect the bundled copy of a slug the server reports withdrawn", async () => {
+    (apiGet as jest.Mock).mockResolvedValue([wireItem({ review: { state: "withdrawn" } })]);
+    await refreshContent();
+    const items = await loadContent();
+    expect(items).toHaveLength(8);
+    expect(items.find((i) => i.slug === "hazard-cooking")).toBeUndefined();
+  });
+
+  // N3: `items.every(isAcceptable)` used to discard the *entire* response
+  // the moment a single item failed — and H1 makes any `reviewed` item fail
+  // unconditionally. Once a bundled guide is genuinely reviewed, every
+  // payload containing it (or a cache that already does) would poison the
+  // whole batch and silently kill OTA at exactly the moment the clinical
+  // review lands. A payload with one reviewed item and eight otherwise-valid
+  // ones must yield the eight, not fall back to bundled entirely.
+  it("keeps the eight valid items when one item in the payload is reviewed, not a full fallback", async () => {
+    const slugs = [
+      { slug: "hazard-electrical", category: "hazard", subcategory: "electrical" },
+      { slug: "hazard-cooking", category: "hazard", subcategory: "cooking" },
+      { slug: "hazard-home", category: "hazard", subcategory: "home" },
+      { slug: "hazard-workplace", category: "hazard", subcategory: "workplace" },
+      { slug: "hazard-seasonal", category: "hazard", subcategory: "seasonal" },
+      { slug: "firstaid-burns", category: "first_aid", subcategory: "burns" },
+      { slug: "firstaid-smoke-inhalation", category: "first_aid", subcategory: "smoke" },
+      { slug: "firstaid-evacuation", category: "first_aid", subcategory: "evacuation" },
+      { slug: "firstaid-extinguisher-pass", category: "first_aid", subcategory: "extinguisher" },
+    ];
+    const reviewedProbeSlug = "hazard-electrical";
+
+    const payload = slugs.map((meta) =>
+      wireItem({
+        ...meta,
+        title: `${meta.slug} (updated)`,
+        steps: meta.category === "first_aid" ? [{ title: "Step", body: "Body" }] : [],
+        review: meta.slug === reviewedProbeSlug ? { state: "reviewed" } : { state: "pending_review" },
+      })
+    );
+
+    (apiGet as jest.Mock).mockResolvedValue(payload);
+    await refreshContent();
+    const items = await loadContent();
+
+    expect(items).toHaveLength(9);
+
+    const updated = items.filter((i) => i.title.endsWith("(updated)"));
+    expect(updated).toHaveLength(8);
+
+    const reviewedProbe = items.find((i) => i.slug === reviewedProbeSlug);
+    expect(reviewedProbe?.title).not.toMatch(/\(updated\)/);
   });
 });
