@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -15,8 +15,6 @@ import {
   BrainIcon,
   WarningIcon,
   PhoneIcon,
-  InfoIcon,
-  ProhibitIcon,
 } from "phosphor-react-native";
 import { Text } from "../../components/ui/Text";
 import { colors } from "../../theme/colors";
@@ -29,21 +27,21 @@ import type { GuidesStackParamList } from "../../navigation/types";
 
 type Props = NativeStackScreenProps<GuidesStackParamList, "GuidesChat">;
 
-type MessageType = "text" | "steps" | "warning" | "fact" | "emergency" | "outOfScope";
-
-interface Step {
-  title: string;
-  body: string;
-}
+// Narrowed to what the app actually produces. "steps" / "fact" / "emergency" /
+// "outOfScope" only ever came from the deleted hardcoded mock answers —
+// askAI returns plain text, and the offline fallback is a "warning" card.
+type MessageType = "text" | "warning";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   type: MessageType;
   content: string;
-  steps?: Step[];
-  factLabel?: string;
-  factValue?: string;
+  // True only for messages that genuinely came back from askAI. Gates the
+  // "AI-generated" label and disclaimer block — the static welcome message
+  // and the client-side offline fallback are not model output and must not
+  // claim to be.
+  fromAI?: boolean;
 }
 
 const WELCOME_MESSAGE: Message = {
@@ -69,6 +67,22 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const flatListRef = useRef<FlatList>(null);
 
+  // Guards the post-await state updates in handleSend. Navigating away while
+  // a request is in flight must not setState on an unmounted screen — the
+  // race is new since handleSend became async.
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
+  const callEmergency = () => {
+    Linking.openURL(`tel:${NATIONAL_EMERGENCY_PHONE}`).catch((err) =>
+      console.warn("[GuidesChat] dial failed", err)
+    );
+  };
+
   const handleSend = async (text?: string) => {
     const messageText = text || input.trim();
     if (!messageText || isLoading) return;
@@ -86,11 +100,19 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
 
     try {
       const answer = await askAI(messageText);
+      if (!isMountedRef.current) return;
       setMessages((prev) => [
         ...prev,
-        { id: `${Date.now() + 1}`, role: "assistant", type: "text", content: answer },
+        {
+          id: `${Date.now() + 1}`,
+          role: "assistant",
+          type: "text",
+          content: answer,
+          fromAI: true,
+        },
       ]);
     } catch (err) {
+      if (!isMountedRef.current) return;
       console.warn("[GuidesChat] ask failed", err);
       setMessages((prev) => [
         ...prev,
@@ -103,39 +125,12 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
         },
       ]);
     } finally {
-      setIsLoading(false);
-      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+      if (isMountedRef.current) {
+        setIsLoading(false);
+        setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+      }
     }
   };
-
-  const renderSteps = (steps: Step[]) => (
-    <View style={rs.stepsContainer}>
-      {steps.map((step, i) => (
-        <View
-          key={i}
-          style={[rs.stepRow, { backgroundColor: theme.background, borderColor: theme.border }]}
-        >
-          <View style={rs.stepBadge}>
-            <Text variant="label" color="#FFFFFF">
-              {i + 1}
-            </Text>
-          </View>
-          <View style={rs.stepContent}>
-            <Text variant="caption" weight="bold">
-              {step.title}
-            </Text>
-            <Text
-              variant="caption"
-              color={theme.textSecondary}
-              style={{ marginTop: 2 }}
-            >
-              {step.body}
-            </Text>
-          </View>
-        </View>
-      ))}
-    </View>
-  );
 
   const renderWarningCard = (content: string) => (
     <View
@@ -156,67 +151,27 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
     </View>
   );
 
-  const renderFactCard = (label: string, value: string) => (
-    <View style={[rs.factCard, { backgroundColor: theme.background, borderColor: theme.border }]}>
-      <View style={rs.factHeader}>
-        <InfoIcon size={16} color={colors.brandPrimary} weight="fill" />
-        <Text variant="label" color={theme.textTertiary}>
-          {label}
-        </Text>
+  // "Typing dots" per the UI spec — the last row while a request is in
+  // flight, so the screen never looks dead while the user is waiting on a
+  // network call they may be relying on during or right after an emergency.
+  const renderTypingIndicator = () => (
+    <View style={[styles.messageBubble, styles.aiBubble]} testID="guidesChatTypingIndicator">
+      <View style={styles.aiAvatar}>
+        <BrainIcon size={16} color={colors.brandPrimary} weight="fill" />
       </View>
-      <Text variant="displayBold" color={colors.brandPrimary}>
-        {value}
-      </Text>
-      <TouchableOpacity
-        style={rs.factCallButton}
-        onPress={() => Linking.openURL(`tel:${value}`)}
+      <View
+        style={[
+          styles.bubbleContent,
+          styles.aiContent,
+          { backgroundColor: theme.surface, borderColor: theme.border },
+        ]}
       >
-        <PhoneIcon size={16} color="#FFFFFF" weight="fill" />
-        <Text variant="caption" weight="bold" color="#FFFFFF">
-          Call {value}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const renderEmergencyCard = (content: string) => (
-    <View style={[rs.emergencyCard, { backgroundColor: theme.emergencyBg }]}>
-      <View style={rs.emergencyHeader}>
-        <View style={rs.emergencyPulse} />
-        <Text variant="caption" weight="bold" color={isDark ? "#FCA5A5" : "#991B1B"}>
-          ACTIVE EMERGENCY
-        </Text>
+        <View style={styles.typingDots}>
+          <View style={[styles.typingDot, { backgroundColor: theme.textTertiary }]} />
+          <View style={[styles.typingDot, { backgroundColor: theme.textTertiary }]} />
+          <View style={[styles.typingDot, { backgroundColor: theme.textTertiary }]} />
+        </View>
       </View>
-      <Text variant="caption" color={theme.emergencyText}>
-        {content}
-      </Text>
-      <TouchableOpacity
-        style={rs.emergencyCallButton}
-        onPress={() =>
-          Linking.openURL(`tel:${NATIONAL_EMERGENCY_PHONE}`).catch((err) =>
-            console.warn("[GuidesChat] dial failed", err)
-          )
-        }
-      >
-        <PhoneIcon size={18} color="#FFFFFF" weight="fill" />
-        <Text variant="bodyMedium" weight="bold" color="#FFFFFF">
-          Call 192 Now
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const renderOutOfScopeCard = (content: string) => (
-    <View style={[rs.outOfScopeCard, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-      <View style={rs.outOfScopeHeader}>
-        <ProhibitIcon size={18} color={theme.textTertiary} weight="fill" />
-        <Text variant="caption" weight="bold" color={theme.textSecondary}>
-          Outside My Expertise
-        </Text>
-      </View>
-      <Text variant="caption" color={theme.textSecondary}>
-        {content}
-      </Text>
     </View>
   );
 
@@ -241,47 +196,47 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
           <BrainIcon size={16} color={colors.brandPrimary} weight="fill" />
         </View>
         <View style={styles.aiColumn}>
-          {/* Text intro (always shown) */}
-          {item.type !== "emergency" && item.type !== "outOfScope" && (
-            <View
-              style={[
-                styles.bubbleContent,
-                styles.aiContent,
-                { backgroundColor: theme.surface, borderColor: theme.border },
-              ]}
-            >
-              <Text variant="bodyMedium" color={theme.textPrimary}>
-                {item.content}
-              </Text>
-            </View>
-          )}
+          <View
+            style={[
+              styles.bubbleContent,
+              styles.aiContent,
+              { backgroundColor: theme.surface, borderColor: theme.border },
+            ]}
+          >
+            <Text variant="bodyMedium" color={theme.textPrimary}>
+              {item.content}
+            </Text>
+          </View>
 
-          {/* Rich content */}
-          {item.type === "steps" && item.steps && renderSteps(item.steps)}
           {item.type === "warning" && renderWarningCard(item.content)}
-          {item.type === "fact" &&
-            item.factLabel &&
-            item.factValue &&
-            renderFactCard(item.factLabel, item.factValue)}
-          {item.type === "emergency" && renderEmergencyCard(item.content)}
-          {item.type === "outOfScope" && renderOutOfScopeCard(item.content)}
 
-          {item.role === "assistant" && (
+          {item.fromAI && (
             <View style={styles.aiDisclaimer}>
               <Text variant="label" color={theme.textTertiary}>
                 AI-generated · Not medical advice
               </Text>
-              <Text variant="label" color={theme.textTertiary} style={{ marginTop: 2, lineHeight: 15 }}>
+              <Text
+                variant="label"
+                color={theme.textTertiary}
+                style={{ marginTop: 2, lineHeight: 15 }}
+              >
                 This is general guidance only. In an active emergency, call your nearest fire station immediately.
               </Text>
-              <TouchableOpacity
-                style={styles.callShortcut}
-                onPress={() =>
-                  Linking.openURL(`tel:${NATIONAL_EMERGENCY_PHONE}`).catch((err) =>
-                    console.warn("[GuidesChat] dial failed", err)
-                  )
-                }
-              >
+              <TouchableOpacity style={styles.callShortcut} onPress={callEmergency}>
+                <PhoneIcon size={12} color={colors.brandPrimary} weight="fill" />
+                <Text variant="label" weight="bold" color={colors.brandPrimary}>
+                  Call {NATIONAL_EMERGENCY_PHONE}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Not real AI output, so it does not get the AI-generated label —
+              but this is exactly the moment someone may need to call for
+              help, so the shortcut stays on its own. */}
+          {!item.fromAI && item.type === "warning" && (
+            <View style={styles.aiDisclaimer}>
+              <TouchableOpacity style={styles.callShortcut} onPress={callEmergency}>
                 <PhoneIcon size={12} color={colors.brandPrimary} weight="fill" />
                 <Text variant="label" weight="bold" color={colors.brandPrimary}>
                   Call {NATIONAL_EMERGENCY_PHONE}
@@ -340,28 +295,31 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
           contentContainerStyle={styles.messageList}
           showsVerticalScrollIndicator={false}
           ListFooterComponent={
-            showSuggestions ? (
-              <View style={styles.suggestions}>
-                <Text
-                  variant="label"
-                  color={theme.textTertiary}
-                  style={styles.suggestionsLabel}
-                >
-                  TRY ASKING
-                </Text>
-                {SUGGESTED_QUESTIONS.map((q) => (
-                  <TouchableOpacity
-                    key={q}
-                    style={styles.suggestionChip}
-                    onPress={() => handleSend(q)}
+            <>
+              {isLoading && renderTypingIndicator()}
+              {showSuggestions && !isLoading ? (
+                <View style={styles.suggestions}>
+                  <Text
+                    variant="label"
+                    color={theme.textTertiary}
+                    style={styles.suggestionsLabel}
                   >
-                    <Text variant="caption" color={colors.brandPrimary}>
-                      {q}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            ) : null
+                    TRY ASKING
+                  </Text>
+                  {SUGGESTED_QUESTIONS.map((q) => (
+                    <TouchableOpacity
+                      key={q}
+                      style={styles.suggestionChip}
+                      onPress={() => handleSend(q)}
+                    >
+                      <Text variant="caption" color={colors.brandPrimary}>
+                        {q}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              ) : null}
+            </>
           }
         />
 
@@ -376,6 +334,7 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
           ]}
         >
           <TextInput
+            testID="guidesChatInput"
             style={[styles.textInput, { backgroundColor: theme.surface, color: theme.textPrimary }]}
             placeholder="Ask a fire safety question..."
             placeholderTextColor={theme.textTertiary}
@@ -385,16 +344,17 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
             returnKeyType="send"
           />
           <TouchableOpacity
+            testID="guidesChatSendButton"
             style={[
               styles.sendButton,
-              !input.trim() && { backgroundColor: theme.surface },
+              (!input.trim() || isLoading) && { backgroundColor: theme.surface },
             ]}
             onPress={() => handleSend()}
-            disabled={!input.trim()}
+            disabled={!input.trim() || isLoading}
           >
             <PaperPlaneRightIcon
               size={20}
-              color={input.trim() ? "#FFFFFF" : theme.textTertiary}
+              color={input.trim() && !isLoading ? "#FFFFFF" : theme.textTertiary}
               weight="fill"
             />
           </TouchableOpacity>
@@ -406,28 +366,6 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
 
 // Rich response styles
 const rs = StyleSheet.create({
-  stepsContainer: {
-    gap: 8,
-    marginTop: 8,
-  },
-  stepRow: {
-    flexDirection: "row",
-    gap: 10,
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 12,
-  },
-  stepBadge: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: colors.brandPrimary,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  stepContent: {
-    flex: 1,
-  },
   warningCard: {
     borderWidth: 1,
     borderRadius: 12,
@@ -439,74 +377,6 @@ const rs = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-  },
-  factCard: {
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
-    alignItems: "center",
-    gap: 8,
-    marginTop: 8,
-  },
-  factHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  factCallButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    backgroundColor: colors.brandPrimary,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 10,
-    marginTop: 4,
-  },
-  emergencyCard: {
-    borderWidth: 2,
-    borderColor: colors.brandPrimary,
-    borderRadius: 12,
-    padding: 16,
-    gap: 12,
-  },
-  emergencyHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  emergencyPulse: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: colors.brandPrimary,
-  },
-  outOfScopeCard: {
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 14,
-    gap: 8,
-    marginTop: 8,
-    borderStyle: "dashed" as const,
-  },
-  outOfScopeHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  emergencyCallButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    backgroundColor: colors.brandPrimary,
-    paddingVertical: 14,
-    borderRadius: 12,
-    shadowColor: colors.brandPrimary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
   },
 });
 
@@ -585,6 +455,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 4,
     marginTop: 6,
+  },
+  typingDots: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingVertical: 2,
+  },
+  typingDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
   suggestions: {
     gap: 8,
