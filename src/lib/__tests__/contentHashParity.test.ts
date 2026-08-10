@@ -73,8 +73,15 @@ describe("build-time boundary", () => {
     const CODE_FILE = /\.(mjs|jsx?|tsx?)$/;
     const offenders: string[] = [];
 
+    // Match real import/require specifiers, not any mention of the filename.
+    // A whole-file substring scan flags comments that merely name the module —
+    // which already forced one comment to be reworded — and that is how a guard
+    // stops being trusted.
+    const IMPORTS_HASH =
+      /(?:\bfrom\s*|\bimport\s*\(?\s*|\brequire\s*\(\s*)["'][^"']*contentHash\.mjs["']/;
+
     const checkFile = (full: string) => {
-      if (fs.readFileSync(full, "utf8").includes("contentHash.mjs")) {
+      if (IMPORTS_HASH.test(fs.readFileSync(full, "utf8"))) {
         offenders.push(full);
       }
     };

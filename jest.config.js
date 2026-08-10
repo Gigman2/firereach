@@ -4,14 +4,14 @@
 // hand-rolling a second babel config — Jest merges `transform` keys from the
 // preset and this file, so this only adds a rule instead of replacing them.
 //
-// This only works because the .mjs modules under app/scripts/ that Jest ever
-// imports (the content-hash, content-validation, and safety-content-seed
-// helpers) are pure logic with no import.meta. Files that need import.meta
-// for path resolution (e.g. the safety-content-seed CLI entrypoint) run only
-// via `node scripts/foo.mjs`, never imported by a test — jest-expo's preset
-// targets Hermes and throws on import.meta ("not supported in Hermes") for
-// any non-web caller platform, which is what it would hit if a test tried to
-// import one of those directly.
+// This only works because the .mjs files under app/scripts/ that Jest ever
+// imports (contentHash.mjs, contentValidate.mjs, safetyContentSeed.mjs) are
+// pure logic with no import.meta. Files that need import.meta for path
+// resolution (e.g. build-safety-content-seed.mjs) are CLI entrypoints that
+// run only via `node scripts/foo.mjs`, never imported by a test — jest-expo's
+// preset targets Hermes and throws on import.meta ("not supported in
+// Hermes") for any non-web caller platform, which is what it would hit if a
+// test tried to import one of those directly.
 const jestExpoPreset = require("jest-expo/jest-preset");
 
 module.exports = {
