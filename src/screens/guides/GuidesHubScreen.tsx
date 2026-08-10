@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   LightningIcon,
@@ -38,15 +33,69 @@ interface Category {
 }
 
 const CATEGORIES: Category[] = [
-  { id: "electrical", label: "Electrical", Icon: LightningIcon, accentColor: colors.brandPrimary, tab: "Hazards" },
-  { id: "cooking", label: "Cooking", Icon: CookingPotIcon, accentColor: colors.brandPrimary, tab: "Hazards" },
-  { id: "home", label: "Home", Icon: HouseIcon, accentColor: colors.brandPrimary, tab: "Hazards" },
-  { id: "workplace", label: "Workplace", Icon: BuildingsIcon, accentColor: colors.brandPrimary, tab: "Hazards" },
-  { id: "seasonal", label: "Seasonal", Icon: CalendarIcon, accentColor: colors.brandPrimary, tab: "Hazards" },
-  { id: "burns", label: "Burns", Icon: FirstAidKitIcon, accentColor: colors.brandPrimary, tab: "First Aid" },
-  { id: "smoke", label: "Smoke", Icon: WindIcon, accentColor: colors.brandPrimary, tab: "Hazards" },
-  { id: "evacuation", label: "Evacuation", Icon: SignOutIcon, accentColor: colors.brandPrimary, tab: "Hazards" },
-  { id: "extinguisher", label: "Extinguisher", Icon: FireExtinguisherIcon, accentColor: colors.brandPrimary, tab: "Hazards" },
+  {
+    id: "electrical",
+    label: "Electrical",
+    Icon: LightningIcon,
+    accentColor: colors.brandPrimary,
+    tab: "Hazards",
+  },
+  {
+    id: "cooking",
+    label: "Cooking",
+    Icon: CookingPotIcon,
+    accentColor: colors.brandPrimary,
+    tab: "Hazards",
+  },
+  {
+    id: "home",
+    label: "Home",
+    Icon: HouseIcon,
+    accentColor: colors.brandPrimary,
+    tab: "Hazards",
+  },
+  {
+    id: "workplace",
+    label: "Workplace",
+    Icon: BuildingsIcon,
+    accentColor: colors.brandPrimary,
+    tab: "Hazards",
+  },
+  {
+    id: "seasonal",
+    label: "Seasonal",
+    Icon: CalendarIcon,
+    accentColor: colors.brandPrimary,
+    tab: "Hazards",
+  },
+  {
+    id: "burns",
+    label: "Burns",
+    Icon: FirstAidKitIcon,
+    accentColor: colors.brandPrimary,
+    tab: "First Aid",
+  },
+  {
+    id: "smoke",
+    label: "Smoke",
+    Icon: WindIcon,
+    accentColor: colors.brandPrimary,
+    tab: "Hazards",
+  },
+  {
+    id: "evacuation",
+    label: "Evacuation",
+    Icon: SignOutIcon,
+    accentColor: colors.brandPrimary,
+    tab: "Hazards",
+  },
+  {
+    id: "extinguisher",
+    label: "Extinguisher",
+    Icon: FireExtinguisherIcon,
+    accentColor: colors.brandPrimary,
+    tab: "Hazards",
+  },
 ];
 
 export const GuidesHubScreen = ({ navigation }: Props) => {
@@ -62,8 +111,20 @@ export const GuidesHubScreen = ({ navigation }: Props) => {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
-        <Text variant="displayBold">Safety Guide</Text>
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop: insets.top + 12,
+            borderBottomColor: theme.border,
+            backgroundColor: theme.background,
+          },
+        ]}
+      >
+        <Text variant="heading2">Safety Guide</Text>
+      </View>
+
+      <View style={{ marginHorizontal: 16 }}>
         <Text
           variant="bodyMedium"
           color={theme.textSecondary}
@@ -79,18 +140,13 @@ export const GuidesHubScreen = ({ navigation }: Props) => {
           <TouchableOpacity
             key={tab}
             onPress={() => setActiveTab(tab)}
-            style={[
-              styles.tab,
-              activeTab === tab && styles.tabActive,
-            ]}
+            style={[styles.tab, activeTab === tab && styles.tabActive]}
           >
             <Text
               variant="caption"
               weight="bold"
               color={
-                activeTab === tab
-                  ? colors.brandPrimary
-                  : theme.textTertiary
+                activeTab === tab ? colors.brandPrimary : theme.textTertiary
               }
             >
               {tab}
@@ -126,7 +182,10 @@ export const GuidesHubScreen = ({ navigation }: Props) => {
         {filtered.map((cat) => (
           <TouchableOpacity
             key={cat.id}
-            style={[styles.card, { backgroundColor: theme.background, borderColor: theme.border }]}
+            style={[
+              styles.card,
+              { backgroundColor: theme.background, borderColor: theme.border },
+            ]}
             activeOpacity={0.7}
             onPress={() =>
               navigation.navigate("GuideDetail", { guideId: cat.id })
@@ -158,8 +217,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
   },
   subtitle: {
     marginTop: 4,
