@@ -29,9 +29,9 @@ Smoke and fumes can injure the airway even when there are no burns on the skin. 
 
 - Guideline 9.1.3 – First Aid for Burns (approved March 2023) — Australian and New Zealand Committee on Resuscitation (ANZCOR), 2023. <https://www.anzcor.org/home/first-aid/guideline-9-1-3-first-aid-for-burns>
 - Carbon monoxide, in WHO Guidelines for Indoor Air Quality: Selected Pollutants — World Health Organization, 2010. <https://www.ncbi.nlm.nih.gov/books/NBK138710/>
-- How to make a home fire escape plan — National Fire Protection Association, . <https://www.nfpa.org/education-and-research/home-fire-safety/escape-planning>
-- How to Use a Fire Extinguisher (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php>
-- Fire Safety Tips for the Workplace (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107114316/https://www.gnfs.gov.gh/fire-safety-tips-workplace.php>
+- How to make a home fire escape plan — National Fire Protection Association. <https://www.nfpa.org/education-and-research/home-fire-safety/escape-planning>
+- How to Use a Fire Extinguisher (archived snapshot, 7 November 2025) — Ghana National Fire Service. <https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php>
+- Fire Safety Tips for the Workplace (archived snapshot, 7 November 2025) — Ghana National Fire Service. <https://web.archive.org/web/20251107114316/https://www.gnfs.gov.gh/fire-safety-tips-workplace.php>
 
 ## Sign-off
 

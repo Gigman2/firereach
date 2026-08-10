@@ -3,7 +3,7 @@
 **Slug:** `firstaid-evacuation`  
 **Section:** First Aid — evacuation  
 **Current state:** pending_review  
-**Content hash:** `b459fc5bbe5b0a0b9d40877f26141c5b03b2423583d41b89996dfdfc8015f642`
+**Content hash:** `b55ed4189593d5b9b6f639e61f3eea2e09b907952bac45fa3ae89271a7579854`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -29,10 +29,17 @@ Getting everyone out is the first priority, before property and before putting a
 
 ## Sources cited
 
-- How to make a home fire escape plan — National Fire Protection Association, . <https://www.nfpa.org/education-and-research/home-fire-safety/escape-planning>
-- Fire Safety Tips for the Workplace (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107114316/https://www.gnfs.gov.gh/fire-safety-tips-workplace.php>
-- How to Use a Fire Extinguisher (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php>
-- Gap flagged for the reviewer — this guide does not tell the reader to check a door for heat before opening it. No source among those cited states it, so it was left out rather than written from memory. Please advise whether to add it. — FireReach — known gap, not a source, . <> **⚠ UNVERIFIED — please confirm or replace**
+- How to make a home fire escape plan — National Fire Protection Association. <https://www.nfpa.org/education-and-research/home-fire-safety/escape-planning>
+- Fire Safety Tips for the Workplace (archived snapshot, 7 November 2025) — Ghana National Fire Service. <https://web.archive.org/web/20251107114316/https://www.gnfs.gov.gh/fire-safety-tips-workplace.php>
+- How to Use a Fire Extinguisher (archived snapshot, 7 November 2025) — Ghana National Fire Service. <https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php>
+
+## Questions for the reviewer
+
+The FireReach team could not decide or could not confirm the following.
+These are the reason this item is in front of you — please answer each
+one, or say it needs no change.
+
+1. This guide does not tell the reader to check a door for heat before opening it. NFPA's home fire escape planning page — the source used throughout this item — does not contain that instruction, so it was left out rather than written from memory. Should it be added, and in what words?
 
 ## Sign-off
 

@@ -3,7 +3,7 @@
 **Slug:** `hazard-cooking`  
 **Section:** Hazard — cooking  
 **Current state:** pending_review  
-**Content hash:** `b230d87201e179f04968b73aacc54239981db607c30d8e537a25d52627406b56`
+**Content hash:** `62519f1cb5628df4b39b1ef6ba5b69d4730019f49eaa83eb19a23c08ec1ac2be`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -35,16 +35,24 @@ If a pan catches fire:
 
 Charcoal, firewood, and kerosene. WHO's indoor air quality guidelines describe carbon monoxide as "a colourless, non-irritant, odourless and tasteless toxic gas", produced by "the incomplete combustion of carbonaceous fuels such as wood, petrol, coal, natural gas and kerosene". It cannot be seen or smelled. Charcoal that has stopped flaming and is only glowing is still burning, and still producing it.
 
-**On this basis FireReach advises never bringing a coalpot or brazier into a closed room, including to keep warm, and cooking where there is good airflow.** That specific instruction is not a quotation from WHO, which describes the hazard but does not give this rule. It is flagged for GNFS or Ghana Health Service to confirm or correct.
+**FireReach advises never bringing a coalpot or brazier into a closed room, including to keep warm, and cooking where there is good airflow.**
 
-**Not covered yet:** this guide does not cover LPG gas cylinders — leaks, regulators, hoses, or storage. That guidance needs a Ghanaian source and has not been written rather than guessed.
+**Not covered here:** this guide does not cover LPG gas cylinders — leaks, regulators, hoses, or storage.
 
 ## Sources cited
 
-- Safety with cooking equipment — National Fire Protection Association, . <https://www.nfpa.org/education-and-research/home-fire-safety/cooking>
-- How to Use a Fire Extinguisher (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php>
+- Safety with cooking equipment — National Fire Protection Association. <https://www.nfpa.org/education-and-research/home-fire-safety/cooking>
+- How to Use a Fire Extinguisher (archived snapshot, 7 November 2025) — Ghana National Fire Service. <https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php>
 - Carbon monoxide, in WHO Guidelines for Indoor Air Quality: Selected Pollutants — World Health Organization, 2010. <https://www.ncbi.nlm.nih.gov/books/NBK138710/>
-- Applied instruction — "never bring a coalpot into a closed room". No source states this rule; it is FireReach's application of WHO's carbon monoxide findings. Needs GNFS/GHS confirmation. — FireReach — not an external source, . <> **⚠ UNVERIFIED — please confirm or replace**
+
+## Questions for the reviewer
+
+The FireReach team could not decide or could not confirm the following.
+These are the reason this item is in front of you — please answer each
+one, or say it needs no change.
+
+1. The instruction "never bring a coalpot into a closed room" is FireReach's own, not a quotation. WHO's carbon monoxide chapter gives the mechanism but does not name charcoal braziers as an indoor source. Please confirm this rule, or give us the wording you want.
+2. LPG cylinder safety is missing entirely — leaks, regulators, hoses, storage, and what to do when you smell gas. Ghana's National Petroleum Authority website did not respond, and we would not write this from memory. Can you supply or point us to authoritative Ghanaian LPG guidance?
 
 ## Sign-off
 

@@ -3,7 +3,7 @@
 **Slug:** `hazard-electrical`  
 **Section:** Hazard — electrical  
 **Current state:** pending_review  
-**Content hash:** `f1767460a5201d375e3e4def5b38a6b90d8162b58f9ceef11301a21db32f5a47`
+**Content hash:** `34148d5690da9aaa73f5129fe85f741558740994d9047fd0c1cc59085bfdba61`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -38,17 +38,24 @@ NFPA says to call a qualified electrician or your landlord if you have any of th
 
 Generators and carbon monoxide. WHO's indoor air quality guidelines describe carbon monoxide as "a colourless, non-irritant, odourless and tasteless toxic gas", produced by "the incomplete combustion of carbonaceous fuels such as wood, petrol, coal, natural gas and kerosene". WHO says it binds to haemoglobin in place of oxygen, so that less haemoglobin is left to carry oxygen, and the result is arterial hypoxaemia. You cannot see it or smell it, and a generator that is barely smoking is still producing it.
 
-**On this basis FireReach advises running a generator in the open air, never in a closed room or a shut-in corner of a compound.** That specific instruction is not itself a quotation from WHO, which describes the hazard but does not give this rule. It is flagged for GNFS or Ghana Health Service to confirm or correct.
+**FireReach advises running a generator in the open air, never in a closed room or a shut-in corner of a compound.**
 
 If a fire starts, get everyone out and call 192. GNFS says to call for help before attempting to deal with a serious fire yourself.
 
 ## Sources cited
 
-- Electrical Home Fire Safety — National Fire Protection Association, . <https://www.nfpa.org/education-and-research/home-fire-safety/electrical-safety-in-the-home>
-- Fire Safety Tips for the Workplace (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107114316/https://www.gnfs.gov.gh/fire-safety-tips-workplace.php>
+- Electrical Home Fire Safety — National Fire Protection Association. <https://www.nfpa.org/education-and-research/home-fire-safety/electrical-safety-in-the-home>
+- Fire Safety Tips for the Workplace (archived snapshot, 7 November 2025) — Ghana National Fire Service. <https://web.archive.org/web/20251107114316/https://www.gnfs.gov.gh/fire-safety-tips-workplace.php>
 - Carbon monoxide, in WHO Guidelines for Indoor Air Quality: Selected Pollutants — World Health Organization, 2010. <https://www.ncbi.nlm.nih.gov/books/NBK138710/>
-- How to Use a Fire Extinguisher (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php>
-- Applied instruction — "run a generator in the open air, never in a closed room". No source states this rule; it is FireReach's application of WHO's carbon monoxide findings. Needs GNFS/GHS confirmation. — FireReach — not an external source, . <> **⚠ UNVERIFIED — please confirm or replace**
+- How to Use a Fire Extinguisher (archived snapshot, 7 November 2025) — Ghana National Fire Service. <https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php>
+
+## Questions for the reviewer
+
+The FireReach team could not decide or could not confirm the following.
+These are the reason this item is in front of you — please answer each
+one, or say it needs no change.
+
+1. The instruction "run a generator in the open air, never in a closed room" is FireReach's own, not a quotation. WHO's carbon monoxide chapter gives the mechanism but does not name portable generators as an indoor source. Please confirm this rule, or give us the wording you want.
 
 ## Sign-off
 

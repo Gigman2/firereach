@@ -47,6 +47,41 @@ describe("toMarkdown", () => {
     expect(toMarkdown(item)).toContain("abc123");
   });
 
+  // open_questions exists precisely so reviewer-directed text stays OUT of
+  // body/steps, which Task 10 renders into the app. That trade only pays off
+  // if the packet actually surfaces the questions — otherwise moving them out
+  // of the steps would silently lose them.
+  it("renders open questions for the reviewer", () => {
+    const md = toMarkdown({ ...item, open_questions: ["Is 20 minutes right for a child?"] });
+    expect(md).toContain("## Questions for the reviewer");
+    expect(md).toContain("1. Is 20 minutes right for a child?");
+  });
+
+  // A reviewer signs at the bottom. A question placed after the signature
+  // table is a question they have already signed past.
+  it("puts open questions above the sign-off block", () => {
+    const md = toMarkdown({ ...item, open_questions: ["Confirm the cooling duration."] });
+    expect(md.indexOf("## Questions for the reviewer")).toBeLessThan(md.indexOf("## Sign-off"));
+  });
+
+  it("omits the questions section entirely when there are none", () => {
+    expect(toMarkdown(item)).not.toContain("## Questions for the reviewer");
+  });
+
+  // Several cited pages carry no visible publication date, and inventing one
+  // is the failure this whole project exists to prevent. So blank year/url is
+  // the correct state — it just must not render as a dangling ", . <>", which
+  // reads to a non-technical reviewer as a broken document.
+  it("renders a source with no year or url without dangling punctuation", () => {
+    const md = toMarkdown({
+      ...item,
+      sources: [{ title: "Fire extinguishers", publisher: "NFPA", year: "", url: "" }],
+    });
+    expect(md).toContain("- Fire extinguishers — NFPA.");
+    expect(md).not.toMatch(/,\s*\.\s*<>/);
+    expect(md).not.toContain("<>");
+  });
+
   // The whole point of this file is that a clinician can fill it in and send
   // it back — no sign-off fields means no way to capture their verdict.
   it("includes a sign-off block the reviewer fills in", () => {

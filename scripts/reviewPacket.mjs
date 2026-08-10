@@ -91,9 +91,35 @@ export function toMarkdown(item) {
     // Uppercase and a warning glyph so this cannot be skimmed past — it is
     // the single most useful signal in the packet.
     const flag = s.unverified ? " **⚠ UNVERIFIED — please confirm or replace**" : "";
-    lines.push(`- ${s.title} — ${s.publisher}, ${s.year}. <${s.url}>${flag}`);
+    // A blank publisher, year, or url is normal and deliberate here: several
+    // cited pages carry no visible publication date, and inventing one is the
+    // exact failure this project exists to prevent. Rendering the parts
+    // unconditionally produced a dangling ", . <>", which reads as a bug to a
+    // non-technical reviewer and undermines confidence in the whole packet.
+    const present = (v) => typeof v === "string" && v.trim() !== "";
+    const attribution = [s.publisher, s.year].filter(present).join(", ");
+    const head = [s.title, attribution].filter(present).join(" — ");
+    const stop = /[.!?]$/.test(head) ? "" : ".";
+    const link = present(s.url) ? ` <${s.url}>` : "";
+    lines.push(`- ${head}${stop}${link}${flag}`);
   }
   lines.push("");
+
+  // Above the sign-off block on purpose: these are the things the reviewer is
+  // actually being asked to resolve, and burying them under the signature
+  // table would make them easy to sign past.
+  if (item.open_questions?.length) {
+    lines.push("## Questions for the reviewer");
+    lines.push("");
+    lines.push("The FireReach team could not decide or could not confirm the following.");
+    lines.push("These are the reason this item is in front of you — please answer each");
+    lines.push("one, or say it needs no change.");
+    lines.push("");
+    item.open_questions.forEach((question, i) => {
+      lines.push(`${i + 1}. ${question}`);
+    });
+    lines.push("");
+  }
 
   lines.push("## Sign-off");
   lines.push("");

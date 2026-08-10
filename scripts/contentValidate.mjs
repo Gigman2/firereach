@@ -81,6 +81,27 @@ export function validateContent(items) {
       }
     }
 
+    // Optional. Holds anything a clinical reviewer must decide or confirm —
+    // deliberately NOT part of body/steps, which Task 10 renders straight into
+    // the app. A user mid-emergency must never read "OPEN QUESTION for the
+    // reviewer". Excluded from the content hash on purpose (see contentHash.mjs
+    // and the Go implementation, which are pinned byte-for-byte against shared
+    // fixtures): an open question is metadata about the review, not the
+    // approved text, exactly like tags.
+    if (item.open_questions !== undefined) {
+      if (!Array.isArray(item.open_questions)) {
+        errors.push(`${at}: open_questions must be an array of strings.`);
+      } else {
+        item.open_questions.forEach((question, i) => {
+          if (blank(question)) {
+            errors.push(
+              `${at}: open_questions[${i}] is blank — a question a reviewer cannot read is not a question.`
+            );
+          }
+        });
+      }
+    }
+
     const review = item.review ?? {};
     if (!VALID_STATES.has(review.state)) {
       errors.push(`${at}: invalid review state "${review.state}".`);

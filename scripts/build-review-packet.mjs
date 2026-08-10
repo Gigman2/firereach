@@ -46,6 +46,10 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import
     (i.sources ?? []).filter((s) => s.unverified).map((s) => `${i.slug}: ${s.title}`)
   );
 
+  const openQuestions = forReview.flatMap((i) =>
+    (i.open_questions ?? []).map((q) => `**${i.slug}** — ${q}`)
+  );
+
   const index = [
     "# FireReach safety content — review packet",
     "",
@@ -90,6 +94,13 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import
     "## Unverified citations needing attention",
     "",
     unverified.length ? unverified.map((u) => `- ${u}`).join("\n") : "_None._",
+    "",
+    "## Open questions for the reviewer",
+    "",
+    "Specific things the FireReach team could not decide or could not confirm.",
+    "Each is repeated in its item's own file, above the sign-off block.",
+    "",
+    openQuestions.length ? openQuestions.map((q) => `- ${q}`).join("\n") : "_None._",
     "",
   ].join("\n");
 

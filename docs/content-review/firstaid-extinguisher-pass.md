@@ -3,7 +3,7 @@
 **Slug:** `firstaid-extinguisher-pass`  
 **Section:** First Aid — extinguisher  
 **Current state:** pending_review  
-**Content hash:** `08c5aec61fa223afc9980959828b9ed43ff2175624d4299efd5cc52a46a3e60d`
+**Content hash:** `11121671c8f840c6bcfe800017021181d8e0098fbc80f1406fd3a3a833d71d4e`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -32,9 +32,17 @@ An extinguisher is for a small, contained fire only — never for a fire that is
 
 ## Sources cited
 
-- How to Use a Fire Extinguisher (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php>
-- Fire extinguishers — National Fire Protection Association, . <https://www.nfpa.org/education-and-research/home-fire-safety/fire-extinguishers>
-- NFPA 10, Standard for Portable Fire Extinguishers — cited at document level only. The standard's text is paywalled, so the clause containing PASS was never read and no section number or edition year is given. PASS itself is quoted from GNFS and from NFPA's free public-education page, so nothing in this guide depends on NFPA 10. — National Fire Protection Association, . <https://www.nfpa.org/codes-and-standards/nfpa-10-standard-development/10> **⚠ UNVERIFIED — please confirm or replace**
+- How to Use a Fire Extinguisher (archived snapshot, 7 November 2025) — Ghana National Fire Service. <https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php>
+- Fire extinguishers — National Fire Protection Association. <https://www.nfpa.org/education-and-research/home-fire-safety/fire-extinguishers>
+- NFPA 10, Standard for Portable Fire Extinguishers — National Fire Protection Association. <https://www.nfpa.org/codes-and-standards/nfpa-10-standard-development/10> **⚠ UNVERIFIED — please confirm or replace**
+
+## Questions for the reviewer
+
+The FireReach team could not decide or could not confirm the following.
+These are the reason this item is in front of you — please answer each
+one, or say it needs no change.
+
+1. NFPA 10 is cited at document level only. Its text is paywalled, so the clause that actually contains PASS was never read, and no section number or edition year is given. PASS itself is quoted from GNFS's own page and from NFPA's free public-education page, so nothing a reader sees depends on NFPA 10. Confirm this citation or tell us to drop it.
 
 ## Sign-off
 

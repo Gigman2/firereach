@@ -3,7 +3,7 @@
 **Slug:** `hazard-seasonal`  
 **Section:** Hazard — seasonal  
 **Current state:** pending_review  
-**Content hash:** `770e0bcc1d077535ebedad020569ecdc2cdd13dca122c8c0d291f1d24c809a2d`
+**Content hash:** `e905fe38bbd8f5fd8dd1360e5d3768baa9c07e0103b77778e38e9e6cd2841545`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -22,9 +22,9 @@ The law. Ghana's Control and Prevention of Bushfires Act, 1990 (P.N.D.C.L. 229),
 - **Section 8, Control of Fire:** "A person who starts a fire permitted by this Act shall control the spread of the fire." A permitted burn is still yours to control. Do not walk away from one.
 - **Section 6(1)(b):** each District's Bushfire Control Sub-committee must "specify the period or periods in the year, and thereafter yearly, within which the burning of farm slash, grass, herbage and dead wood shall be prohibited." Burning seasons are set district by district, so ask your District Assembly what applies where you are before you burn anything.
 - **Section 12, Duty to Report Bushfire:** it is an offence to become aware of a bushfire and, without good cause, fail to report it — to a fire volunteer squad member, a member of the bushfire control Sub-committee, a police officer, or the traditional authority. Reporting a bush fire is a legal duty here, not a favour.
-- **Section 11, Offences:** contravening the Act carries a fine, or imprisonment or community labour not exceeding twelve months, or both, and more for a repeat offence.
+- **Section 11, Offences:** contravening the Act carries a fine, or imprisonment or community labour not exceeding twelve months, or both.
 
-**How this law text was checked:** the Parliament of Ghana repository returns an error to automated requests, so the section text above was read on GhanaLegal, a third-party legal portal, and cross-checked against the FAO ECOLEX record of the Act. It has not been confirmed against a government-published copy. This source is marked unverified for that reason, and a Ghanaian reviewer should confirm the wording and check for any later amendment.
+**Where this text came from:** the section wording above was read on a third-party legal portal, not on a government website, because the Parliament of Ghana repository does not respond to automated requests. Check with your District Assembly before you rely on it for anything that matters.
 
 If a bush or grass fire starts near you:
 
@@ -33,14 +33,23 @@ If a bush or grass fire starts near you:
 - GNFS says to check that all other people are out and that they are all assembled at a safe meeting point.
 - NFPA says to choose an outside meeting place a safe distance in front of the building.
 
-**Not covered yet:** firebreaks and cleared strips around buildings, whether to burn on windy harmattan days, what time of day is safer, and keeping water or sand to hand. These are real questions and no Ghanaian source for them could be reached, so they have been left out rather than written from memory.
+**Not covered here:** firebreaks and cleared strips around buildings, whether to burn on windy harmattan days, what time of day is safer, and keeping water or sand to hand.
 
 ## Sources cited
 
-- Control and Prevention of Bushfires Act, 1990 (P.N.D.C.L. 229) — sections 1, 2, 6, 8, 11 and 12. Section text read on GhanaLegal, a third-party legal portal, because the Parliament of Ghana repository returns HTTP 403. Not confirmed against a government-published copy, and not checked for later amendment. — Republic of Ghana (text read via GhanaLegal), 1990. <https://ghanalegal.com/laws_subdomain/acts/id/506/control-and-prevention-of-bushfires-act/> **⚠ UNVERIFIED — please confirm or replace**
+- Control and Prevention of Bushfires Act, 1990 (P.N.D.C.L. 229) — sections 1, 2, 6, 8, 11 and 12 — Republic of Ghana (text read via GhanaLegal), 1990. <https://ghanalegal.com/laws_subdomain/acts/id/506/control-and-prevention-of-bushfires-act/> **⚠ UNVERIFIED — please confirm or replace**
 - Control and Prevention of Bushfires Act, 1990 (P.N.D.C.L. 229) — FAOLEX record — Food and Agriculture Organization of the United Nations (ECOLEX/FAOLEX), 1990. <https://www.ecolex.org/details/legislation/control-and-prevention-of-bushfires-act-1990-pndcl-229-lex-faoc040958/>
-- How to Use a Fire Extinguisher (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php>
-- How to make a home fire escape plan — National Fire Protection Association, . <https://www.nfpa.org/education-and-research/home-fire-safety/escape-planning>
+- How to Use a Fire Extinguisher (archived snapshot, 7 November 2025) — Ghana National Fire Service. <https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php>
+- How to make a home fire escape plan — National Fire Protection Association. <https://www.nfpa.org/education-and-research/home-fire-safety/escape-planning>
+
+## Questions for the reviewer
+
+The FireReach team could not decide or could not confirm the following.
+These are the reason this item is in front of you — please answer each
+one, or say it needs no change.
+
+1. The statutory wording quoted in this item was read on GhanaLegal, a third-party legal portal, because the Parliament of Ghana repository returns HTTP 403 and both the Judicial Service e-library and lawsghana.com sit behind bot challenges. It was cross-checked against the FAO ECOLEX record but never against a government-published copy, and it has not been checked for later amendment. Please confirm the wording of sections 1, 2, 6(1)(b), 8, 11 and 12, and tell us whether the Act has been amended.
+2. Practical dry-season guidance is missing because no Ghanaian source could be reached: firebreaks and cleared strips around buildings and fuel stores, whether to burn on windy harmattan days, safer times of day to burn, and keeping water or sand to hand. Can GNFS supply this?
 
 ## Sign-off
 

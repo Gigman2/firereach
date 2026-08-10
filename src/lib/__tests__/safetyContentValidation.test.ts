@@ -33,6 +33,40 @@ describe("validateContent", () => {
     expect(validateContent([item]).join(" ")).toMatch(/at least one step/i);
   });
 
+  // open_questions is optional metadata, not approved text — it must never be
+  // required, or every already-clean item would suddenly fail validation.
+  it("accepts an item with no open_questions at all", () => {
+    expect(validateContent([valid()])).toEqual([]);
+  });
+
+  it("accepts an item with well-formed open_questions", () => {
+    const item = { ...valid(), open_questions: ["Confirm the cooling duration for children."] };
+    expect(validateContent([item])).toEqual([]);
+  });
+
+  // A blank question reaches the clinician as an empty numbered bullet — it
+  // tells them something is being asked but not what, which is worse than
+  // asking nothing at all.
+  it("rejects a blank open question", () => {
+    const item = { ...valid(), open_questions: ["   "] };
+    expect(validateContent([item]).join(" ")).toMatch(/open_questions\[0\]/);
+  });
+
+  it("rejects open_questions that is not an array", () => {
+    const item = { ...valid(), open_questions: "confirm this" };
+    expect(validateContent([item]).join(" ")).toMatch(/array of strings/i);
+  });
+
+  // The Go and JS hash implementations are pinned byte-for-byte against shared
+  // fixtures. If open_questions ever entered the hash, every reviewed item
+  // would silently demote to "awaiting review" the moment a question was added
+  // or answered — and cross-language parity would break.
+  it("keeps open_questions out of the content hash", () => {
+    const base = valid();
+    const withQuestions = { ...base, open_questions: ["Does this change the hash? It must not."] };
+    expect(contentHash(withQuestions)).toBe(contentHash(base));
+  });
+
   it("rejects a reviewed item with no reviewer", () => {
     const item = { ...valid(), review: { state: "reviewed" } };
     expect(validateContent([item]).join(" ")).toMatch(/reviewer/i);

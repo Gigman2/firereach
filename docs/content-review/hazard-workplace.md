@@ -39,8 +39,8 @@ GNFS says the best way to ensure the safety of your staff is through fire preven
 
 ## Sources cited
 
-- Fire Safety Tips for the Workplace (archived snapshot, 7 November 2025) — Ghana National Fire Service, . <https://web.archive.org/web/20251107114316/https://www.gnfs.gov.gh/fire-safety-tips-workplace.php>
-- Fire extinguishers — National Fire Protection Association, . <https://www.nfpa.org/education-and-research/home-fire-safety/fire-extinguishers>
+- Fire Safety Tips for the Workplace (archived snapshot, 7 November 2025) — Ghana National Fire Service. <https://web.archive.org/web/20251107114316/https://www.gnfs.gov.gh/fire-safety-tips-workplace.php>
+- Fire extinguishers — National Fire Protection Association. <https://www.nfpa.org/education-and-research/home-fire-safety/fire-extinguishers>
 
 ## Sign-off
 
