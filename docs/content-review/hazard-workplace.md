@@ -3,39 +3,40 @@
 **Slug:** `hazard-workplace`  
 **Section:** Hazard — workplace  
 **Current state:** pending_review  
-**Content hash:** `b571c8426fbc230dbbd6c803aa1ed950eb5f04955405df773faf286a3b9bb836`
+**Content hash:** `f27d22fa01032eddd68a27dca1f87e6ab1e336c86c2121e26b0aa1dd0dcdb649`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
 > reverts this item to "awaiting review".
 
-_The Ghana National Fire Service's own fire prevention and evacuation guidance for businesses._
+_Fire prevention and evacuation for shops, offices, workshops, and market stalls._
 
 ## Text as the user sees it
 
-The Ghana National Fire Service says that no matter the type of business you conduct at your workplace, fire safety should always be a major concern as it remains very important for the sustenance of your business. Almost everything below is GNFS's own workplace guidance, quoted closely. NFPA advice on extinguishers is added where it agrees.
+Fire safety keeps your staff alive and your business trading. Whatever work you do, treat it as a priority.
 
-Fire prevention, from GNFS:
+Prevent it:
 
-- Keep your work area free of waste paper, trash and other items that can easily catch fire.
-- Check on your electrical cords. If a cord is damaged in any way, replace it.
-- Try not to lay cords in places where they can be stepped on, as this will contribute to deterioration of the protective outside coating.
+- Keep work areas clear of waste paper, rubbish, and anything else that catches easily.
+- Check your cords. Replace any cord that is damaged in any way.
+- Do not run cords where people walk on them. It wears the covering away.
 - Do not overload your circuits.
-- Turn off electrical appliances at the end of each day or when not in use.
-- Keep heat producing equipment away from anything that might burn. This includes copiers, water dispensers, computers.
-- Contact your local Fire Station for a suitable fire extinguisher and let them help teach and install it at the appropriate place in the work premise.
+- Switch appliances off at the end of each day, and whenever they are not in use.
+- Keep anything that gets hot away from things that burn — copiers, water dispensers, computers.
+- Ask your local fire station for the right extinguisher. They will help you put it in the right place and show your staff how to use it.
 
-In the event of a fire, GNFS says:
+If fire breaks out:
 
-- Call 192 immediately and do not hang up on the emergency responder until you are told to do so. GNFS publishes 0302 772 446, 0299 340 383, 192 and 112 together. GNFS also says to save your local Fire Station number on your phone.
-- Close doors when exiting to help limit the spread of smoke and fire throughout the building.
-- Never use elevators during an evacuation.
-- Follow an agreed and constantly practiced escape plan and meet at a pre-determined place, an assembly point outside of your building and away from danger.
-- Conduct a headcount to ensure all of your staff has evacuated.
+- Call 192 straight away, and do not hang up until the responder tells you to. You can also reach the fire service on 0302 772 446, 0299 340 383, or 112.
+- Save your local fire station's number in your phone now.
+- Close doors as you leave, to hold back the smoke and fire.
+- Never use the lift.
+- Follow the escape plan you have practised. Gather at your assembly point, outside the building and away from danger.
+- Count everyone, so you know all your staff are out.
 
-If anyone uses an extinguisher, NFPA says to do so only when the fire is confined to a small area and is not growing, everyone has exited the building, the fire department has been called or is being called, and the room is not filled with smoke.
+Only pick up an extinguisher if the fire is small and not spreading, everyone else is out, 192 has been called, and the room is not full of smoke.
 
-GNFS says the best way to ensure the safety of your staff is through fire prevention and preparation. GNFS asks employers to talk with staff about fire safety in the workplace, or contact their local Fire Station for fire safety education.
+Preparation protects your staff far better than anything you can do once a fire has started. Talk to your team about it, or ask your local fire station to come and teach them.
 
 ## Sources cited
 

@@ -3,27 +3,27 @@
 **Slug:** `firstaid-smoke-inhalation`  
 **Section:** First Aid — smoke  
 **Current state:** pending_review  
-**Content hash:** `e9a3e4faed2972848ba5c82331020f56563dd63072897f484fcc2a421225fe42`
+**Content hash:** `112adf0394ba8e55ce3c52e6c6b7678212a772c1262adcfe67a2de97313d5158`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
 > reverts this item to "awaiting review".
 
-_Smoke can injure the airway even when the skin is not burnt, and the damage can be delayed._
+_Smoke can injure the airway even when the skin is not burnt, and the damage can come later._
 
 ## Text as the user sees it
 
-Smoke and fumes can injure the airway even when there are no burns on the skin. This is first aid only. If the person is unresponsive or not breathing normally, go straight to step 4.
+Smoke and fumes can injure the airway even when there are no burns on the skin. This is first aid only. If the person is not responding, or is not breathing normally, go straight to step 4.
 
 ### Steps
 
-1. **Get out, call 192** — Leave the smoke and get into fresh air, then call 192 — toll-free on all networks. ANZCOR says to remove the person to fresh air if safe to do so, and to send for an ambulance. GNFS says not to attempt to put out a fire where it is emitting toxic smoke, and that if you suspect or simply do not know if the smoke is toxic, leave it to the professionals.
-2. **Keep low going out** — NFPA says to always choose the escape route that is safest — the one with the least amount of smoke and heat — but be prepared to escape under toxic smoke if necessary. NFPA says everyone should practise getting low and going under the smoke to the exit.
-3. **Stay out** — NFPA says: once you're out, stay out, and under no circumstances should you ever go back into a burning building. NFPA says that if someone is missing, inform the fire department dispatcher when you call, because firefighters have the skills and equipment to perform rescues. GNFS says to close doors when exiting, to help limit the spread of smoke and fire.
-4. **If not breathing** — ANZCOR says to maintain an open airway and assess whether the person is breathing normally, and if they are not breathing normally, to follow resuscitation guidance. FireReach does not teach resuscitation in this guide. Stay on the line with 192 and do exactly what the responder tells you — they can talk you through it.
-5. **Check for airway burns** — ANZCOR says to always assume inhalation injury if there are burns to the face, nasal hairs, eyebrows or eyelashes, or if there is evidence of carbon (sooty) deposits in the nose or mouth. ANZCOR says coughing of black particles in sputum can indicate a risk of inhalation burn, and that a hoarse voice or breathing difficulties may indicate damage to the airway. Tell the responders straight away if you see any of these.
-6. **Do not assume stable** — This is the reason to get checked even when someone looks fine. ANZCOR says: "Do not assume the person burnt is stable following an inhalation injury simply because the person is breathing, talking and able to get up. Some gases produce delayed lung damage (inflammation) which may develop up to 24 hours later." ANZCOR says an inhalation burn should be suspected whenever someone has been trapped in an enclosed space for some time with hot or toxic gas, steam or fumes, and that injury may result from irritant gases even if they are not hot.
-7. **Carbon monoxide** — Smoke from a fire, a generator, or smouldering charcoal contains carbon monoxide. WHO describes it as "a colourless, non-irritant, odourless and tasteless toxic gas" produced by incomplete combustion of fuels such as wood, petrol, coal, natural gas and kerosene. WHO says it binds to haemoglobin in place of oxygen, leaving progressively less haemoglobin available to carry oxygen. You cannot see it or smell it, so tell the health worker how long the person was in the smoke and what was burning.
+1. **Get out, call 192** — Get out of the smoke and into fresh air, then call 192. Move the injured person into fresh air too, if it is safe for you to do it. Do not try to put out a fire that is giving off toxic smoke — if you think it is toxic, or you do not know, leave it to the professionals.
+2. **Keep low** — Take the way out with the least smoke and heat. If you have to pass through smoke, get down low and go underneath it. The cleaner air is near the floor.
+3. **Stay out** — Once you are out, stay out. Never go back into a burning building for any reason. If someone is missing, tell the firefighters when you call — they have the training and the equipment to go in. Close doors behind you as you leave, to hold the smoke and fire back.
+4. **If not breathing** — Tilt the head back gently to open the airway, and check whether the person is breathing normally. If they are not, they need resuscitation immediately. This guide does not teach it — stay on the line with 192 and do exactly what the responder tells you. They can talk you through it.
+5. **Check for airway burns** — Look for burns on the face, or singed nasal hairs, eyebrows, or eyelashes. Look for soot in the nose or mouth. Listen for a hoarse voice or difficult breathing, and watch for coughing up black specks. Tell the responders straight away if you see any of these.
+6. **Do not assume safe** — Someone who is breathing, talking, and walking around can still be badly injured inside. Some gases damage the lungs slowly, and the swelling can come on up to 24 hours later. Anyone who has been shut in with smoke, hot gas, steam, or fumes needs to be checked — even fumes that were never hot can burn the airway.
+7. **Carbon monoxide** — Smoke from a fire, a generator, or smouldering charcoal carries carbon monoxide. You cannot see it, smell it, or taste it. It takes the place of oxygen in the blood, so the body is starved of oxygen with no warning at all. Tell the health worker how long the person was in the smoke, and what was burning.
 
 ## Sources cited
 

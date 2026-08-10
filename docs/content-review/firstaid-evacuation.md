@@ -3,29 +3,29 @@
 **Slug:** `firstaid-evacuation`  
 **Section:** First Aid — evacuation  
 **Current state:** pending_review  
-**Content hash:** `b55ed4189593d5b9b6f639e61f3eea2e09b907952bac45fa3ae89271a7579854`
+**Content hash:** `8e8d50a61582dfa5ebed444f46ed9cde298847d4904149e62fe220d45cfeb5b2`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
 > reverts this item to "awaiting review".
 
-_Fire gives you a minute or two. Leave, call 192 from outside, and stay out — and know what to do if you cannot get out._
+_Fire gives you a minute or two. Get out, call 192 from outside, and stay out._
 
 ## Text as the user sees it
 
-Getting everyone out is the first priority, before property and before putting anything out. NFPA says fire can spread rapidly, leaving you as little as one or two minutes to escape safely. If your way out is blocked, do not force it — go to step 8.
+Getting everyone out comes first — before belongings, and before trying to put anything out. Once a fire takes hold you may have only a minute or two. If your way out is blocked, go to step 8.
 
 ### Steps
 
-1. **Leave immediately** — Get out and take everyone with you. Do not stop for belongings. NFPA says fire can spread rapidly through your home, leaving you as little as one or two minutes to escape safely once the smoke alarm sounds — and most homes here have no alarm, so you may have less warning than that.
-2. **Choose the safest route** — NFPA says to always choose the escape route that is safest — the one with the least amount of smoke and heat — but to be prepared to escape under toxic smoke if necessary, getting low and going under the smoke to your exit.
-3. **Call 192 outside** — Once you are safely outside, call 192. GNFS says to call immediately and not to hang up on the emergency responder until you are told to do so. NFPA says any member of the household can call from a neighbour's home or a mobile phone once safely outside.
-4. **Close doors behind you** — GNFS says to close doors when exiting to help limit the spread of smoke and fire throughout the building. NFPA says a closed door may slow the spread of smoke, heat and fire, and that closing doors on your way out gives you more time to escape safely.
-5. **Never use lifts** — GNFS says never to use elevators during an evacuation. Use the stairs.
-6. **Meet at assembly point** — GNFS says to follow an agreed and constantly practiced escape plan and meet at a pre-determined place, an assembly point outside of your building and away from danger. NFPA says to choose an outside meeting place a safe distance in front of the building, so everyone can meet after they have escaped.
-7. **Headcount, then stay out** — GNFS says to conduct a headcount to ensure everyone has evacuated. NFPA says: once you're out, stay out, and under no circumstances should you ever go back into a burning building. NFPA says if someone is missing, inform the fire department dispatcher when you call — firefighters have the skills and equipment to perform rescues.
-8. **If you cannot get out** — NFPA says that in some cases smoke or fire may prevent you from exiting, and gives this as "sealing yourself in for safety": close all doors between you and the fire; use tape or towels to seal the door cracks and cover air vents to keep smoke from coming in; if possible open your windows at the top and bottom so fresh air can get in; call the fire department to report your exact location; and wave a torch or a light-coloured cloth at the window to let them know where you are. On 192, say exactly which room and which floor you are in.
-9. **Plan two ways out** — Before an emergency, NFPA says to walk through the building and mark two ways out of each room, including windows and doors, and when you walk through your plan to check that escape routes are clear and doors and windows can be opened easily. NFPA says items that block doors and windows could keep you from escaping, so unblock your exits. NFPA says to practise the plan twice a year, and to make sure someone is assigned to assist infants, older adults, or family members with mobility limitations, with a backup person too.
+1. **Leave now** — Get out, and take everyone with you. Do not stop for money, papers, or phones. You may have only a minute or two, and with no smoke alarm you may have even less.
+2. **Take the safest way** — Choose the way out with the least smoke and heat. If you have to pass through smoke, get low and go underneath it.
+3. **Call 192 outside** — Once you are outside, call 192. Do not hang up until the responder tells you to. If you have no phone on you, use a neighbour's.
+4. **Close doors** — Close each door behind you as you go. A closed door slows the smoke and fire, and buys everyone more time.
+5. **Never use lifts** — Use the stairs. Never take a lift during a fire.
+6. **Meet at assembly point** — Go to the place you agreed in advance — outside the building, and well away from the danger.
+7. **Count everyone** — Count heads and make sure nobody is missing. If someone is, tell the firefighters immediately. Never go back inside to look for them yourself; they have the training and equipment for it.
+8. **If you are trapped** — If smoke or fire blocks your way out, shut yourself into a room away from the fire. Close every door between you and the fire. Block the gaps under the doors with towels or cloth, and cover any vents, to keep the smoke out. Open the window at the top and the bottom if you can, for fresh air. Call 192 and say exactly which room and which floor you are on. Wave a torch or a light-coloured cloth at the window so they can see where you are.
+9. **Plan it beforehand** — Find two ways out of every room, counting windows as well as doors. Check they are clear and that the doors and windows open easily, and never block them with furniture or goods. Practise twice a year. Decide who helps the babies, the elderly, and anyone who cannot move fast, and name a backup in case that person is out.
 
 ## Sources cited
 

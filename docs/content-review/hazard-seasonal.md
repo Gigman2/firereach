@@ -3,37 +3,36 @@
 **Slug:** `hazard-seasonal`  
 **Section:** Hazard — seasonal  
 **Current state:** pending_review  
-**Content hash:** `e905fe38bbd8f5fd8dd1360e5d3768baa9c07e0103b77778e38e9e6cd2841545`
+**Content hash:** `0e77f9dfcfb8950b8dc39ac7eca04ac6af512a94591ba172814b40bf7237b494`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
 > reverts this item to "awaiting review".
 
-_Starting a bushfire is a criminal offence in Ghana, and so is failing to report one. What the law requires._
+_Starting a bushfire is a criminal offence in Ghana, and so is failing to report one._
 
 ## Text as the user sees it
 
-In the dry harmattan months the air is dry and the wind is strong, and grass, farm waste and bush catch easily. A fire that starts in the bush can reach homes, farms, fuel stores and market sheds quickly.
+In the dry harmattan months the air is dry and the wind is strong. Grass, farm waste, and bush catch quickly and burn fast. A fire that starts out in the bush can reach homes, farms, fuel stores, and market sheds within minutes.
 
-The law. Ghana's Control and Prevention of Bushfires Act, 1990 (P.N.D.C.L. 229), made on 1 March 1990, says:
+What the law says:
 
-- **Section 1, Prohibition of Bushfires:** "Except as otherwise provided under this Act, it is unlawful for any person to start a bushfire for any purpose."
-- **Section 2, Meaning of Starting a Bushfire:** "For the purposes of this Act, a person starts a bushfire if an action of that person results in the uncontrolled burning of any farm, forest or grassland." You do not have to intend the spread to have committed the offence.
-- **Section 8, Control of Fire:** "A person who starts a fire permitted by this Act shall control the spread of the fire." A permitted burn is still yours to control. Do not walk away from one.
-- **Section 6(1)(b):** each District's Bushfire Control Sub-committee must "specify the period or periods in the year, and thereafter yearly, within which the burning of farm slash, grass, herbage and dead wood shall be prohibited." Burning seasons are set district by district, so ask your District Assembly what applies where you are before you burn anything.
-- **Section 12, Duty to Report Bushfire:** it is an offence to become aware of a bushfire and, without good cause, fail to report it — to a fire volunteer squad member, a member of the bushfire control Sub-committee, a police officer, or the traditional authority. Reporting a bush fire is a legal duty here, not a favour.
-- **Section 11, Offences:** contravening the Act carries a fine, or imprisonment or community labour not exceeding twelve months, or both.
-
-**Where this text came from:** the section wording above was read on a third-party legal portal, not on a government website, because the Parliament of Ghana repository does not respond to automated requests. Check with your District Assembly before you rely on it for anything that matters.
+- Starting a bushfire is a criminal offence in Ghana.
+- It counts as starting one if what you did ends in a farm, forest, or grassland burning out of control. You do not have to have meant it to spread.
+- If you light a fire you are allowed to light, controlling it is your responsibility. Never walk away from it.
+- Every district sets its own periods when burning farm slash, grass, and dead wood is banned. Ask your District Assembly what applies where you are before you burn anything.
+- If you know about a bushfire, you must report it. Failing to report one is an offence in itself.
+- Report it to a fire volunteer, someone on your district's bushfire committee, a police officer, or your traditional authority.
+- Breaking this law can mean a fine, or imprisonment or community labour of up to twelve months, or both.
 
 If a bush or grass fire starts near you:
 
-- Call 192 straight away. GNFS says to call for help before attempting to extinguish a serious fire.
-- GNFS says not to attempt to put out a fire where it is emitting toxic smoke, and that if you suspect or simply do not know if the smoke is toxic, leave it to the professionals.
-- GNFS says to check that all other people are out and that they are all assembled at a safe meeting point.
-- NFPA says to choose an outside meeting place a safe distance in front of the building.
+- Call 192 straight away. Call for help before you try to put out a serious fire.
+- Do not try to put out a fire that is giving off toxic smoke. If you think the smoke is toxic, or you simply do not know, leave it to the professionals.
+- Check that everyone is out and gathered at a safe meeting point.
+- Keep that meeting point outside, a safe distance in front of the building.
 
-**Not covered here:** firebreaks and cleared strips around buildings, whether to burn on windy harmattan days, what time of day is safer, and keeping water or sand to hand.
+This guide does not cover firebreaks, whether to burn on windy days, what time of day is safer, or keeping water or sand to hand.
 
 ## Sources cited
 

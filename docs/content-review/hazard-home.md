@@ -3,40 +3,42 @@
 **Slug:** `hazard-home`  
 **Section:** Hazard — home  
 **Current state:** pending_review  
-**Content hash:** `58b549597f452ba793c263dc239a7c9536aa7ce60218dd2b9a76fdadaf6520cc`
+**Content hash:** `84dc3753a44653acd27108520ed007d6ab42d1330b635e3a5bd64dc081e29a72`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
 > reverts this item to "awaiting review".
 
-_Cut the risk at home, and make sure everyone can get out in the two minutes a fire gives you._
+_Cut the risk at home, and make sure everyone can get out in the minute or two a fire gives you._
 
 ## Text as the user sees it
 
-NFPA says fire can spread rapidly through your home, leaving you as little as one or two minutes to escape safely once the smoke alarm sounds. **Most homes here have no smoke alarm.** Without one there is no early warning at all, so the clock starts only when somebody happens to notice — which means less time, not more.
+Fire spreads fast. Once it takes hold you may have only a minute or two to get out. Most homes here have no smoke alarm, so no one gets an early warning — the clock starts only when somebody notices.
 
-Smoke alarms. NFPA says to install smoke alarms in every sleeping room, outside each sleeping area, and on every level of the home. Where alarms are fitted, NFPA says that when one sounds they should all sound. If you have no alarm, treat every other precaution below as more important, not less.
+Smoke alarms:
+
+- Fit an alarm in every bedroom, outside each sleeping area, and on every floor.
+- If you have no alarm, everything else on this page matters more, not less.
 
 Reduce the risk:
 
-- GNFS says to keep your space free of waste paper, trash, and other items that can easily catch fire.
-- NFPA says to have all electrical work done by a qualified electrician.
-- NFPA says only one heat-producing appliance should be plugged into a receptacle outlet at a time.
-- GNFS says to turn off electrical appliances when they are not in use.
-- NFPA's rule for the stovetop is to keep anything that can catch fire away from it. FireReach applies the same rule to any open flame — kerosene lamps, candles, and coalpots near curtains, mats, or mattresses.
+- Keep your space clear of waste paper, rubbish, and anything else that catches easily.
+- Let a qualified electrician do all electrical work.
+- Plug only one heat-producing appliance into a socket at a time.
+- Switch appliances off when you are not using them.
+- Keep anything that burns well away from any open flame. Curtains, mats, and mattresses do not belong near a kerosene lamp, a candle, or a coalpot.
 
-Be ready to get out. NFPA says:
+Be ready to get out:
 
-- Walk through your home and inspect all possible exits and escape routes, marking two ways out of each room, including windows and doors.
-- When you walk through your plan, check to make sure the escape routes are clear and doors and windows can be opened easily.
-- Choose an outside meeting place a safe distance in front of your home where everyone can meet after they have escaped.
-- If windows or doors in your home have security bars, make sure that the bars have emergency release devices inside so that they can be opened immediately in an emergency. FireReach applies the same principle to a shared compound gate: it must open immediately, not be padlocked shut.
-- Have everyone memorize the emergency phone number of the fire department, so any member of the household can call from a neighbour's home or a mobile phone once safely outside. In Ghana that number is 192, toll-free on all networks.
-- If there are infants, older adults, or family members with mobility limitations, make sure that someone is assigned to assist them in the fire drill and in the event of an emergency. Assign a backup person too.
-- Practise your home fire escape plan twice a year.
-- A closed door may slow the spread of smoke, heat and fire. Close doors on your way out.
-
-Items that block doors and windows could keep you from escaping, so NFPA says to unblock your exits.
+- Walk through your home and find two ways out of every room. Count windows, not just doors.
+- Check that both ways out are clear, and that the doors and windows open easily.
+- Agree on a meeting place outside, a safe distance in front of the house, where everyone gathers.
+- Burglar bars need a release catch on the inside that opens immediately. A compound gate must open immediately too — never padlocked shut at night.
+- Make sure everyone knows to call 192, so anyone can call from a neighbour's phone once they are outside.
+- Decide now who helps the babies, the elderly, and anyone who cannot move quickly. Name a second person too, in case the first one is out.
+- Practise the plan twice a year.
+- Close doors behind you as you leave. A closed door slows the fire and buys you time.
+- Never block a door or window with furniture, stock, or goods.
 
 ## Sources cited
 

@@ -3,41 +3,41 @@
 **Slug:** `hazard-cooking`  
 **Section:** Hazard — cooking  
 **Current state:** pending_review  
-**Content hash:** `62519f1cb5628df4b39b1ef6ba5b69d4730019f49eaa83eb19a23c08ec1ac2be`
+**Content hash:** `ea16f4d6ef3ad47c4bfdb18b7c39c8cbb85f745425d2686432254eed8abe22dd`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
 > reverts this item to "awaiting review".
 
-_Staying safe with charcoal, firewood, and hot oil — and what to do when a pan catches fire._
+_Charcoal, firewood, and hot oil — and what to do when a pan catches fire._
 
 ## Text as the user sees it
 
-NFPA says cooking is a leading cause of reported home fires, home fire injuries, and home fire deaths. NFPA also reports that unattended equipment is a factor in one quarter of reported home cooking fires and half of the associated deaths. The precautions below come from NFPA, the Ghana National Fire Service, and WHO.
+Cooking causes more home fires than anything else. Most of them start when food is left unattended.
 
-While you are cooking, NFPA says:
+While you cook:
 
-- Stay in the kitchen while you are frying, grilling, boiling, or broiling food.
-- If you are simmering, baking, or roasting food, check it regularly, remain in the kitchen while food is cooking, and use a timer to remind you that you are cooking.
-- Be on alert. If you are sleepy or have consumed alcohol, do not use the stove or stovetop.
-- Keep anything that can catch fire — oven mitts, wooden utensils, food packaging, towels or curtains — away from your stovetop.
-- Heat the oil slowly to the temperature you need, and add food gently to the pan so the oil does not splatter.
-- If you see wisps of smoke or the oil smells, immediately turn off the burner and carefully remove the pan. Smoke is a danger sign that the oil is too hot.
-- Always cook with a lid beside your pan.
+- Stay in the kitchen while you fry, grill, boil, or roast.
+- If you are simmering or baking, check the food often and set a timer to remind you it is on.
+- Do not cook if you are sleepy or have been drinking.
+- Keep oven mitts, wooden spoons, food packaging, towels, and curtains away from the flame or hotplate.
+- Heat oil slowly. Add food gently so the oil does not splash.
+- If you see wisps of smoke, or the oil smells, turn the heat off at once and carefully move the pan off. Smoke means the oil is too hot.
+- Keep a lid beside the pan whenever you fry.
 
 If a pan catches fire:
 
-- NFPA and GNFS both say to turn off the heat and slide the lid over the pan to smother the flames.
-- NFPA says to leave the pan covered until it is completely cooled, and not to remove the cover because the fire could start again.
-- NFPA says never to throw water on the fire.
-- For an oven fire, NFPA says to turn off the heat and keep the door closed.
-- NFPA says that if the fire does not go out, or you do not feel comfortable sliding a lid over the pan, get everyone out and close the door behind you. Then call 192 from outside.
+- Turn off the heat and slide the lid over the pan to smother the flames.
+- Leave the lid on until the pan is completely cool. Taking it off too soon can restart the fire.
+- Never throw water on burning oil.
+- For an oven fire, turn off the heat and keep the door shut.
+- If the fire does not go out, or you are not confident, get everyone out, close the door behind you, and call 192 from outside.
 
-Charcoal, firewood, and kerosene. WHO's indoor air quality guidelines describe carbon monoxide as "a colourless, non-irritant, odourless and tasteless toxic gas", produced by "the incomplete combustion of carbonaceous fuels such as wood, petrol, coal, natural gas and kerosene". It cannot be seen or smelled. Charcoal that has stopped flaming and is only glowing is still burning, and still producing it.
+Charcoal, firewood, and kerosene give off carbon monoxide as they burn. You cannot see it, smell it, or taste it, and it can kill you in your sleep. Charcoal that has stopped flaming and is only glowing is still burning, and still giving it off.
 
-**FireReach advises never bringing a coalpot or brazier into a closed room, including to keep warm, and cooking where there is good airflow.**
+Never bring a coalpot or brazier into a closed room, not even to keep warm. Cook where the air moves freely.
 
-**Not covered here:** this guide does not cover LPG gas cylinders — leaks, regulators, hoses, or storage.
+This guide does not cover gas cylinders — leaks, regulators, hoses, or storage.
 
 ## Sources cited
 

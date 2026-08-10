@@ -3,32 +3,32 @@
 **Slug:** `firstaid-extinguisher-pass`  
 **Section:** First Aid — extinguisher  
 **Current state:** pending_review  
-**Content hash:** `11121671c8f840c6bcfe800017021181d8e0098fbc80f1406fd3a3a833d71d4e`
+**Content hash:** `05c11b88cf05b3ea2d8bd79dcfb3b46974351bb05fcc6e86c2d85b7ce173e3bd`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
 > reverts this item to "awaiting review".
 
-_Call 192 first, make sure everyone is out, check the extinguisher suits the fire, and only then fight it._
+_Call 192 first, get everyone out, check the extinguisher suits the fire, then fight it._
 
 ## Text as the user sees it
 
-An extinguisher is for a small, contained fire only — never for a fire that is growing or filling the room with smoke. GNFS says to call for help before attempting to extinguish a serious fire. Both GNFS and NFPA teach the same four actions, remembered as PASS.
+Use an extinguisher only on a small fire that is not spreading. Call for help before you try to put out a serious fire. The four actions are pull, aim, squeeze, sweep.
 
 ### Steps
 
-1. **Call 192 first** — GNFS says to call for help before attempting to extinguish a serious fire, and to call, or have someone else call, 192 as soon as possible. Ask the fire service to come immediately, giving your address or a landmark and a brief description of the type of fire.
-2. **Check everyone is out** — GNFS says to check that all other people are out of the house and to check that they are all assembled at a safe meeting point. NFPA says to use a portable fire extinguisher only when everyone has exited the building and the fire department has been called or is being called.
-3. **Only small fires** — GNFS says only a contained fire should be fought using a fire extinguisher. NFPA says to use one when the fire is confined to a small area, such as a wastebasket, and is not growing, and the room is not filled with smoke. GNFS says not to attempt to put out a fire where it is emitting toxic smoke.
-4. **Match it to the fire** — The wrong extinguisher makes things worse. GNFS says water is only safe on "most combustibles other than oils and other insoluble combustible liquids or places involving electricity" — so never put water on burning cooking oil or on anything electrical. NFPA says that for the home you should select a multi-purpose extinguisher, which can be used on all types of home fires, and GNFS says a multi-purpose extinguisher is best for a home and to check that it is labelled as such. If you do not know what your extinguisher is rated for, do not use it — get out instead.
-5. **Keep your exit clear** — GNFS says to install fire extinguishers close to an exit point, so you can keep your back to the exit and make an easy escape if the fire cannot be controlled. NFPA gives the same advice. GNFS says to keep your mind on the availability of a safe retreat at all times, and if that is threatened at all, to leave at once.
-6. **Pull the pin** — NFPA says to pull the pin: hold the extinguisher with the nozzle pointing away from you, and release the locking mechanism. GNFS says you must break the seal and pull the safety pin from the handle before the extinguisher will discharge.
-7. **Aim low** — NFPA says to aim low and point the extinguisher at the base of the fire, not at the flames. GNFS says to aim the extinguisher nozzle or hose at the base of the fire, and to keep yourself low.
-8. **Squeeze the lever** — NFPA says to squeeze the lever slowly and evenly. GNFS says to squeeze the handle or lever slowly to discharge the agent, and notes that letting go of the handle will stop the discharge, so keep it held down.
-9. **Sweep side to side** — NFPA says to sweep the nozzle from side to side. GNFS says to sweep side to side over the fire, and to stand several metres back, because fire extinguishers are manufactured for use from a distance. Stop when the fire is out — do not keep discharging into a fire that has gone out, and watch in case it re-ignites.
-10. **Know when to go** — NFPA says that if the room fills with smoke, leave immediately. GNFS says a typical fire extinguisher contains around 10 seconds of extinguishing power, and that if the fire does not respond well after you have used it up, move to a place of safety quickly. GNFS says that if the room becomes filled with smoke, make a hasty exit.
-11. **Afterwards** — GNFS says not to leave the area alone once the fire is out, as it might re-ignite without warning, and that the Fire Service can help you make sure the fire is completely extinguished. GNFS says to replace a used extinguisher immediately, because an empty one creates the false impression of being a good extinguisher.
-12. **Children must not** — GNFS says not to allow children to attempt to use a fire extinguisher or control a fire in any respect whatsoever. NFPA says it believes children should not be trained how to operate portable fire extinguishers, because teaching them to do so runs counter to NFPA's messaging to get out and stay out if there is a fire.
+1. **Call 192 first** — Call 192, or have someone else call, before you try to fight a serious fire. Give your address or a landmark, and say briefly what is burning.
+2. **Get everyone out** — Check that everyone else is out of the building and gathered at a safe meeting point. Only pick up an extinguisher once they are.
+3. **Only small fires** — Use it only if the fire is contained and small — something like a wastebasket — and is not growing. If the room is filling with smoke, leave instead. Never fight a fire that is giving off toxic smoke.
+4. **Match it first** — The wrong extinguisher makes things worse. Never put water on burning oil, and never on anything electrical. Water is only for ordinary burning materials such as paper, cloth, and wood. A multi-purpose extinguisher is the right one for a home — check the label says so. If you do not know what yours is for, do not use it; get out instead.
+5. **Keep your exit clear** — Keep an extinguisher near the door, so you can stand with your back to your way out. Keep thinking about that escape the whole time you are using it. If it is ever cut off, leave at once.
+6. **Pull the pin** — Break the seal and pull the pin out of the handle. Hold the extinguisher with the nozzle pointing away from you.
+7. **Aim low** — Aim at the base of the flames, not at the flames themselves. Keep yourself low.
+8. **Squeeze the lever** — Squeeze the handle slowly and evenly. Letting go stops the spray, so keep it held down.
+9. **Sweep across** — Sweep the nozzle from side to side across the base of the fire. Stand a few metres back — an extinguisher is made to be used from a distance. Stop once the fire is out, and watch in case it starts again.
+10. **Know when to go** — An extinguisher holds only about ten seconds of spray. If the fire is still going once it is empty, get out fast. If the room fills with smoke, get out.
+11. **After the fire** — Do not leave the area — a fire can start again without warning. Let the fire service check that it is properly out. Replace a used extinguisher straight away, because an empty one on the wall is worse than none: people believe it works.
+12. **Keep children away** — Never let a child use an extinguisher or try to control a fire. Children should be taught to get out and stay out, not to fight fires.
 
 ## Sources cited
 

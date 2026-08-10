@@ -3,44 +3,44 @@
 **Slug:** `hazard-electrical`  
 **Section:** Hazard — electrical  
 **Current state:** pending_review  
-**Content hash:** `34148d5690da9aaa73f5129fe85f741558740994d9047fd0c1cc59085bfdba61`
+**Content hash:** `a3ee8b1644bd1c3d4d9c4ed9fdfb4cd145cee4bc57921599919e43216503f6f2`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
 > reverts this item to "awaiting review".
 
-_How to spot bad wiring, overloaded sockets, and generator risks before they start a fire._
+_Spot bad wiring, overloaded sockets, and generator danger before they start a fire._
 
 ## Text as the user sees it
 
-Electrical faults start a lot of fires. NFPA reports that in 2020–2024, home fires involving an electrical failure or malfunction, or electrical equipment involved in ignition, caused an annual average of 527 deaths and 1,580 injuries in the United States. Extension boards, long runs of flex, and standby generators all add risk.
+Bad wiring and overloaded sockets start a lot of fires. Faulty electrical equipment is one of the most common causes of house and shop fires.
 
 In the house, shop, or office:
 
-- NFPA says to have all electrical work done by a qualified electrician.
-- NFPA says to plug only one heat-producing appliance — a kettle, iron, or heater — into a socket at a time.
-- NFPA says major appliances such as fridges, washers, and stoves should be plugged directly into a wall socket, and that extension cords and plug strips should not be used for them.
-- NFPA says extension cords are intended for temporary use, and to check that cords are not running across doorways or under carpets.
-- GNFS says to check your electrical cords, and to replace a cord that is damaged in any way.
-- GNFS says not to lay cords where they can be stepped on, as this contributes to deterioration of the protective outside coating.
-- GNFS says not to overload your circuits.
-- GNFS says to turn off electrical appliances at the end of each day, or when they are not in use.
-- GNFS says to keep heat-producing equipment away from anything that might burn.
+- Let a qualified electrician do all electrical work.
+- Plug only one heat-producing appliance into a socket at a time — a kettle, an iron, a heater.
+- Plug big appliances like fridges, washers, and stoves straight into a wall socket. Do not run them off an extension board or plug strip.
+- Extension cords are for temporary use only. Never run a cord across a doorway or under a carpet or mat.
+- Check your cords. Replace any cord that is damaged in any way.
+- Do not lay cords where people step on them. It wears away the outer covering.
+- Do not overload your circuits.
+- Switch appliances off at the end of the day, and whenever you are not using them.
+- Keep anything that gets hot away from things that burn.
 
-NFPA says to call a qualified electrician or your landlord if you have any of these:
+Call an electrician or your landlord if you notice any of these:
 
-- Frequent problems with blowing fuses or tripping circuit breakers.
-- A tingling feeling when you touch an electrical appliance.
-- Discoloured or warm wall outlets.
-- A burning or rubbery smell coming from an appliance.
-- Flickering or dimming lights.
-- Sparks from an outlet.
+- Fuses blowing or breakers tripping often.
+- A tingling feeling when you touch an appliance.
+- Wall sockets that are warm or discoloured.
+- A burning or rubbery smell from an appliance.
+- Lights that flicker or dim.
+- Sparks from a socket.
 
-Generators and carbon monoxide. WHO's indoor air quality guidelines describe carbon monoxide as "a colourless, non-irritant, odourless and tasteless toxic gas", produced by "the incomplete combustion of carbonaceous fuels such as wood, petrol, coal, natural gas and kerosene". WHO says it binds to haemoglobin in place of oxygen, so that less haemoglobin is left to carry oxygen, and the result is arterial hypoxaemia. You cannot see it or smell it, and a generator that is barely smoking is still producing it.
+A generator gives off carbon monoxide. You cannot see it, smell it, or taste it, and it builds up in a closed space until it kills. A generator that is barely smoking is still producing it.
 
-**FireReach advises running a generator in the open air, never in a closed room or a shut-in corner of a compound.**
+Run a generator in the open air. Never in a room, and never in a shut-in corner of a compound.
 
-If a fire starts, get everyone out and call 192. GNFS says to call for help before attempting to deal with a serious fire yourself.
+If a fire starts, get everyone out and call 192. Call for help before you try to deal with a serious fire yourself.
 
 ## Sources cited
 
