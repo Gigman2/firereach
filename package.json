@@ -9,7 +9,8 @@
     "web": "expo start --web",
     "test": "jest",
     "build:stations": "node scripts/build-stations-bundle.mjs",
-    "build:content-seed": "node scripts/build-safety-content-seed.mjs"
+    "build:content-seed": "node scripts/build-safety-content-seed.mjs",
+    "build:review-packet": "node scripts/build-review-packet.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
