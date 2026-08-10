@@ -5,6 +5,7 @@ jest.mock("@react-native-async-storage/async-storage", () =>
 );
 
 import { resetAllAppData, setAppRemountHandler } from "../devReset";
+import { SAFETY_CONTENT_CACHE_KEY } from "../safetyContent";
 
 /**
  * Every key the app is known to write today. The point of the test below is
@@ -17,6 +18,7 @@ const KNOWN_KEYS = [
   "@firereach_theme",
   "firereach.stations.v2",
   "firereach.nearestStation.v1",
+  SAFETY_CONTENT_CACHE_KEY,
 ];
 
 let unregister: (() => void) | null = null;

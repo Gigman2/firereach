@@ -1,3 +1,12 @@
+// safetyContent.ts now reaches AsyncStorage (the OTA cache added for Task
+// 13). Every other test file that imports a module reaching AsyncStorage
+// (devReset, stationSnapshot, savedPlaces, submissionsApi, guidesHubCategories)
+// swaps in the official jest mock the same way, so this stays consistent
+// with the rest of the suite rather than adding a global moduleNameMapper.
+jest.mock("@react-native-async-storage/async-storage", () =>
+  require("@react-native-async-storage/async-storage/jest/async-storage-mock")
+);
+
 import {
   effectiveState,
   badgeText,

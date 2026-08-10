@@ -1,5 +1,15 @@
 import fs from "fs";
 import path from "path";
+
+// safetyContent.ts now reaches AsyncStorage (the OTA cache added for Task
+// 13). Every other test file that imports a module reaching AsyncStorage
+// (devReset, stationSnapshot, savedPlaces, submissionsApi, guidesHubCategories)
+// swaps in the official jest mock the same way, so this stays consistent
+// with the rest of the suite rather than adding a global moduleNameMapper.
+jest.mock("@react-native-async-storage/async-storage", () =>
+  require("@react-native-async-storage/async-storage/jest/async-storage-mock")
+);
+
 import { itemBySlug } from "../safetyContent";
 
 const SCREEN = path.resolve(__dirname, "../../screens/guides/GuideDetailScreen.tsx");
@@ -21,7 +31,12 @@ describe("GuideDetailScreen", () => {
   });
 
   it("looks the item up by the navigated slug", () => {
-    expect(source).toContain("itemBySlug");
+    // Task 13: the screen now sources items from useSafetyContent() (bundled
+    // synchronously, then cached/refreshed content) and finds the navigated
+    // slug within them, rather than calling the bundled-only itemBySlug
+    // directly — see useSafetyContent.ts.
+    expect(source).toContain("useSafetyContent");
+    expect(source).toMatch(/items\.find\(/);
     expect(source).toMatch(/route\.params/);
   });
 

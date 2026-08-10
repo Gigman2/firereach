@@ -18,7 +18,7 @@ import { Text } from "../../components/ui/Text";
 import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
 import { useConnectivity } from "../../hooks/useConnectivity";
-import { visibleItems } from "../../lib/safetyContent";
+import { useSafetyContent } from "../../hooks/useSafetyContent";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { GuidesStackParamList } from "../../navigation/types";
 
@@ -72,7 +72,7 @@ export const GuidesHubScreen = ({ navigation }: Props) => {
   const { isOnline } = useConnectivity();
   const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>("All");
 
-  const items = useMemo(() => visibleItems(), []);
+  const items = useSafetyContent();
   const filtered = useMemo(
     () =>
       activeTab === "All"

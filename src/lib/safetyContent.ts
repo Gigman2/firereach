@@ -1,4 +1,6 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import bundled from "../data/safety-content.bundled.json";
+import { apiGet } from "./apiClient";
 
 /** Bump when the shape below changes; a mismatch discards the cache. */
 export const SAFETY_CONTENT_VERSION = 1;
@@ -201,4 +203,86 @@ export function visibleItems(): SafetyItem[] {
 /** Routed through visibleItems(), so a withdrawn slug is unreachable even by direct navigation. */
 export function itemBySlug(slug: string): SafetyItem | undefined {
   return visibleItems().find((i) => i.slug === slug);
+}
+
+export const SAFETY_CONTENT_CACHE_KEY = "firereach.safetyContent.v1";
+
+/** The tabs each subcategory may appear under. Mirrors scripts/contentValidate.mjs. */
+const SUBCATEGORY_TAB: Record<string, "hazard" | "first_aid"> = {
+  electrical: "hazard",
+  cooking: "hazard",
+  home: "hazard",
+  workplace: "hazard",
+  seasonal: "hazard",
+  burns: "first_aid",
+  smoke: "first_aid",
+  evacuation: "first_aid",
+  extinguisher: "first_aid",
+};
+
+/**
+ * Fetched content is validated before it is trusted. The same rules the build
+ * script enforces at authoring time apply again at the network boundary — a
+ * compromised or misconfigured server must not be able to push unreviewed
+ * medical instructions into the app wearing a trust badge.
+ */
+function isAcceptable(item: SafetyItem): boolean {
+  if (!item.slug || !item.title || !item.body) return false;
+  if (SUBCATEGORY_TAB[item.subcategory] !== item.category) return false;
+  if (!item.sources || item.sources.length === 0) return false;
+  if (item.category === "first_aid" && item.steps.length === 0) return false;
+
+  if (item.review.state === "reviewed") {
+    if (!item.review.reviewerName) return false;
+    if (!item.review.reviewedAt) return false;
+    if (!item.review.contentHash) return false;
+  }
+
+  return true;
+}
+
+/**
+ * Bundled is the floor, cache is preferred, any failure degrades silently —
+ * the same precedence as stationCache.ts:47-55.
+ */
+export async function loadContent(): Promise<SafetyItem[]> {
+  try {
+    const raw = await AsyncStorage.getItem(SAFETY_CONTENT_CACHE_KEY);
+    if (!raw) return visibleItems();
+
+    const parsed = JSON.parse(raw);
+    if (parsed.schemaVersion !== SAFETY_CONTENT_VERSION) return visibleItems();
+    if (!Array.isArray(parsed.items) || parsed.items.length === 0) return visibleItems();
+
+    const items = parsed.items.map(fromJson);
+    if (!items.every(isAcceptable)) return visibleItems();
+
+    return items.filter((i: SafetyItem) => effectiveState(i) !== "withdrawn");
+  } catch {
+    return visibleItems();
+  }
+}
+
+/**
+ * Best-effort OTA refresh. Never throws and never leaves the app with less
+ * content than it shipped with.
+ */
+export async function refreshContent(): Promise<void> {
+  try {
+    const raw = await apiGet<any[] | null>("/v1/content");
+    if (!Array.isArray(raw) || raw.length === 0) return;
+
+    const items = raw.map(fromJson);
+    if (!items.every(isAcceptable)) {
+      console.warn("[safetyContent] rejected OTA payload: failed validation");
+      return;
+    }
+
+    await AsyncStorage.setItem(
+      SAFETY_CONTENT_CACHE_KEY,
+      JSON.stringify({ schemaVersion: SAFETY_CONTENT_VERSION, items: raw })
+    );
+  } catch (err) {
+    console.warn("[safetyContent] refresh failed, keeping bundled content", err);
+  }
 }

@@ -17,7 +17,8 @@ import { Text } from "../../components/ui/Text";
 import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
 import { NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
-import { itemBySlug, badgeText, effectiveState } from "../../lib/safetyContent";
+import { badgeText, effectiveState } from "../../lib/safetyContent";
+import { useSafetyContent } from "../../hooks/useSafetyContent";
 import { SUBCATEGORY_META, NEUTRAL_ACCENT } from "./GuidesHubScreen";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { GuidesStackParamList } from "../../navigation/types";
@@ -28,7 +29,8 @@ export const GuideDetailScreen = ({ navigation, route }: Props) => {
   const insets = useSafeAreaInsets();
   const { theme, isDark } = useTheme();
 
-  const item = itemBySlug(route.params.guideId);
+  const items = useSafetyContent();
+  const item = items.find((i) => i.slug === route.params.guideId);
   const state = item ? effectiveState(item) : "pending";
   const isReviewed = state === "reviewed";
   const isFirstAid = item?.category === "first_aid";

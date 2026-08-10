@@ -38,7 +38,11 @@ export function setAppRemountHandler(fn: () => void): () => void {
  * theme standing, whereas this one has to leave nothing standing. A list of
  * keys to delete is a list a future key can be left out of — the same shape
  * as the onboarding bug recorded in `onboarding.ts` — and here nobody would
- * see it as anything but the reset mysteriously "not taking".
+ * see it as anything but the reset mysteriously "not taking". That includes
+ * `SAFETY_CONTENT_CACHE_KEY` (`safetyContent.ts`): a user who resets all app
+ * data must not keep a stale OTA guide cache, and because this function was
+ * never given a key list in the first place, that guarantee held the moment
+ * the key started being written — nothing here needed to change for it.
  *
  * Clearing storage is only half the job. The providers in `App.tsx` each hold
  * their own copy of what they read at launch and nothing tells them to look
