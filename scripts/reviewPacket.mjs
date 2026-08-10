@@ -21,6 +21,34 @@ export function selectForReview(items) {
   );
 }
 
+/**
+ * Given the filenames currently sitting in docs/content-review/ and the full
+ * content file, returns exactly the filenames the CLI should delete: ones it
+ * could have generated (name is `<slug>.md` for a slug that still exists in
+ * the content file) whose item has left the review set — e.g. withdrawn, or
+ * demoted back to draft for rework.
+ *
+ * withdrawn is how a content authority pulls a guide judged unsafe; leaving
+ * its file behind after that would put a plausible-looking, no-longer-valid
+ * instruction on a reviewer's desk — the one mechanism for pulling dangerous
+ * content wouldn't actually remove it from where a reviewer looks.
+ *
+ * Deliberately conservative in two ways: never names README.md (the index,
+ * rewritten wholesale every run, not a per-item file), and never names a
+ * file whose slug isn't in the content file at all — that could be a human's
+ * notes dropped in the same folder, not this generator's to touch.
+ */
+export function selectStaleFiles(filenames, items) {
+  const reviewSlugs = new Set(selectForReview(items).map((i) => i.slug));
+  const knownSlugs = new Set(items.map((i) => i.slug));
+
+  return filenames.filter((name) => {
+    if (name === "README.md" || !name.endsWith(".md")) return false;
+    const slug = name.slice(0, -".md".length);
+    return knownSlugs.has(slug) && !reviewSlugs.has(slug);
+  });
+}
+
 export function toMarkdown(item) {
   const lines = [];
 

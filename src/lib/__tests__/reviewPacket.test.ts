@@ -3,7 +3,7 @@
 // resolution, and jest-expo's Hermes-targeted preset throws on import.meta
 // for any non-web platform. Importing the pure module here is what lets this
 // suite run at all without a custom babel workaround (see jest.config.js).
-import { toMarkdown, selectForReview } from "../../../scripts/reviewPacket.mjs";
+import { toMarkdown, selectForReview, selectStaleFiles } from "../../../scripts/reviewPacket.mjs";
 
 const item = {
   slug: "firstaid-burns",
@@ -77,5 +77,49 @@ describe("toMarkdown", () => {
   // leak into the packet just because it isn't a draft.
   it("excludes withdrawn items from the packet", () => {
     expect(selectForReview([{ ...item, review: { state: "withdrawn" } }])).toEqual([]);
+  });
+});
+
+describe("selectStaleFiles", () => {
+  // withdrawn is how a content authority pulls a guide judged unsafe — the
+  // whole point is to remove it, not leave a plausible-looking instruction
+  // on a reviewer's desk. A left-behind firstaid-burns.md would defeat that:
+  // a reviewer browsing the folder (not the README index) could still open
+  // and sign a withdrawn guide.
+  it("removes the file for an item that moved from pending_review to withdrawn", () => {
+    const withdrawn = { ...item, review: { state: "withdrawn" } };
+    expect(selectStaleFiles(["firstaid-burns.md"], [withdrawn])).toEqual(["firstaid-burns.md"]);
+  });
+
+  // Same hazard as withdrawn: an item demoted back to draft (e.g. the
+  // content author pulled it for rework) must not leave stale prose sitting
+  // where a reviewer could still find and approve it.
+  it("removes the file for an item that moved from pending_review to draft", () => {
+    const draft = { ...item, review: { state: "draft" } };
+    expect(selectStaleFiles(["firstaid-burns.md"], [draft])).toEqual(["firstaid-burns.md"]);
+  });
+
+  // The flip side of both cases above: a file must not be deleted just
+  // because pruning runs every time. An item still legitimately under
+  // review — possibly with a reviewer's in-progress annotations in its
+  // sign-off block — has to survive the same run that prunes others.
+  it("keeps the file for an item still pending_review", () => {
+    expect(selectStaleFiles(["firstaid-burns.md"], [item])).toEqual([]);
+  });
+
+  // README.md is the index, rewritten wholesale every run — it is not a
+  // per-item file and must never be treated as one, or the "stale" pass
+  // would delete it right before the CLI regenerates it (harmless here, but
+  // the wrong file for this function to ever name).
+  it("never returns README.md — it is regenerated every run, not per-item", () => {
+    const withdrawn = { ...item, review: { state: "withdrawn" } };
+    expect(selectStaleFiles(["README.md"], [withdrawn])).toEqual([]);
+  });
+
+  // A name that matches no slug in the content file was not written by this
+  // generator — maybe a human dropped review notes alongside the packet.
+  // "Only remove what you could have generated" means leaving it alone.
+  it("ignores a file that matches no known slug — not ours to touch", () => {
+    expect(selectStaleFiles(["notes.md"], [item])).toEqual([]);
   });
 });
