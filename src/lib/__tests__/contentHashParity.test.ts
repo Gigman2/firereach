@@ -61,22 +61,47 @@ describeParity("content hash parity with the Go implementation", () => {
 describe("build-time boundary", () => {
   it("is not imported by any app source file", () => {
     const srcDir = path.resolve(__dirname, "../..");
+    // React Native's real entry points — App.tsx, index.ts — live at the app
+    // repo root, not under src/. An import added there would break the app
+    // at runtime (React Native has no node:crypto) while sailing straight
+    // past a scan that only descends from src/, which is exactly the
+    // mistake this test exists to catch.
+    const repoRoot = path.resolve(__dirname, "../../..");
+
+    // Not just .tsx?: nothing under src/ is .js/.jsx/.mjs today, but the
+    // guard should not depend on that staying true.
+    const CODE_FILE = /\.(mjs|jsx?|tsx?)$/;
     const offenders: string[] = [];
+
+    const checkFile = (full: string) => {
+      if (fs.readFileSync(full, "utf8").includes("contentHash.mjs")) {
+        offenders.push(full);
+      }
+    };
 
     const walk = (dir: string) => {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
         const full = path.join(dir, entry.name);
         if (entry.isDirectory()) {
           walk(full);
-        } else if (/\.tsx?$/.test(entry.name) && !full.includes("__tests__")) {
-          if (fs.readFileSync(full, "utf8").includes("contentHash.mjs")) {
-            offenders.push(full);
-          }
+        } else if (CODE_FILE.test(entry.name) && !full.includes("__tests__")) {
+          checkFile(full);
         }
       }
     };
 
     walk(srcDir);
+
+    // Root entry points only — not a recursive walk of repoRoot, which
+    // would also have to dodge node_modules, android/, ios/, scripts/, etc.
+    for (const entry of fs.readdirSync(repoRoot, { withFileTypes: true })) {
+      if (entry.isDirectory()) continue;
+      const full = path.join(repoRoot, entry.name);
+      if (CODE_FILE.test(entry.name)) {
+        checkFile(full);
+      }
+    }
+
     expect(offenders).toEqual([]);
   });
 });
