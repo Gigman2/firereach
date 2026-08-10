@@ -53,6 +53,36 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import
     "items that leave review (e.g. withdrawn, or demoted back to draft) are",
     "removed from this directory on the next run._",
     "",
+    "## How to review",
+    "",
+    "You're being asked to confirm whether each instruction below is correct",
+    "and safe for use in Ghana, and to correct it where it is not. You're",
+    "reviewing the exact words shown in each file, not the general topic.",
+    "",
+    "For each item, record one verdict in its sign-off table:",
+    "",
+    "- **Approved** — the text is correct as written and may be shown to the",
+    "  public with your name against it.",
+    "- **Corrected** — the substance is sound, but specific wording needs to",
+    "  change. Write the required change in the corrections row.",
+    "- **Withdrawn** — this guidance should not be shown to the public at all.",
+    "  Choosing this stops the app from displaying the item entirely, not just",
+    "  hiding a badge — that's the whole point of the option, so only choose",
+    "  it if you mean it.",
+    "",
+    "When you're done, send the completed file(s) back to the FireReach team,",
+    "who will transcribe your name, credential, and date into the content",
+    "record.",
+    "",
+    "Your name is recorded together with the exact content hash shown in each",
+    "file. If a single word of the text changes afterwards, the hash stops",
+    'matching and the app automatically reverts that item to "awaiting',
+    'review" until it is re-reviewed — you are never silently held to text',
+    "you didn't read.",
+    "",
+    "Until you sign off, every item below displays to the public as",
+    "sourced-but-unreviewed. Your signature is what changes that.",
+    "",
     `${forReview.length} item(s) awaiting or holding review.`,
     "",
     ...forReview.map((i) => `- [${i.title}](${i.slug}.md) — ${i.review.state}`),
@@ -66,7 +96,13 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import
   writeFileSync(resolve(outDir, "README.md"), index);
   console.log(`Wrote ${forReview.length} review file(s) to ${outDir}`);
   if (items.length !== forReview.length) {
-    console.log(`Excluded ${items.length - forReview.length} draft item(s).`);
+    const excluded = items.filter((i) => !forReview.includes(i));
+    const draftCount = excluded.filter((i) => i.review?.state === "draft").length;
+    const withdrawnCount = excluded.filter((i) => i.review?.state === "withdrawn").length;
+    const parts = [];
+    if (draftCount > 0) parts.push(`${draftCount} draft`);
+    if (withdrawnCount > 0) parts.push(`${withdrawnCount} withdrawn`);
+    console.log(`Excluded ${excluded.length} item(s): ${parts.join(", ")}.`);
   }
 
   const existingFiles = readdirSync(outDir);

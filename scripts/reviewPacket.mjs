@@ -97,6 +97,20 @@ export function toMarkdown(item) {
 
   lines.push("## Sign-off");
   lines.push("");
+  lines.push(
+    "**How to review:** confirm the text above is correct and safe for use in " +
+      "Ghana, or correct it — you're reviewing these exact words, not the topic. " +
+      "**Approved** = correct as written, publishable under your name. " +
+      "**Corrected** = sound, but wording must change (describe the change " +
+      "below). **Withdrawn** = stop showing this to the public entirely, not " +
+      "just hide a badge — only choose this if you mean that. Until an item is " +
+      "signed off, it displays to the public as sourced but unreviewed. Send " +
+      "the completed file back to the FireReach team, who will record your " +
+      "name, credential, and date. Your sign-off binds to the content hash " +
+      "above; if the text changes afterward, this automatically reverts to " +
+      '"awaiting review."'
+  );
+  lines.push("");
   lines.push("| Field | Value |");
   lines.push("|---|---|");
   lines.push("| Reviewer name | |");
