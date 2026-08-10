@@ -8,7 +8,8 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "jest",
-    "build:stations": "node scripts/build-stations-bundle.mjs"
+    "build:stations": "node scripts/build-stations-bundle.mjs",
+    "build:content-seed": "node scripts/build-safety-content-seed.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",

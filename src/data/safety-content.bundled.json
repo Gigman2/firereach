@@ -7,13 +7,23 @@
     "summary": "Placeholder — replaced in Task 7.",
     "body": "Placeholder body. Replaced with sourced content in Task 7.",
     "steps": [],
-    "tags": ["cooking"],
+    "tags": [
+      "cooking"
+    ],
     "contextual_trigger": null,
     "sources": [
-      {"title": "Placeholder", "publisher": "Placeholder", "year": "2026", "url": "https://example.org", "unverified": true}
+      {
+        "title": "Placeholder",
+        "publisher": "Placeholder",
+        "year": "2026",
+        "url": "https://example.org",
+        "unverified": true
+      }
     ],
-    "content_hash": "",
-    "review": {"state": "draft"}
+    "content_hash": "ef7c103f0e356c0a83ad3ab195ed90c7343a17bf5bb4a7d71837f6f581d3e55d",
+    "review": {
+      "state": "draft"
+    }
   },
   {
     "slug": "firstaid-burns",
@@ -22,13 +32,28 @@
     "title": "Burns",
     "summary": "Placeholder — replaced in Task 7.",
     "body": "Placeholder body. Replaced with sourced content in Task 7.",
-    "steps": [{"title": "Placeholder step", "body": "Replaced in Task 7."}],
-    "tags": ["burns"],
+    "steps": [
+      {
+        "title": "Placeholder step",
+        "body": "Replaced in Task 7."
+      }
+    ],
+    "tags": [
+      "burns"
+    ],
     "contextual_trigger": null,
     "sources": [
-      {"title": "Placeholder", "publisher": "Placeholder", "year": "2026", "url": "https://example.org", "unverified": true}
+      {
+        "title": "Placeholder",
+        "publisher": "Placeholder",
+        "year": "2026",
+        "url": "https://example.org",
+        "unverified": true
+      }
     ],
-    "content_hash": "",
-    "review": {"state": "draft"}
+    "content_hash": "b76f2565d98c0f166f98595c146e5d3e2e5783b70eca7f52bb05ac6628afba75",
+    "review": {
+      "state": "draft"
+    }
   }
 ]
