@@ -32,8 +32,14 @@ export const HomeScreen = ({ navigation }: Props) => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { isOnline } = useConnectivity();
-  const { nearest, table, positionSource, stationOrigin, refresh, isResolving } =
-    useNearestStation();
+  const {
+    nearest,
+    table,
+    positionSource,
+    stationOrigin,
+    refresh,
+    isResolving,
+  } = useNearestStation();
 
   const targets = nearest
     ? dialTargets(nearest)
@@ -46,13 +52,11 @@ export const HomeScreen = ({ navigation }: Props) => {
   // screen already derives its cost labels the same way. Since the regional
   // command line now leads, the toll-free branch is what a caller sees only
   // when no station resolved and 192 is all there is.
-  const primaryCostCaption = primary.tollFree
-    ? "Free on any network — no credit needed"
-    : "Regional command line — may cost airtime";
+  const primaryCostCaption = primary.tollFree ? null : "Direct command line";
 
   const dial = (phone: string) => {
     Linking.openURL(`tel:${phone}`).catch((err) =>
-      console.warn("[HomeScreen] dial failed", err)
+      console.warn("[HomeScreen] dial failed", err),
     );
   };
 
@@ -79,30 +83,30 @@ export const HomeScreen = ({ navigation }: Props) => {
   const statusLabel = isFinding
     ? "FINDING YOUR LOCATION"
     : stationOrigin === "snapshot"
-    ? "USING LAST KNOWN AREA"
-    : positionSource === "denied"
-    ? "LOCATION OFF"
-    : positionSource === "unavailable"
-    ? "NO LOCATION FIX"
-    : positionSource === "implausible"
-    ? "LOCATION OUTSIDE GHANA"
-    : positionSource === "lastKnownStale"
-    ? "USING LAST KNOWN LOCATION"
-    : isOnline !== false
-    ? "ONLINE · GPS ACTIVE"
-    : "OFFLINE · SAVED LIST";
+      ? "USING LAST KNOWN AREA"
+      : positionSource === "denied"
+        ? "LOCATION OFF"
+        : positionSource === "unavailable"
+          ? "NO LOCATION FIX"
+          : positionSource === "implausible"
+            ? "LOCATION OUTSIDE GHANA"
+            : positionSource === "lastKnownStale"
+              ? "USING LAST KNOWN LOCATION"
+              : isOnline !== false
+                ? "ONLINE · GPS ACTIVE"
+                : "OFFLINE · SAVED LIST";
 
   const statusColor = isFinding
     ? theme.textTertiary
     : stationOrigin === "snapshot" ||
-      positionSource === "denied" ||
-      positionSource === "unavailable" ||
-      positionSource === "implausible" ||
-      positionSource === "lastKnownStale"
-    ? colors.warning
-    : isOnline !== false
-    ? colors.success
-    : colors.warning;
+        positionSource === "denied" ||
+        positionSource === "unavailable" ||
+        positionSource === "implausible" ||
+        positionSource === "lastKnownStale"
+      ? colors.warning
+      : isOnline !== false
+        ? colors.success
+        : colors.warning;
 
   /**
    * Only reached when there is no station to name — which now means
@@ -116,12 +120,12 @@ export const HomeScreen = ({ navigation }: Props) => {
   const noStationHeading = isFinding
     ? "Finding nearest station…"
     : positionSource === "denied"
-    ? "Turn on location to find your station"
-    : positionSource === "unavailable"
-    ? "Can't get a location fix — showing the national number"
-    : positionSource === "implausible"
-    ? "Can't place your location in Ghana"
-    : "Turn on location to find your station";
+      ? "Turn on location to find your station"
+      : positionSource === "unavailable"
+        ? "Can't get a location fix — showing the national number"
+        : positionSource === "implausible"
+          ? "Can't place your location in Ghana"
+          : "Turn on location to find your station";
 
   /**
    * A second line for the no-station states, shown under the heading. The
@@ -131,10 +135,10 @@ export const HomeScreen = ({ navigation }: Props) => {
   const noStationHelp = isFinding
     ? ""
     : positionSource === "implausible"
-    ? "Your phone reports a position outside the country. Call 192 and tell them where you are."
-    : positionSource === "denied"
-    ? "Without location we cannot pick a station, but 192 is free to dial on any network."
-    : "";
+      ? "Your phone reports a position outside the country. Call 192 and tell them where you are."
+      : positionSource === "denied"
+        ? "Without location we cannot pick a station, but 192 is free to dial on any network."
+        : "";
 
   /**
    * A `lastKnownStale` fix is an unbounded-age last-known position, so the
@@ -157,8 +161,8 @@ export const HomeScreen = ({ navigation }: Props) => {
     isFinding || !nearest
       ? null
       : stationOrigin === "snapshot" || positionSource === "lastKnownStale"
-      ? "Based on where your phone last had a location fix — if you have travelled, check the station name and distance before calling."
-      : null;
+        ? "Based on where your phone last had a location fix — if you have travelled, check the station name and distance before calling."
+        : null;
 
   /**
    * The one thing the caller can actually do about it, and only in the state
@@ -176,10 +180,10 @@ export const HomeScreen = ({ navigation }: Props) => {
   const distanceLabel = !rawDistance
     ? null
     : stationOrigin === "snapshot"
-    ? `${rawDistance} (from where your phone last had a fix)`
-    : positionSource === "lastKnownStale"
-    ? `${rawDistance} (from your last known location)`
-    : rawDistance;
+      ? `${rawDistance} (from where your phone last had a fix)`
+      : positionSource === "lastKnownStale"
+        ? `${rawDistance} (from your last known location)`
+        : rawDistance;
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -195,9 +199,7 @@ export const HomeScreen = ({ navigation }: Props) => {
         ]}
       >
         <View style={styles.statusLeft}>
-          <View
-            style={[styles.onlineDot, { backgroundColor: statusColor }]}
-          />
+          <View style={[styles.onlineDot, { backgroundColor: statusColor }]} />
           <Text variant="label" color={theme.textSecondary}>
             {statusLabel}
           </Text>
@@ -309,21 +311,25 @@ export const HomeScreen = ({ navigation }: Props) => {
           activeOpacity={0.85}
           onPress={() => dial(primary.phone)}
         >
-          <PhoneIcon size={28} color="#FFFFFF" weight="fill" />
-          <View style={styles.callButtonTextGroup}>
+          <View style={{ flexDirection: "row", gap: 12 }}>
+            <PhoneIcon size={28} color="#FFFFFF" weight="fill" />
             <Text variant="bodyLarge" weight="bold" color="#FFFFFF">
               Call {primary.phone}
             </Text>
-            <Text variant="caption" color="#FFFFFF">
-              {primaryCostCaption}
-            </Text>
           </View>
+          {primaryCostCaption && (
+            <View style={styles.callButtonTextGroup}>
+              <Text variant="caption" color="#FFFFFF">
+                {primaryCostCaption}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
 
         <WhatToSayCard />
 
         {alternates.length > 0 && (
-          <View style={styles.alternatesRow}>
+          <View style={styles.alternates}>
             {/*
               Not "If no answer:" — that implied the chain is ordered by which
               number is most likely to be picked up. It is not: the ordering
@@ -336,41 +342,88 @@ export const HomeScreen = ({ navigation }: Props) => {
               chargeable line with toll-free 192, so no single heading is true
               of all of it.
             */}
-            <Text variant="caption" color={theme.textTertiary}>
-              Other numbers:
+            <Text
+              variant="label"
+              color={theme.textTertiary}
+              style={styles.alternatesLabel}
+            >
+              OTHER NUMBERS
             </Text>
-            {alternates.map((target) => (
+
+            {/*
+              Rows, not a centred run of wrapped text. These dial — tapping one
+              places a call — and they previously read as a caption and stood
+              about 20 px tall, which is neither a visible affordance nor a
+              target anyone hits with shaking hands. Left-aligned so the digits
+              line up under each other: a column of numbers is read by
+              comparing them, and centring made every one start in a different
+              place.
+            */}
+            {alternates.map((target, i) => (
               <TouchableOpacity
                 key={target.phone}
                 activeOpacity={0.6}
                 onPress={() => dial(target.phone)}
+                accessibilityRole="button"
+                accessibilityLabel={
+                  target.tollFree
+                    ? `Call ${target.phone}, works with no credit`
+                    : `Call ${target.phone}`
+                }
+                style={[
+                  styles.alternateRow,
+                  i > 0 && {
+                    borderTopWidth: StyleSheet.hairlineWidth,
+                    borderTopColor: theme.divider,
+                  },
+                ]}
               >
+                <PhoneIcon
+                  size={16}
+                  color={colors.brandPrimary}
+                  weight="fill"
+                />
                 <Text
-                  variant="caption"
+                  variant="bodyMedium"
                   weight="semiBold"
                   color={colors.brandPrimary}
+                  style={styles.alternateNumber}
                 >
                   {target.phone}
-                  <Text variant="caption" color={theme.textTertiary}>
-                    {target.tollFree
-                      ? "  ·  free on any network"
-                      : "  ·  may cost airtime"}
-                  </Text>
                 </Text>
+                {/*
+                  Only 192 is tagged, and not with what it costs.
+                  "May cost airtime" hung off every chargeable number here and
+                  answered a question nobody asks mid-emergency — no one
+                  compares tariffs while a building burns, and the tag was
+                  charged to every row for it.
+
+                  This one earns its place by saying something else. Leading
+                  with a chargeable line has a known failure (see dialTargets):
+                  a caller with no credit taps the primary button and simply
+                  nothing happens, with no explanation on screen. This is the
+                  line that tells them which number still works — recovery
+                  information, not a price.
+                */}
+                {target.tollFree ? (
+                  <Text variant="label" color={colors.success}>
+                    Works with no credit
+                  </Text>
+                ) : null}
               </TouchableOpacity>
             ))}
           </View>
         )}
 
         <Text
-          variant="caption"
+          variant="label"
           color={theme.textTertiary}
-          style={styles.freshness}
+          style={styles.dataFreshness}
         >
           {table.source === "bundled"
             ? "Using the station list built into the app"
             : `Station list updated ${new Date(
-                table.refreshedAt as string
+                table.refreshedAt as string,
               ).toLocaleDateString()}`}
         </Text>
 
@@ -488,10 +541,10 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   callButton: {
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    gap: 12,
+    gap: 6,
     minHeight: 72,
     paddingVertical: 12,
     paddingHorizontal: 20,
@@ -507,17 +560,38 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexShrink: 1,
   },
-  alternatesRow: {
+  alternates: {
+    marginTop: -8,
+  },
+  alternatesLabel: {
+    letterSpacing: 0.8,
+    marginBottom: 4,
+  },
+  /**
+   * 48 because this row dials. The whole block is secondary to the call
+   * button above it and is styled quietly — no card, no fill, just a rule
+   * between rows — but quiet is about weight, not about being hard to hit.
+   */
+  alternateRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    flexWrap: "wrap",
-    gap: 12,
-    marginTop: -8,
+    gap: 10,
+    minHeight: 48,
+  },
+  /** Takes the slack so the cost tag sits against the right edge. */
+  alternateNumber: {
+    flex: 1,
   },
   freshness: {
     textAlign: "center",
     marginTop: -8,
+  },
+  /**
+   * Metadata about the data, not about this call. Tucked under the numbers
+   * it describes rather than floating a full gap below them.
+   */
+  dataFreshness: {
+    marginTop: -12,
   },
   quickActions: {
     flexDirection: "row",
