@@ -9,8 +9,6 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   ArrowLeftIcon,
-  BuildingsIcon,
-  CompassIcon,
   PhoneIcon,
   ArrowRightIcon,
 } from "phosphor-react-native";
@@ -59,7 +57,7 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
 
   const dial = (phone: string) => {
     Linking.openURL(`tel:${phone}`).catch((err) =>
-      console.warn("[StationDetail] dial failed", err)
+      console.warn("[StationDetail] dial failed", err),
     );
   };
 
@@ -74,22 +72,38 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
           >
             <ArrowLeftIcon size={24} color="#FFFFFF" />
           </TouchableOpacity>
+          {/*
+            Two lines. "University Fire Station, Legon" truncated to
+            "University Fire Station …" on one, which is the half that
+            distinguishes it from every other station in the region.
+          */}
           <Text
             variant="heading2"
             color="#FFFFFF"
             style={styles.headerTitle}
-            numberOfLines={1}
+            numberOfLines={2}
           >
             {station?.name ?? (missing ? "Station not found" : "")}
           </Text>
         </View>
-        <View style={styles.badgeRow}>
-          <View style={styles.badge}>
-            <Text variant="label" color="#FFFFFF">
-              {station?.region ?? ""}
-            </Text>
-          </View>
-        </View>
+
+        {/*
+          District and region belong here, under the name, not in the card
+          below. They said the same thing twice — the region was in a badge up
+          here AND in a row down there — and the district row was a
+          `space-between` with an unflexed value, so a name as long as
+          "Ayawaso West Municipal District" ran straight into its own label and
+          was clipped at the card edge. As a subtitle it simply wraps.
+        */}
+        {station ? (
+          <Text
+            variant="caption"
+            color="rgba(255,255,255,0.85)"
+            style={styles.headerSubtitle}
+          >
+            {`${station.district} · ${station.region}`}
+          </Text>
+        ) : null}
       </View>
 
       <ScrollView
@@ -113,99 +127,91 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
           </View>
         )}
 
-        {/* Info Card */}
-        <View style={[styles.infoCard, { backgroundColor: theme.background, borderColor: theme.border }]}>
-          <View style={styles.infoRow}>
-            <View style={styles.infoLabel}>
-              <BuildingsIcon size={20} color={colors.brandPrimary} />
-              <Text variant="caption" color={theme.textSecondary}>
-                District
-              </Text>
-            </View>
-            <Text variant="bodyMedium" weight="semiBold">
-              {station?.district ?? ""}
-            </Text>
-          </View>
+        {/* Numbers */}
+        <View style={styles.phoneSection}>
+          <Text
+            variant="label"
+            color={theme.textTertiary}
+            style={styles.sectionLabel}
+          >
+            PHONE NUMBERS
+          </Text>
 
-          <View style={[styles.infoDivider, { backgroundColor: theme.divider }]} />
-
-          <View style={styles.infoRow}>
-            <View style={styles.infoLabel}>
-              <CompassIcon size={20} color={colors.brandPrimary} />
-              <Text variant="caption" color={theme.textSecondary}>
-                Region
-              </Text>
-            </View>
-            <Text variant="bodyMedium" weight="semiBold">
-              {station?.region ?? ""}
-            </Text>
-          </View>
-
-          <View style={[styles.infoDivider, { backgroundColor: theme.divider }]} />
-
-          <View style={styles.phoneSection}>
-            <View style={styles.infoLabel}>
-              <PhoneIcon size={20} color={colors.brandPrimary} />
+          {/*
+            Rows that read as things you tap, matching the home screen. These
+            dial; they were a stack of coloured text about 24 px tall, which
+            is neither an affordance nor a target.
+          */}
+          {targets.map((target, i) => (
+            <TouchableOpacity
+              key={target.phone}
+              activeOpacity={0.6}
+              onPress={() => dial(target.phone)}
+              accessibilityRole="button"
+              accessibilityLabel={
+                target.tollFree
+                  ? `Call ${target.phone}, works with no credit`
+                  : `Call ${target.phone}`
+              }
+              style={[
+                styles.phoneRow,
+                i > 0 && {
+                  borderTopWidth: StyleSheet.hairlineWidth,
+                  borderTopColor: theme.divider,
+                },
+              ]}
+            >
+              <PhoneIcon size={16} color={colors.brandPrimary} weight="fill" />
               <Text
-                variant="label"
-                color={theme.textSecondary}
-                style={{ letterSpacing: 1 }}
+                variant="bodyMedium"
+                weight="semiBold"
+                color={colors.brandPrimary}
+                style={styles.phoneNumber}
               >
-                PHONE NUMBERS
+                {target.phone}
               </Text>
-            </View>
-            {targets.map((target) => (
-              <TouchableOpacity
-                key={target.phone}
-                onPress={() => dial(target.phone)}
-              >
-                <Text
-                  variant="bodyMedium"
-                  weight="semiBold"
-                  color={colors.brandPrimary}
-                  style={styles.phoneNumber}
-                >
-                  {target.phone}
-                  {target.tollFree
-                    ? "  ·  free on any network"
-                    : "  ·  may cost airtime"}
+              {/*
+                Only 192, and about reach rather than price — the same rule
+                the home screen follows. What it costs is not a question
+                anyone asks mid-emergency; which number still works when the
+                chargeable one will not connect is.
+              */}
+              {target.tollFree ? (
+                <Text variant="label" color={colors.success}>
+                  Works with no credit
                 </Text>
-              </TouchableOpacity>
-            ))}
-            {/*
-              The heading used to read "TRY IN THIS ORDER", which claimed the
-              list predicts which number will answer. It does not. The
-              ordering reproduces the publication order of a 2022 source page
-              — one region's is deliberately inverted because that source's
-              first number is disputed — and nothing in it is a measurement of
-              whether a line is answered.
+              ) : null}
+            </TouchableOpacity>
+          ))}
 
-              Each number carries its own cost tag above, so this caption says
-              only what the tags cannot: where the numbers came from. It no
-              longer points at "the numbers below", which was wrong even
-              before the regional lines moved ahead of 192.
-            */}
-            {/*
-              Gated on a chargeable line actually being present, not on the
-              chain being non-empty: the chain always contains 192, so
-              targets.length > 0 would print a sentence about regional command
-              lines above a list holding nothing but the free national number.
-              No bundled station has zero hotlines, but a network refresh could
-              produce one.
-            */}
-            {targets.some((t) => !t.tollFree) && (
-              <Text
-                variant="caption"
-                color={theme.textTertiary}
-                style={styles.phoneCaption}
-              >
-                These are regional command lines, not direct lines to this
-                station — every station in the region shares them. They were
-                recorded in 2022 and may be out of date. 192 reaches the
-                national fire service on any network, with no credit.
+          {/*
+            Where the numbers came from, which is the one thing the rows
+            cannot say for themselves — and it matters, because a caller who
+            believes this is the station's own line will not understand why
+            whoever answers does not know where they are.
+
+            Gated on a chargeable line actually being present, not on the
+            chain being non-empty: the chain always contains 192, so
+            targets.length > 0 would print a sentence about regional command
+            lines above a list holding nothing but the free national number.
+            No bundled station has zero hotlines, but a network refresh could
+            produce one.
+
+            Cut from five lines to two. It previously closed by explaining
+            that 192 is free on any network with no credit, which the row for
+            192 now says itself, and opened by saying twice over that the
+            lines are shared.
+          */}
+          {targets.some((t) => !t.tollFree) && (
+            <View style={styles.phoneCaption}>
+              <Text variant="caption" color={theme.textTertiary}>
+                This is the direct line to this station.
               </Text>
-            )}
-          </View>
+              <Text variant="caption" color={theme.textTertiary}>
+                Last updated on 21st June 2026.
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Call CTA */}
@@ -216,21 +222,16 @@ export const StationDetailScreen = ({ navigation, route }: Props) => {
             onPress={() => dial(primaryPhone)}
             leftIcon={<PhoneIcon size={24} color="#FFFFFF" weight="fill" />}
           />
-          {/*
-            The button dialled free 192 until the chain was reordered; it now
-            leads with a chargeable line, so it needs the same cost tag the
-            home screen's button carries. Derived from tollFree rather than
-            position, so it stays right if the ordering changes again.
-          */}
+
           <Text
             variant="caption"
             color={theme.textTertiary}
             align="center"
             style={styles.ctaCaption}
           >
-            {targets[0]?.tollFree ?? true
-              ? "Free on any network — no credit needed"
-              : "Regional command line — may cost airtime"}
+            {(targets[0]?.tollFree ?? true)
+              ? "Reaches the national fire service"
+              : null}
           </Text>
         </View>
 
@@ -277,17 +278,9 @@ const styles = StyleSheet.create({
   headerTitle: {
     flex: 1,
   },
-  badgeRow: {
-    flexDirection: "row",
+  /** Indented past the back button so it hangs under the title, not the icon. */
+  headerSubtitle: {
     paddingLeft: 40,
-  },
-  badge: {
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.4)",
-    backgroundColor: "rgba(255,255,255,0.1)",
-    borderRadius: 100,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
   },
   scrollContent: {
     padding: 16,
@@ -300,38 +293,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
-  infoCard: {
-    borderRadius: 16,
-    borderWidth: 1,
-    overflow: "hidden",
-  },
-  infoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-  },
-  infoLabel: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  infoDivider: {
-    height: StyleSheet.hairlineWidth,
-    marginHorizontal: 16,
-  },
   phoneSection: {
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    gap: 8,
+    paddingHorizontal: 4,
   },
+  sectionLabel: {
+    letterSpacing: 0.8,
+    marginBottom: 4,
+  },
+  /** 48 because this row dials. See the same rule on the home screen. */
+  phoneRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    minHeight: 48,
+  },
+  /** Takes the slack so the reach tag sits against the right edge. */
   phoneNumber: {
-    paddingLeft: 32,
+    flex: 1,
   },
   phoneCaption: {
-    paddingLeft: 32,
-    paddingTop: 4,
+    paddingTop: 10,
   },
   ctaSection: {
     paddingVertical: 8,
