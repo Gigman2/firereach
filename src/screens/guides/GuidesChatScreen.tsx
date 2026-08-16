@@ -22,6 +22,8 @@ import { useTheme } from "../../theme/ThemeContext";
 import { typography } from "../../theme/typography";
 import { NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
 import { askAI } from "../../lib/aiApi";
+import type { AIResponse } from "../../lib/aiApi";
+import { AIResponseContent } from "../../components/AIResponseContent";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { GuidesStackParamList } from "../../navigation/types";
 
@@ -37,6 +39,9 @@ interface Message {
   role: "user" | "assistant";
   type: MessageType;
   content: string;
+  // The structured answer, when one came back from askAI. Its presence is
+  // what switches rendering from the plain bubble to a per-kind card.
+  payload?: AIResponse;
   // True only for messages that genuinely came back from askAI. Gates the
   // "AI-generated" label and disclaimer block — the static welcome message
   // and the client-side offline fallback are not model output and must not
@@ -99,7 +104,7 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
     setIsLoading(true);
 
     try {
-      const answer = await askAI(messageText);
+      const payload = await askAI(messageText);
       if (!isMountedRef.current) return;
       setMessages((prev) => [
         ...prev,
@@ -107,7 +112,10 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
           id: `${Date.now() + 1}`,
           role: "assistant",
           type: "text",
-          content: answer,
+          // content stays the flattened prose for accessibility and any
+          // consumer that only reads text; payload drives the rendering.
+          content: payload.answer || payload.body,
+          payload,
           fromAI: true,
         },
       ]);
@@ -196,19 +204,26 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
           <BrainIcon size={16} color={colors.brandPrimary} weight="fill" />
         </View>
         <View style={styles.aiColumn}>
-          <View
-            style={[
-              styles.bubbleContent,
-              styles.aiContent,
-              { backgroundColor: theme.surface, borderColor: theme.border },
-            ]}
-          >
-            <Text variant="bodyMedium" color={theme.textPrimary}>
-              {item.content}
-            </Text>
-          </View>
+          {item.payload ? (
+            // A structured answer renders as the component its kind calls for.
+            <AIResponseContent payload={item.payload} />
+          ) : (
+            <>
+              <View
+                style={[
+                  styles.bubbleContent,
+                  styles.aiContent,
+                  { backgroundColor: theme.surface, borderColor: theme.border },
+                ]}
+              >
+                <Text variant="bodyMedium" color={theme.textPrimary}>
+                  {item.content}
+                </Text>
+              </View>
 
-          {item.type === "warning" && renderWarningCard(item.content)}
+              {item.type === "warning" && renderWarningCard(item.content)}
+            </>
+          )}
 
           {item.fromAI && (
             <View style={styles.aiDisclaimer}>

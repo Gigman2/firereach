@@ -109,7 +109,7 @@ afterEach(() => {
 
 describe("I1: loading state is visible", () => {
   it("disables Send while a request is in flight, independent of input text", async () => {
-    const pending = deferred<string>();
+    const pending = deferred<any>();
     mockAskAI.mockReturnValue(pending.promise);
 
     const tree = renderScreen();
@@ -137,7 +137,11 @@ describe("I1: loading state is visible", () => {
     expect(queryByTestId(tree, "guidesChatTypingIndicator")).not.toBeNull();
 
     await act(async () => {
-      pending.resolve("Stop, drop, and roll.");
+      pending.resolve({
+          kind: "text",
+          body: "Stop, drop, and roll.",
+          answer: "Stop, drop, and roll.",
+        });
       await Promise.resolve();
       await Promise.resolve();
     });
@@ -155,7 +159,11 @@ describe("I2: the AI-generated label only marks genuine askAI output", () => {
   });
 
   it("labels a real askAI response but not the offline fallback on failure", async () => {
-    mockAskAI.mockResolvedValueOnce("Cool the burn under running water.");
+    mockAskAI.mockResolvedValueOnce({
+      kind: "text",
+      body: "Cool the burn under running water.",
+      answer: "Cool the burn under running water.",
+    });
     const tree = renderScreen();
 
     await act(async () => {
