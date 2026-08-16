@@ -14,6 +14,7 @@ import {
   FlameIcon,
   BrainIcon,
   ArrowRightIcon,
+  WifiSlashIcon,
 } from "phosphor-react-native";
 import { Text } from "../../components/ui/Text";
 import { colors } from "../../theme/colors";
@@ -132,42 +133,87 @@ export const GuidesHubScreen = ({ navigation }: Props) => {
         ))}
       </View>
 
+      {/* AI Ask — pinned between the tabs and the grid so the one
+          conversational entry point never scrolls away. The red-tinted
+          border is the only one on the screen: this is the interactive
+          thing here. Surface, not a red fill — red app-wide means a
+          control that dials, and this one navigates. */}
+      {isOnline === false ? (
+        <View
+          style={[
+            styles.askBar,
+            { backgroundColor: theme.surface, borderColor: theme.border },
+          ]}
+        >
+          <View
+            style={[styles.askBarIcon, { backgroundColor: theme.background }]}
+          >
+            <WifiSlashIcon size={22} color={theme.textTertiary} />
+          </View>
+          <View style={styles.askBarCopy}>
+            <Text
+              variant="bodyMedium"
+              weight="semiBold"
+              color={theme.textSecondary}
+              style={styles.askBarCopyText}
+            >
+              AI guide unavailable offline
+            </Text>
+            <Text
+              variant="caption"
+              color={theme.textTertiary}
+              style={styles.askBarCopyText}
+            >
+              Your saved guides below still work
+            </Text>
+          </View>
+        </View>
+      ) : (
+        <TouchableOpacity
+          style={[
+            styles.askBar,
+            {
+              backgroundColor: theme.surface,
+              borderColor: `${colors.brandPrimary}66`,
+            },
+          ]}
+          activeOpacity={0.7}
+          onPress={() => navigation.navigate("GuidesChat")}
+          accessibilityRole="button"
+          accessibilityLabel="Ask the AI guide"
+          accessibilityHint="Opens the AI chat"
+        >
+          <View
+            style={[
+              styles.askBarIcon,
+              { backgroundColor: `${colors.brandPrimary}1F` },
+            ]}
+          >
+            <BrainIcon size={22} color={colors.brandPrimary} weight="fill" />
+          </View>
+          <View style={styles.askBarCopy}>
+            <Text variant="bodyMedium" weight="semiBold" style={styles.askBarCopyText}>
+              Ask the AI guide
+            </Text>
+            <Text
+              variant="caption"
+              color={theme.textSecondary}
+              style={styles.askBarCopyText}
+            >
+              Instant fire safety answers
+            </Text>
+          </View>
+          <View style={styles.askBarArrow}>
+            <ArrowRightIcon size={16} color="#FFFFFF" />
+          </View>
+        </TouchableOpacity>
+      )}
+
       {/* Category Grid */}
       <ScrollView
         contentContainerStyle={styles.grid}
         showsVerticalScrollIndicator={false}
       >
-        {/* AI Ask Bar */}
-        {isOnline === false ? (
-          <View style={[styles.askBar, { backgroundColor: theme.surface }]}>
-            <Text
-              variant="caption"
-              color={theme.textTertiary}
-              style={styles.askBarText}
-            >
-              AI tips unavailable offline
-            </Text>
-          </View>
-        ) : (
-          <TouchableOpacity
-            style={[styles.askBar, { backgroundColor: theme.surface }]}
-            activeOpacity={0.7}
-            onPress={() => navigation.navigate("GuidesChat")}
-          >
-            <BrainIcon size={20} color={colors.brandPrimary} weight="fill" />
-            <Text
-              variant="caption"
-              color={theme.textTertiary}
-              style={styles.askBarText}
-            >
-              Ask a fire safety question...
-            </Text>
-            <View style={styles.askBarArrow}>
-              <ArrowRightIcon size={14} color="#FFFFFF" />
-            </View>
-          </TouchableOpacity>
-        )}
-
         {filtered.map((item) => {
           const meta = SUBCATEGORY_META[item.subcategory];
           if (!meta) {
@@ -244,22 +290,34 @@ const styles = StyleSheet.create({
     paddingBottom: 120,
   },
   askBar: {
-    width: "100%",
     flexDirection: "row",
     alignItems: "center",
-    borderRadius: 100,
+    borderRadius: 16,
+    borderWidth: 1,
     paddingVertical: 14,
     paddingHorizontal: 16,
-    gap: 10,
-    marginBottom: 4,
+    gap: 12,
+    marginHorizontal: 16,
+    marginTop: 12,
   },
-  askBarText: {
+  askBarIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  askBarCopy: {
     flex: 1,
+    gap: 2,
+  },
+  askBarCopyText: {
+    flexShrink: 1,
   },
   askBarArrow: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: colors.brandPrimary,
     alignItems: "center",
     justifyContent: "center",
