@@ -42,12 +42,22 @@ interface AskAIResponse extends AIResponse {}
  * stays server-side and the backend applies the scoped system prompt.
  * Product Scope §API: "The mobile app never calls the Claude API directly."
  */
+/** One prior message in the conversation, sent so follow-ups carry context. */
+export interface AskTurn {
+  role: "user" | "assistant";
+  content: string;
+}
+
 export async function askAI(
   question: string,
   topic?: string,
+  history?: AskTurn[],
 ): Promise<AIResponse> {
-  const body: { question: string; topic?: string } = { question };
+  const body: { question: string; topic?: string; history?: AskTurn[] } = {
+    question,
+  };
   if (topic) body.topic = topic;
+  if (history && history.length > 0) body.history = history;
 
   // /v1/ai/ask is rate-limited per device hash, falling back to client IP.
   // Without this header everyone behind one carrier NAT shares a single

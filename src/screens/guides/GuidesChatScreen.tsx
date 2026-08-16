@@ -104,7 +104,16 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
     setIsLoading(true);
 
     try {
-      const payload = await askAI(messageText);
+      // Send the conversation so far, so a follow-up ("what if it blisters?")
+      // carries the context a bare question would lack. Only real exchanges
+      // count: the static welcome and the offline fallback are not model
+      // output, so they are not model memory either. `messages` here is the
+      // state before this send, so the new question is not double-counted —
+      // it goes as `question`, not in history.
+      const history = messages
+        .filter((m) => m.role === "user" || m.fromAI)
+        .map((m) => ({ role: m.role, content: m.content }));
+      const payload = await askAI(messageText, undefined, history);
       if (!isMountedRef.current) return;
       setMessages((prev) => [
         ...prev,
