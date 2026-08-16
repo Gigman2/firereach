@@ -175,6 +175,22 @@ describe("AIResponseContent", () => {
     expect(tree.root.findAllByProps({ accessibilityRole: "button" })).toHaveLength(0);
   });
 
+  it("still renders a list when a plain text answer carries one", () => {
+    // The model sometimes answers a general-prevention question as kind=text
+    // but with items; the fail-safe must show them, not drop them.
+    const tree = renderPayload({
+      kind: "text",
+      body: "Ways to prevent kitchen fires:",
+      items: [{ body: "Never leave cooking unattended" }, { body: "Keep a lid nearby" }],
+      answer: "Ways to prevent kitchen fires:",
+    });
+
+    const text = textOf(tree);
+    expect(text).toContain("Ways to prevent kitchen fires:");
+    expect(text).toContain("Never leave cooking unattended");
+    expect(text).toContain("Keep a lid nearby");
+  });
+
   it("fails safe to the body bubble for an unknown kind", () => {
     const tree = renderPayload({
       // A kind this build has never heard of, as an OTA/server drift would

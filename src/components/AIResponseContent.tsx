@@ -249,8 +249,11 @@ export function AIResponseContent({ payload }: { payload: AIResponse }) {
     case "text":
     case "out_of_scope":
     default:
-      // Unknown and unrecognised kinds degrade to the plain body bubble.
-      content = <BodyBubble text={payload.body || payload.answer} />;
+      // Unknown and unrecognised kinds degrade to the plain body bubble,
+      // still rendering any list the model included so nothing is dropped.
+      content = (
+        <BodyBubble text={payload.body || payload.answer} items={payload.items} />
+      );
       break;
   }
   return <View style={styles.responseColumn}>{content}</View>;
