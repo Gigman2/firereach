@@ -3,7 +3,7 @@
 **Slug:** `firstaid-burns`  
 **Section:** First Aid — burns  
 **Current state:** pending_review  
-**Content hash:** `d9a9d082067c2d83b7aa7d03c3091ba5fea512b3909978a0e3228643ee122d6f`
+**Content hash:** `f4835f4a4a341e6cc225ae5c6d53d998ff40fa584efb73111e09bb3e60ec8692`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -13,22 +13,22 @@ _Cool the burn, keep the person warm, and get medical help._
 
 ## Text as the user sees it
 
-This is first aid only, for while you wait for help. Work through the steps in order. The first three keep you and the injured person safe — treatment starts after that.
+This is first aid only, for while you wait for help. Work through the steps in order. The first three keep you and the injured person safe. Treatment starts after that.
 
 ### Steps
 
 1. **Get safe, call 192** — Make sure you, the injured person, and anyone nearby are safe before you touch anything. Do not go into a burning room or into smoke. Call 192. If the burn is serious, or you are not sure how bad it is, get an ambulance on the way.
-2. **If clothes alight** — If the person's clothes are on fire, do not move them away — put the fire out. Get them to stop, drop to the ground, cover their face, and roll. Smother the flames with a blanket, or douse them with water if it is safe. Then move them away from the fire.
-3. **Electric shock first** — If electricity is involved, do not touch the person until the power is off. Switch it off at the mains or the breaker first, without touching them. If a power line has come down, call for help immediately and keep everyone at least 10 metres back from the person and the wires. Never try to move a wire with anything — not even a wooden stick or a broom, because wood still carries high voltage. Wait until someone authorised has turned the power off.
+2. **If clothes alight** — If the person's clothes are on fire, do not move them away. Put the fire out. Get them to stop, drop to the ground, cover their face, and roll. Smother the flames with a blanket, or douse them with water if it is safe. Then move them away from the fire.
+3. **Electric shock first** — If electricity is involved, do not touch the person until the power is off. Switch it off at the mains or the breaker first, without touching them. If a power line has come down, call for help immediately and keep everyone at least 10 metres back from the person and the wires. Never try to move a wire with anything, not even a wooden stick or a broom, because wood still carries high voltage. Wait until someone authorised has turned the power off.
 4. **Stop the burning** — Take off wet clothing near the burn, because cloth soaked in hot liquid holds the heat against the skin. If cloth is stuck to the skin, leave it there and cool over the top of it. Never peel it off. Take off rings, watches, and bangles near the burn now, before the swelling starts.
 5. **Cool the burn** — Hold the burn under cool running water for at least 20 minutes. Use cool or cold water, never iced water. If you have no running water, use any clean cool liquid.
-6. **Keep them warm** — Do this while you are cooling, not afterwards. Cover every part of the body that is not burnt and keep the person warm. A baby, a small child, or anyone with a burn over a large area chills fastest — watch that they do not get cold. Keep cooling the burn itself.
+6. **Keep them warm** — Do this while you are cooling, not afterwards. Cover every part of the body that is not burnt and keep the person warm. A baby, a small child, or anyone with a burn over a large area chills fastest. Watch that they do not get cold. Keep cooling the burn itself.
 7. **If you were delayed** — Sooner is always better. But if you could not start cooling straight away, it is still worth doing. Cooling may still help for up to three hours after the burn.
-8. **Cover the person** — Wrap the person, not the wound. Put a clean cloth or sheet around them and get them to the nearest health facility. Do not rub any cream, ointment, oil, or home remedy into the burn. If you cover the burn itself, use only a loose non-stick dressing or clean cling film laid over it — never wrapped around an arm or leg, and never on the face.
-9. **Never do these** — Never put ice or iced water on a burn; it makes the injury deeper. Never break the blisters. Never rub anything into it — no palm oil, shea butter, butter, toothpaste, ash, ointment, cream, powder, or paste of any kind. Never put raw cotton wool on it.
-10. **Chemical burns** — With a chemical burn the aim is to wash the chemical off, not to cool the skin. Keep the chemical off yourself. Take off any contaminated clothing and jewellery. If the chemical is a dry powder, brush it off the skin first, before you add any water. Then flush the area with running water for at least 20 minutes, and up to an hour, until the stinging stops — taking care not to wash it onto skin that is not affected. Never try to cancel out an acid with an alkali, or the other way round; that makes heat and more damage. Never lay cling film or a gel dressing over a chemical burn.
-11. **Chemical in the eye** — Hold the eye open and flush it with water for as long as the person can bear. Getting water into the eye matters more than rushing them away — flush first, then go. If only one eye is affected, tilt the head so the injured eye is lower, so nothing runs into the good one. Then get urgent medical help, and call 192.
-12. **When it is serious** — Get medical help urgently for a burn covering more than about a tenth of the body — in an adult that is roughly a whole arm, or half a leg. The same goes for any burn to the face, hands, feet, groin, or across a joint, and for a deep burn, any electrical burn, any chemical burn, and any burn where the person has also breathed smoke.
+8. **Cover the person** — Wrap the person, not the wound. Put a clean cloth or sheet around them and get them to the nearest health facility. Do not rub any cream, ointment, oil, or home remedy into the burn. If you cover the burn itself, use only a loose non-stick dressing or clean cling film laid over it, never wrapped around an arm or leg, and never on the face.
+9. **Never do these** — Never put ice or iced water on a burn; it makes the injury deeper. Never break the blisters. Never rub anything into it: no palm oil, shea butter, butter, toothpaste, ash, ointment, cream, powder, or paste of any kind. Never put raw cotton wool on it.
+10. **Chemical burns** — With a chemical burn the aim is to wash the chemical off, not to cool the skin. Keep the chemical off yourself. Take off any contaminated clothing and jewellery. If the chemical is a dry powder, brush it off the skin first, before you add any water. Then flush the area with running water for at least 20 minutes, and up to an hour, until the stinging stops, taking care not to wash it onto skin that is not affected. Never try to cancel out an acid with an alkali, or the other way round; that makes heat and more damage. Never lay cling film or a gel dressing over a chemical burn.
+11. **Chemical in the eye** — Hold the eye open and flush it with water for as long as the person can bear. Getting water into the eye matters more than rushing them away: flush first, then go. If only one eye is affected, tilt the head so the injured eye is lower, so nothing runs into the good one. Then get urgent medical help, and call 192.
+12. **When it is serious** — Get medical help urgently for a burn covering more than about a tenth of the body, which in an adult is roughly a whole arm, or half a leg. The same goes for any burn to the face, hands, feet, groin, or across a joint, and for a deep burn, any electrical burn, any chemical burn, and any burn where the person has also breathed smoke.
 
 ## Sources cited
 

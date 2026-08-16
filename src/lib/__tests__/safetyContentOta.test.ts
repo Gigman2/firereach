@@ -14,6 +14,15 @@ import {
   SAFETY_CONTENT_VERSION,
 } from "../safetyContent";
 
+/**
+ * The bundled floor, derived rather than restated. Every assertion below that
+ * reaches for this is checking that loadContent fell back to bundled content,
+ * not that the project ships a particular number of guides -- so a tenth
+ * guide should not make ten tests fail here. safetyContent.test.ts keeps the
+ * deliberate pin on the shipped count.
+ */
+const BUNDLED_COUNT: number = require("../../data/safety-content.bundled.json").length;
+
 const wireItem = (overrides = {}) => ({
   id: "u1",
   slug: "hazard-cooking",
@@ -39,7 +48,7 @@ beforeEach(async () => {
 describe("loadContent", () => {
   it("returns bundled content when there is no cache", async () => {
     const items = await loadContent();
-    expect(items).toHaveLength(9);
+    expect(items).toHaveLength(BUNDLED_COUNT);
   });
 
   it("prefers a valid cache over bundled", async () => {
@@ -57,12 +66,12 @@ describe("loadContent", () => {
       SAFETY_CONTENT_CACHE_KEY,
       JSON.stringify({ schemaVersion: SAFETY_CONTENT_VERSION - 1, items: [wireItem()] })
     );
-    expect(await loadContent()).toHaveLength(9);
+    expect(await loadContent()).toHaveLength(BUNDLED_COUNT);
   });
 
   it("degrades to bundled when the cache is corrupt", async () => {
     await AsyncStorage.setItem(SAFETY_CONTENT_CACHE_KEY, "{not json");
-    expect(await loadContent()).toHaveLength(9);
+    expect(await loadContent()).toHaveLength(BUNDLED_COUNT);
   });
 });
 
@@ -76,7 +85,7 @@ describe("refreshContent", () => {
     (apiGet as jest.Mock).mockResolvedValue([wireItem()]);
     await refreshContent();
     const items = await loadContent();
-    expect(items).toHaveLength(9);
+    expect(items).toHaveLength(BUNDLED_COUNT);
     const updated = items.find((i) => i.slug === "hazard-cooking");
     expect(updated?.title).toBe("Cooking Fire Safety (updated)");
   });
@@ -86,7 +95,7 @@ describe("refreshContent", () => {
   it("rejects a response whose item has no sources", async () => {
     (apiGet as jest.Mock).mockResolvedValue([wireItem({ sources: [] })]);
     await refreshContent();
-    expect(await loadContent()).toHaveLength(9);
+    expect(await loadContent()).toHaveLength(BUNDLED_COUNT);
   });
 
   it("rejects an item claiming review without provenance", async () => {
@@ -94,13 +103,13 @@ describe("refreshContent", () => {
       wireItem({ review: { state: "reviewed" } }),
     ]);
     await refreshContent();
-    expect(await loadContent()).toHaveLength(9);
+    expect(await loadContent()).toHaveLength(BUNDLED_COUNT);
   });
 
   it("rejects an unknown subcategory", async () => {
     (apiGet as jest.Mock).mockResolvedValue([wireItem({ subcategory: "plumbing" })]);
     await refreshContent();
-    expect(await loadContent()).toHaveLength(9);
+    expect(await loadContent()).toHaveLength(BUNDLED_COUNT);
   });
 
   // N1: `sources: [null]` has a truthy `.length`, so a length-only shape
@@ -113,7 +122,7 @@ describe("refreshContent", () => {
     (apiGet as jest.Mock).mockResolvedValue([wireItem({ sources: [null] })]);
     await refreshContent();
     const items = await loadContent();
-    expect(items).toHaveLength(9);
+    expect(items).toHaveLength(BUNDLED_COUNT);
     const item = items.find((i) => i.slug === "hazard-cooking");
     expect(item?.title).not.toBe("Cooking Fire Safety (updated)");
   });
@@ -121,7 +130,7 @@ describe("refreshContent", () => {
   it("keeps bundled content when the network fails", async () => {
     (apiGet as jest.Mock).mockRejectedValue(new Error("offline"));
     await expect(refreshContent()).resolves.toBeUndefined();
-    expect(await loadContent()).toHaveLength(9);
+    expect(await loadContent()).toHaveLength(BUNDLED_COUNT);
   });
 
   // N2 (client-side confirmation): the server now includes withdrawn rows
@@ -133,7 +142,8 @@ describe("refreshContent", () => {
     (apiGet as jest.Mock).mockResolvedValue([wireItem({ review: { state: "withdrawn" } })]);
     await refreshContent();
     const items = await loadContent();
-    expect(items).toHaveLength(8);
+    // One slug withdrawn out of the bundled floor, not a fixed eight.
+    expect(items).toHaveLength(BUNDLED_COUNT - 1);
     expect(items.find((i) => i.slug === "hazard-cooking")).toBeUndefined();
   });
 
@@ -142,20 +152,20 @@ describe("refreshContent", () => {
   // unconditionally. Once a bundled guide is genuinely reviewed, every
   // payload containing it (or a cache that already does) would poison the
   // whole batch and silently kill OTA at exactly the moment the clinical
-  // review lands. A payload with one reviewed item and eight otherwise-valid
-  // ones must yield the eight, not fall back to bundled entirely.
-  it("keeps the eight valid items when one item in the payload is reviewed, not a full fallback", async () => {
-    const slugs = [
-      { slug: "hazard-electrical", category: "hazard", subcategory: "electrical" },
-      { slug: "hazard-cooking", category: "hazard", subcategory: "cooking" },
-      { slug: "hazard-home", category: "hazard", subcategory: "home" },
-      { slug: "hazard-workplace", category: "hazard", subcategory: "workplace" },
-      { slug: "hazard-seasonal", category: "hazard", subcategory: "seasonal" },
-      { slug: "firstaid-burns", category: "first_aid", subcategory: "burns" },
-      { slug: "firstaid-smoke-inhalation", category: "first_aid", subcategory: "smoke" },
-      { slug: "firstaid-evacuation", category: "first_aid", subcategory: "evacuation" },
-      { slug: "firstaid-extinguisher-pass", category: "first_aid", subcategory: "extinguisher" },
-    ];
+  // review lands. A payload with one reviewed item and otherwise-valid
+  // ones must yield the rest, not fall back to bundled entirely.
+  it("keeps every other valid item when one in the payload is reviewed, not a full fallback", async () => {
+    // Derived from the bundled set, not hand-copied from it. This list was a
+    // transcription of all nine shipped slugs, so adding a tenth guide left
+    // the payload one short of the floor and failed the count below for a
+    // reason that had nothing to do with what the test checks.
+    const slugs: { slug: string; category: string; subcategory: string }[] = require(
+      "../../data/safety-content.bundled.json"
+    ).map((i: { slug: string; category: string; subcategory: string }) => ({
+      slug: i.slug,
+      category: i.category,
+      subcategory: i.subcategory,
+    }));
     const reviewedProbeSlug = "hazard-electrical";
 
     const payload = slugs.map((meta) =>
@@ -171,10 +181,11 @@ describe("refreshContent", () => {
     await refreshContent();
     const items = await loadContent();
 
-    expect(items).toHaveLength(9);
+    expect(items).toHaveLength(BUNDLED_COUNT);
 
     const updated = items.filter((i) => i.title.endsWith("(updated)"));
-    expect(updated).toHaveLength(8);
+    // Everything but the reviewed probe, which H1 refuses over the wire.
+    expect(updated).toHaveLength(BUNDLED_COUNT - 1);
 
     const reviewedProbe = items.find((i) => i.slug === reviewedProbeSlug);
     expect(reviewedProbe?.title).not.toMatch(/\(updated\)/);

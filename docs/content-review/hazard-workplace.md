@@ -3,7 +3,7 @@
 **Slug:** `hazard-workplace`  
 **Section:** Hazard — workplace  
 **Current state:** pending_review  
-**Content hash:** `164d5d34235307802e66d24d3eba8c847679d5bf6f338d4fa35c0f7c0e9d2c13`
+**Content hash:** `6ab997c2309881a156de2c0d2d3e07337420dcb10eba5f6051b2e5f03022b6d9`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -22,7 +22,7 @@ Prevent it:
 - Do not run cords where people walk on them. It wears the covering away.
 - Do not overload your circuits.
 - Switch appliances off at the end of each day, and whenever they are not in use.
-- Keep anything that gets hot away from things that burn — copiers, water dispensers, computers.
+- Keep anything that gets hot away from things that burn: copiers, water dispensers, computers.
 - Ask your local fire station for the right extinguisher. They will help you put it in the right place and show your staff how to use it.
 
 If fire breaks out:

@@ -3,7 +3,7 @@
 **Slug:** `firstaid-smoke-inhalation`  
 **Section:** First Aid — smoke  
 **Current state:** pending_review  
-**Content hash:** `031c203a8d9ed04a22fcd9ce2ad6bb7b27b5611ca3da07f65fcc5e4e6992d356`
+**Content hash:** `6fc664eae8207095258f7bf76cba37da54eb6848d06bf5227e8563a20df7445c`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -17,12 +17,12 @@ Smoke and fumes can injure the airway even when there are no burns on the skin. 
 
 ### Steps
 
-1. **Get out, call 192** — Get out of the smoke and into fresh air, then call 192. Move the injured person into fresh air too, if it is safe for you to do it. Do not try to put out a fire that is giving off toxic smoke — if you think it is toxic, or you do not know, leave it to the professionals.
+1. **Get out, call 192** — Get out of the smoke and into fresh air, then call 192. Move the injured person into fresh air too, if it is safe for you to do it. Do not try to put out a fire that is giving off toxic smoke. If you think it is toxic, or you do not know, leave it to the professionals.
 2. **Keep low** — Take the way out with the least smoke and heat. If you have to pass through smoke, get down low and go underneath it. The cleaner air is near the floor.
-3. **Stay out** — Once you are out, stay out. Never go back into a burning building for any reason. If someone is missing, tell the firefighters when you call — they have the training and the equipment to go in. Close doors behind you as you leave, to hold the smoke and fire back.
-4. **If not breathing** — Keep their airway open and check whether they are breathing normally. If they are not, they need resuscitation immediately. This guide does not teach it — stay on the line with 192 and do exactly what the responder tells you. They can talk you through it.
+3. **Stay out** — Once you are out, stay out. Never go back into a burning building for any reason. If someone is missing, tell the firefighters when you call. They have the training and the equipment to go in. Close doors behind you as you leave, to hold the smoke and fire back.
+4. **If not breathing** — Keep their airway open and check whether they are breathing normally. If they are not, they need resuscitation immediately. This guide does not teach it. Stay on the line with 192 and do exactly what the responder tells you. They can talk you through it.
 5. **Check for airway burns** — Look for burns on the face, or singed nasal hairs, eyebrows, or eyelashes. Look for soot in the nose or mouth. Listen for a hoarse voice or difficult breathing, and watch for coughing up black specks. Tell the responders straight away if you see any of these.
-6. **Do not assume safe** — Someone who is breathing, talking, and walking around can still be badly injured inside. Some gases damage the lungs slowly, and that damage can develop up to 24 hours later. Anyone who has been shut in with smoke, hot gas, steam, or fumes needs to be checked — even fumes that were never hot can burn the airway.
+6. **Do not assume safe** — Someone who is breathing, talking, and walking around can still be badly injured inside. Some gases damage the lungs slowly, and that damage can develop up to 24 hours later. Anyone who has been shut in with smoke, hot gas, steam, or fumes needs to be checked. Even fumes that were never hot can burn the airway.
 7. **Carbon monoxide** — Smoke from a fire, a generator, or smouldering charcoal carries carbon monoxide. You cannot see it, smell it, or taste it. It takes the place of oxygen in the blood, so the body is starved of oxygen with no warning at all. Tell the health worker how long the person was in the smoke, and what was burning.
 
 ## Sources cited

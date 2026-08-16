@@ -121,7 +121,7 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
           role: "assistant",
           type: "warning",
           content:
-            "I couldn't reach the safety assistant. The written guides work offline — go back and open any topic.",
+            "I couldn't reach the safety assistant. The written guides work offline, so go back and open any topic.",
         },
       ]);
     } finally {

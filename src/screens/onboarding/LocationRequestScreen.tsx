@@ -229,7 +229,7 @@ export const LocationRequestScreen = ({ navigation }: Props) => {
             If that ever changes, this sentence has to change with it.
           */}
             Without it we cannot tell you which fire station is closest to you.
-            Your location stays on this phone — it is never sent anywhere. You
+            Your location stays on this phone and is never sent anywhere. You
             can skip this and still call 192.
           </Text>
         </View>

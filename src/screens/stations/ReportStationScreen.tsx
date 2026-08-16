@@ -310,7 +310,7 @@ export const ReportStationScreen = ({ navigation, route }: Props) => {
             style={[styles.input, styles.textarea, { borderColor: theme.border, color: theme.textPrimary, backgroundColor: theme.background }]}
             placeholder={
               fields.noteRequired
-                ? "Describe what you found — a verifier reads this."
+                ? "Describe what you found. A verifier reads this."
                 : "Anything else that would help a verifier check this."
             }
             placeholderTextColor={theme.textTertiary}

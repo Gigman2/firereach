@@ -354,12 +354,12 @@ export const SavePlaceScreen = ({ navigation, route }: Props) => {
           {saveError === "full" && (
             <Text variant="caption" color={colors.error} align="center">
               Your saved places are full, so this one could not be added. Skip
-              for now — you can manage saved places from Settings.
+              for now: you can manage saved places from Settings.
             </Text>
           )}
           {saveError === "storage" && (
             <Text variant="caption" color={colors.error} align="center">
-              This phone would not save the place. Try again, or skip for now —
+              This phone would not save the place. Try again, or skip for now:
               you can add it later from Settings.
             </Text>
           )}

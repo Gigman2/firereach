@@ -269,8 +269,8 @@ describe("promises made in the reviewer packet", () => {
 });
 
 describe("the shipped content", () => {
-  it("ships nine items", () => {
-    expect(visibleItems()).toHaveLength(9);
+  it("ships ten items", () => {
+    expect(visibleItems()).toHaveLength(10);
   });
 
   it("ships nothing claiming review", () => {

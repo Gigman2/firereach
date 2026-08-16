@@ -16,6 +16,7 @@ export const SUBCATEGORIES = Object.freeze({
   home:         "hazard",
   workplace:    "hazard",
   seasonal:     "hazard",
+  flames:       "hazard",
   burns:        "first_aid",
   smoke:        "first_aid",
   evacuation:   "first_aid",

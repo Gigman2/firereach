@@ -3,7 +3,7 @@
 **Slug:** `hazard-home`  
 **Section:** Hazard — home  
 **Current state:** pending_review  
-**Content hash:** `0e59a9d4e1322117f5d494f99223eea2afe270446a885c690322ff9046ffdd9c`
+**Content hash:** `dfefba4c33fd7b5f5dd95ea041c578df47ce3694a43cb7f18ed0d96143e1bd5a`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -13,7 +13,7 @@ _Cut the risk at home, and make sure everyone can get out in the minute or two a
 
 ## Text as the user sees it
 
-Fire spreads fast. Once it takes hold you may have only a minute or two to get out. Most homes here have no smoke alarm, so no one gets an early warning — the clock starts only when somebody notices.
+Fire spreads fast. Once it takes hold you may have only a minute or two to get out. Most homes here have no smoke alarm, so no one gets an early warning. The clock starts only when somebody notices.
 
 Smoke alarms:
 
@@ -32,7 +32,7 @@ Be ready to get out:
 - Walk through your home and find two ways out of every room. Count windows, not just doors.
 - Check that both ways out are clear, and that the doors and windows open easily.
 - Agree on a meeting place outside, a safe distance in front of the house, where everyone gathers.
-- Burglar bars need a release catch on the inside that opens immediately. A compound gate must open immediately too — never padlocked shut at night.
+- Burglar bars need a release catch on the inside that opens immediately. A compound gate must open immediately too, and must never be padlocked shut at night.
 - Make sure everyone knows to call 192, so anyone can call from a neighbour's phone once they are outside.
 - Decide now who helps the babies, the elderly, and anyone who cannot move quickly. Name a second person too, in case the first one is out.
 - Practise the plan twice a year.

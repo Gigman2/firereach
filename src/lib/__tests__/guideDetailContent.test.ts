@@ -41,19 +41,57 @@ describe("GuideDetailScreen", () => {
   });
 
   it("shows the first-aid disclaimer with the mandated wording", () => {
-    expect(source).toContain(
+    // Matched against the source with its whitespace collapsed, because this
+    // is a scan of source *text* and the sentence is long enough that any
+    // reformat wraps it across two lines. JSX collapses that newline and its
+    // indent back to a single space, so the rendered string never changed —
+    // but the literal substring vanished from the file and this failed,
+    // reporting a wording regression that had not happened.
+    expect(source.replace(/\s+/g, " ")).toContain(
       "General first aid guidance. Not a substitute for professional medical care."
     );
   });
 
-  it("no longer hardcodes the amber header for every guide", () => {
-    // Fix round 1 / I1: styles.header used to carry `backgroundColor:
-    // "#D97706"` directly — a leftover from when this screen only ever
-    // rendered the burns protocol. The band must now come from the
-    // category colour map, not a literal in the stylesheet.
-    expect(source).not.toMatch(/header:\s*\{[^}]*backgroundColor:\s*"#D97706"/s);
+  it("gives every guide the same header, with no colour of its own", () => {
+    // This assertion has been round the houses. It began as "styles.header
+    // must not hardcode #D97706" (a leftover from when the screen only ever
+    // rendered the burns protocol), and was then satisfied by painting the
+    // header from SUBCATEGORY_META's per-subcategory `accent` — which traded
+    // one wrong header colour for nine, none of them meaning anything. The
+    // rule now is simply that the header carries no literal colour at all:
+    // it takes theme.background like every other header in the app, so the
+    // screen looks the same whichever guide is open.
+    const header = source.match(/header:\s*\{[^}]*\}/s)?.[0] ?? "";
+    expect(header).not.toMatch(/#[0-9A-Fa-f]{3,8}/);
+    expect(source).toMatch(/styles\.header[\s\S]{0,300}?backgroundColor:\s*theme\.background/);
+    // Category still reaches the header, as the kicker's text rather than
+    // as a fill.
     expect(source).toContain("SUBCATEGORY_META");
-    expect(source).toContain("NEUTRAL_ACCENT");
+  });
+
+  it("dials the resolved station's chain, not a literal national number", () => {
+    // The footer used to print "call 192" in prose and "Call 192" on the
+    // button, both as literals, on a screen that had never asked which
+    // station the caller is near. noHardcodedNumbers.test.ts catches a
+    // literal after "tel:"; these two literals were in the *copy*, so it
+    // saw nothing. Every number on this screen now comes from the same
+    // chain the home screen dials.
+    expect(source).toContain("dialTargets");
+    expect(source).toContain("useNearestStation");
+    expect(source).not.toMatch(/Call 192|call 192/);
+    // 192 stays reachable: dialTargets always ends with it, and the footer
+    // surfaces it separately whenever the primary is chargeable.
+    expect(source).toContain("NATIONAL_EMERGENCY_PHONE");
+    expect(source).toMatch(/freeFallback/);
+  });
+
+  it("no longer renders the empty hero placeholder", () => {
+    // A 192px-tall empty card holding one emoji, sitting between the header
+    // and the first line anyone came to read. There is no artwork behind it
+    // to arrive later — it was a placeholder for images the content schema
+    // has no field for.
+    expect(source).not.toContain("heroImage");
+    expect(source).not.toContain("🩹");
   });
 });
 

@@ -11,6 +11,7 @@ import {
   WindIcon,
   SignOutIcon,
   FireExtinguisherIcon,
+  FlameIcon,
   BrainIcon,
   ArrowRightIcon,
 } from "phosphor-react-native";
@@ -31,51 +32,42 @@ const TABS = ["All", "Hazards", "First Aid"] as const;
  * own `category` field, not from this map — the previous hardcoded array had
  * Smoke, Evacuation, and Extinguisher under Hazards, contradicting §S5.
  *
- * `accent` is a category colour band, consumed by GuideDetailScreen's header
- * (fix round 1 / I1: that header used to be hardcoded amber for every guide,
- * a leftover from when the screen only ever showed the burns protocol).
- * Kept here, in the one map both screens already read from, so a single edit
- * changes every screen. Values below are a working default from the project
- * owner, not a final design decision. None is red: `colors.brandPrimary`
- * (#CC1B1B) stays reserved for call and emergency actions. Each was checked
- * for >=4.5:1 contrast against white header text; "burns" was darkened from
- * the original #D97706 (3.19:1, fails) to #AD5F04 (4.76:1) to clear that bar.
+ * There is deliberately no per-subcategory colour here any more. Each entry
+ * used to carry an `accent` that GuideDetailScreen painted its entire header
+ * with, which gave nine guides nine differently coloured screens for content
+ * of identical weight — colour reading as a severity ranking the app was
+ * never assigning. `colors.brandPrimary` is now the only accent either screen
+ * uses, and it means the same thing on both.
  */
 export const SUBCATEGORY_META: Record<
   string,
-  { label: string; Icon: typeof LightningIcon; accent: string }
+  { label: string; Icon: typeof LightningIcon }
 > = {
-  electrical:   { label: "Electrical",   Icon: LightningIcon,        accent: "#B45309" },
-  cooking:      { label: "Cooking",      Icon: CookingPotIcon,       accent: "#C2410C" },
-  home:         { label: "Home",         Icon: HouseIcon,            accent: "#0F766E" },
-  workplace:    { label: "Workplace",    Icon: BuildingsIcon,        accent: "#1D4ED8" },
-  seasonal:     { label: "Seasonal",     Icon: CalendarIcon,         accent: "#4D7C0F" },
-  burns:        { label: "Burns",        Icon: FirstAidKitIcon,      accent: "#AD5F04" },
-  smoke:        { label: "Smoke",        Icon: WindIcon,             accent: "#57534E" },
-  evacuation:   { label: "Evacuation",   Icon: SignOutIcon,          accent: "#7E22CE" },
-  extinguisher: { label: "Extinguisher", Icon: FireExtinguisherIcon, accent: "#0E7490" },
+  electrical:   { label: "Electrical",   Icon: LightningIcon        },
+  cooking:      { label: "Cooking",      Icon: CookingPotIcon       },
+  home:         { label: "Home",         Icon: HouseIcon            },
+  workplace:    { label: "Workplace",    Icon: BuildingsIcon        },
+  seasonal:     { label: "Seasonal",     Icon: CalendarIcon         },
+  flames:       { label: "Flames",       Icon: FlameIcon            },
+  burns:        { label: "Burns",        Icon: FirstAidKitIcon      },
+  smoke:        { label: "Smoke",        Icon: WindIcon             },
+  evacuation:   { label: "Evacuation",   Icon: SignOutIcon          },
+  extinguisher: { label: "Extinguisher", Icon: FireExtinguisherIcon },
 };
-
-/**
- * Fallback header band for a subcategory that is somehow missing from the
- * map above (shipped content and SUBCATEGORY_META are kept in sync by
- * guidesHubCategories.test.ts, but a screen consuming this map defensively
- * should never crash or fall back to red on a gap). 4.83:1 against white.
- */
-export const NEUTRAL_ACCENT = "#6B7280";
 
 const TAB_FOR_CATEGORY = { hazard: "Hazards", first_aid: "First Aid" } as const;
 
 // With OTA (Task 13), an item can arrive with a subcategory this build of
-// the app has never heard of. GuideDetailScreen already guards the same
-// lookup with `?? NEUTRAL_ACCENT`; this map logs each unknown subcategory
-// once (not once per render/item) so a real drift is still visible without
-// spamming the console every time the hub re-renders.
+// the app has never heard of. GuideDetailScreen guards the same lookup by
+// dropping the subcategory from its header kicker rather than printing an
+// unknown key; this map logs each unknown subcategory once (not once per
+// render/item) so a real drift is still visible without spamming the console
+// every time the hub re-renders.
 const loggedUnknownSubcategories = new Set<string>();
 function warnUnknownSubcategoryOnce(subcategory: string): void {
   if (loggedUnknownSubcategories.has(subcategory)) return;
   loggedUnknownSubcategories.add(subcategory);
-  console.warn(`[GuidesHubScreen] unknown subcategory "${subcategory}" — skipping card`);
+  console.warn(`[GuidesHubScreen] unknown subcategory "${subcategory}", skipping card`);
 }
 
 export const GuidesHubScreen = ({ navigation }: Props) => {

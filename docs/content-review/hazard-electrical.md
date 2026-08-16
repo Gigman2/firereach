@@ -3,7 +3,7 @@
 **Slug:** `hazard-electrical`  
 **Section:** Hazard — electrical  
 **Current state:** pending_review  
-**Content hash:** `c2a9e57b67e3e5cccfe94541afc150c5c5a3f2cdeb1a30f141610756259295a6`
+**Content hash:** `ae82008a41e864517e3f4e99249045defc06b4461dfbbfcb238ec7c60f7253c4`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -18,7 +18,7 @@ Faulty wiring, overloaded sockets, and damaged cords all start fires. Work throu
 In the house, shop, or office:
 
 - Let a qualified electrician do all electrical work.
-- Plug only one heat-producing appliance into a socket at a time — a kettle, an iron, a heater.
+- Plug only one heat-producing appliance into a socket at a time: a kettle, an iron, a heater.
 - Plug big appliances like fridges, washers, and stoves straight into a wall socket. Do not run them off an extension board or plug strip.
 - Extension cords are for temporary use only. Never run a cord across a doorway or under a carpet or mat.
 - Check your cords. Replace any cord that is damaged in any way.

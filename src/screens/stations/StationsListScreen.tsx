@@ -257,7 +257,7 @@ export const StationsListScreen = ({ navigation }: Props) => {
               color={theme.warningText}
               style={styles.noticeText}
             >
-              Based on where your phone last had a location fix — if you have
+              Based on where your phone last had a location fix. If you have
               travelled, this ordering and these distances may be out of date.
             </Text>
           ) : usablePosition ? null : (

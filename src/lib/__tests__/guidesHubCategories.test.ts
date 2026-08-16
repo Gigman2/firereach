@@ -22,9 +22,9 @@ describe("hub categorization", () => {
     expect(byTab.burns).toBe("first_aid");
   });
 
-  it("has exactly five hazard and four first-aid topics", () => {
+  it("has exactly six hazard and four first-aid topics", () => {
     const items = visibleItems();
-    expect(items.filter((i) => i.category === "hazard")).toHaveLength(5);
+    expect(items.filter((i) => i.category === "hazard")).toHaveLength(6);
     expect(items.filter((i) => i.category === "first_aid")).toHaveLength(4);
   });
 

@@ -14,12 +14,14 @@ import {
   CalendarIcon,
 } from "phosphor-react-native";
 import { Text } from "../../components/ui/Text";
+import { GuideBody } from "../../components/GuideBody";
 import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
-import { NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
+import { dialTargets, NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
 import { badgeText, effectiveState } from "../../lib/safetyContent";
 import { useSafetyContent } from "../../hooks/useSafetyContent";
-import { SUBCATEGORY_META, NEUTRAL_ACCENT } from "./GuidesHubScreen";
+import { useNearestStation } from "../../hooks/useNearestStation";
+import { SUBCATEGORY_META } from "./GuidesHubScreen";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { GuidesStackParamList } from "../../navigation/types";
 
@@ -34,6 +36,60 @@ export const GuideDetailScreen = ({ navigation, route }: Props) => {
   const state = item ? effectiveState(item) : "pending";
   const isReviewed = state === "reviewed";
   const isFirstAid = item?.category === "first_aid";
+
+  /**
+   * The same resolution every other screen calls from — one provider mounted
+   * in App.tsx — so this footer can never name a different number than the
+   * home screen's call button at the same moment.
+   *
+   * Hooks run before the not-found return below, which is why this sits up
+   * here rather than beside the footer that uses it.
+   */
+  const { nearest } = useNearestStation();
+
+  /**
+   * Was: a literal 192 on both the copy and the button. 192 is the only
+   * number that connects with no credit, but it is a single national line,
+   * and when a station has resolved there is a closer, smaller queue on
+   * record — the same chain the home screen dials, in the same order. See
+   * dialTargets: 192 never leaves the chain, so the free number is still one
+   * tap away in the pill beside the button, and the chain is never empty, so
+   * the button is never dead.
+   */
+  const targets = nearest
+    ? dialTargets(nearest)
+    : [{ phone: NATIONAL_EMERGENCY_PHONE, tollFree: true }];
+  const primary = targets[0];
+
+  /**
+   * Shown only when the primary is chargeable — that is the case where a
+   * caller with no airtime taps the button and nothing happens, and this is
+   * the number that still works for them. When 192 is already the primary
+   * there is nothing to fall back to and the pill would just print the same
+   * digits twice.
+   *
+   * Derived from tollFree rather than array position, matching how the home
+   * and station screens derive their own cost labels.
+   */
+  const freeFallback = primary.tollFree
+    ? null
+    : (targets.find((t) => t.tollFree)?.phone ?? null);
+
+  /**
+   * Not "direct line to your station". Every station in a region shares one
+   * set of numbers (all 15 Greater Accra stations dial 0302666576), so what
+   * answers is a regional command centre that does not know where the caller
+   * is — which is exactly why the caller has to say.
+   */
+  const primaryCaption = primary.tollFree
+    ? "Free on any network"
+    : "Direct line to your station";
+
+  const dial = (phone: string) => {
+    Linking.openURL(`tel:${phone}`).catch((err) =>
+      console.warn("[GuideDetail] dial failed", err),
+    );
+  };
 
   if (!item) {
     return (
@@ -71,47 +127,64 @@ export const GuideDetailScreen = ({ navigation, route }: Props) => {
     );
   }
 
-  // Category colour band, not the emergency red reserved for call/emergency
-  // actions. Falls back to a neutral grey if this item's subcategory is
-  // somehow missing from SUBCATEGORY_META.
-  const headerColor = SUBCATEGORY_META[item.subcategory]?.accent ?? NEUTRAL_ACCENT;
+  /**
+   * Category and subcategory as text, above the title.
+   *
+   * This used to be a full-bleed colour band, one hue per subcategory, with
+   * the title reversed out in white. Nine guides meant nine differently
+   * coloured screens for content of identical weight, so the colour read as a
+   * severity signal it was never assigning — and the band was the reason the
+   * title had to fit on one line beside a badge, which is how "Electrical
+   * Fire Safety" came to render as "Electrical Fire S..". Saying the same two
+   * facts in a line of small caps costs no colour and no truncation.
+   */
+  const subLabel = SUBCATEGORY_META[item.subcategory]?.label;
+  const kicker = [isFirstAid ? "FIRST AID" : "HAZARD", subLabel?.toUpperCase()]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Category-coloured header */}
-      <View style={[styles.header, { backgroundColor: headerColor, paddingTop: insets.top + 8 }]}>
+      {/* Header — the same on every guide, whatever its category */}
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop: insets.top + 8,
+            backgroundColor: theme.background,
+            borderBottomColor: theme.border,
+          },
+        ]}
+      >
         <View style={styles.headerRow}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
           >
-            <ArrowLeftIcon size={24} color="#FFFFFF" />
+            <ArrowLeftIcon size={24} color={theme.textPrimary} />
           </TouchableOpacity>
           <Text
-            variant="heading2"
-            color="#FFFFFF"
-            style={styles.headerTitle}
+            variant="label"
+            color={theme.textTertiary}
+            style={styles.kicker}
             numberOfLines={1}
           >
-            {item.title}
+            {kicker}
           </Text>
-          <View style={styles.headerBadge}>
-            <Text variant="label" color="#FFFFFF">
-              {isFirstAid ? "FIRST AID" : "HAZARD"}
-            </Text>
-          </View>
         </View>
+        {/* Two lines, because the title no longer shares a row with anything */}
+        <Text variant="heading2" style={styles.headerTitle} numberOfLines={2}>
+          {item.title}
+        </Text>
       </View>
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Hero placeholder */}
-        <View style={[styles.heroImage, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-          <Text style={{ fontSize: 48 /* font-exempt: emoji glyph */ }}>🩹</Text>
-        </View>
-
         {/* Meta badge */}
         <View
           style={[
@@ -126,11 +199,15 @@ export const GuideDetailScreen = ({ navigation, route }: Props) => {
         >
           <CalendarIcon
             size={14}
-            color={isReviewed ? (isDark ? "#FDE68A" : "#92400E") : theme.textTertiary}
+            color={
+              isReviewed ? (isDark ? "#FDE68A" : "#92400E") : theme.textTertiary
+            }
           />
           <Text
             variant="label"
-            color={isReviewed ? (isDark ? "#FDE68A" : "#92400E") : theme.textTertiary}
+            color={
+              isReviewed ? (isDark ? "#FDE68A" : "#92400E") : theme.textTertiary
+            }
           >
             {badgeText(item)}
           </Text>
@@ -150,20 +227,32 @@ export const GuideDetailScreen = ({ navigation, route }: Props) => {
               color={theme.textSecondary}
               style={{ flex: 1, lineHeight: 18 }}
             >
-              General first aid guidance. Not a substitute for professional medical care.
+              General first aid guidance. Not a substitute for professional
+              medical care.
             </Text>
           </View>
         )}
 
-        {/* Steps or body, by category */}
-        {isFirstAid ? (
+        {/*
+          Rendered for both categories. This screen used to branch
+          `isFirstAid ? steps : body`, which meant every first-aid guide's
+          body — "This is first aid only, for while you wait for help. Work
+          through the steps in order." — was authored, validated, cached and
+          clinically reviewed, and then silently dropped on the floor.
+        */}
+        <GuideBody body={item.body} />
+
+        {isFirstAid && (
           <View style={styles.steps}>
             {item.steps.map((step, index) => (
               <View
                 key={index}
                 style={[
                   styles.stepCard,
-                  { backgroundColor: theme.background, borderColor: theme.border },
+                  {
+                    backgroundColor: theme.background,
+                    borderColor: theme.border,
+                  },
                 ]}
               >
                 <View style={styles.stepNumber}>
@@ -186,52 +275,111 @@ export const GuideDetailScreen = ({ navigation, route }: Props) => {
               </View>
             ))}
           </View>
-        ) : (
-          <Text variant="bodyMedium" color={theme.textSecondary} style={{ lineHeight: 24 }}>
-            {item.body}
-          </Text>
         )}
       </ScrollView>
 
-      {/* Emergency Footer */}
+      {/*
+        Emergency footer.
+
+        Was a red-tinted block holding a red button, with the number spelled
+        out a second time in three lines of wrapped prose beside it. The tint
+        and the button were close enough in hue that the one thing to tap did
+        not stand out from the thing it sat on, and the prose spent its width
+        repeating the digits already printed on the button.
+
+        Now: a plain surface with a hairline rule, so the red is the button
+        and nothing else, and the sentence is cut to the label above it. What
+        was said in prose ("free on any network") is said by the pill that
+        dials it.
+      */}
       <View
         style={[
           styles.footer,
           {
             paddingBottom: insets.bottom + 12,
-            backgroundColor: theme.emergencyBg,
-            borderTopColor: theme.emergencyBorder,
+            backgroundColor: theme.background,
+            borderTopColor: theme.border,
           },
         ]}
       >
-        <View style={styles.footerContent}>
-          <View style={styles.footerLeft}>
-            <View
-              style={[
-                styles.emergencyIcon,
-                { backgroundColor: isDark ? "#7F1D1D" : "#FEE2E2" },
-              ]}
-            >
-              <WarningCircleIcon size={20} color={colors.brandPrimary} weight="fill" />
-            </View>
-            <Text variant="caption" weight="medium" color={theme.emergencyText} style={styles.footerText}>
-              In an active emergency, call 192 — free on any network
-            </Text>
-          </View>
+        <View style={styles.footerLabelRow}>
+          <WarningCircleIcon
+            size={14}
+            color={colors.brandPrimary}
+            weight="fill"
+          />
+          <Text
+            variant="label"
+            color={theme.textSecondary}
+            style={styles.footerLabel}
+          >
+            IN AN ACTIVE EMERGENCY
+          </Text>
+        </View>
+
+        <View style={styles.footerActions}>
           <TouchableOpacity
-            style={styles.callNowButton}
+            style={styles.callButton}
             activeOpacity={0.85}
-            onPress={() =>
-              Linking.openURL(`tel:${NATIONAL_EMERGENCY_PHONE}`).catch((err) =>
-                console.warn("[GuideDetail] dial failed", err)
-              )
+            onPress={() => dial(primary.phone)}
+            accessibilityRole="button"
+            accessibilityLabel={
+              primary.tollFree
+                ? `Call ${primary.phone}, free on any network`
+                : `Call ${primary.phone}, regional command line`
             }
           >
-            <PhoneIcon size={16} color="#FFFFFF" weight="fill" />
-            <Text variant="caption" weight="bold" color="#FFFFFF">
-              Call 192
-            </Text>
+            <PhoneIcon size={20} color="#FFFFFF" weight="fill" />
+            <View style={styles.callButtonText}>
+              {/*
+                One line, and never an ellipsis through the digits: a
+                half-printed phone number is worse than no number at all.
+                `adjustsFontSizeToFit` shrinks it instead, which only bites
+                on a 320pt handset at a large accessibility text size.
+              */}
+              <Text
+                variant="bodyMedium"
+                weight="bold"
+                color="#FFFFFF"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.8}
+              >
+                Call {primary.phone}
+              </Text>
+              <Text
+                variant="label"
+                color="rgba(255,255,255,0.85)"
+                numberOfLines={1}
+              >
+                {primaryCaption}
+              </Text>
+            </View>
           </TouchableOpacity>
+
+          {freeFallback && (
+            <TouchableOpacity
+              style={[
+                styles.freeButton,
+                { borderColor: theme.emergencyBorder },
+              ]}
+              activeOpacity={0.7}
+              onPress={() => dial(freeFallback)}
+              accessibilityRole="button"
+              accessibilityLabel={`Call ${freeFallback}, works with no credit`}
+            >
+              <Text
+                variant="bodyMedium"
+                weight="bold"
+                color={colors.brandPrimary}
+              >
+                {freeFallback}
+              </Text>
+              <Text variant="label" color={theme.textTertiary}>
+                Free
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>
@@ -244,7 +392,9 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 16,
-    paddingBottom: 20,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    gap: 4,
   },
   headerRow: {
     flexDirection: "row",
@@ -252,28 +402,22 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   backButton: {
+    marginLeft: -4,
     padding: 4,
   },
-  headerTitle: {
+  kicker: {
     flex: 1,
+    letterSpacing: 0.8,
   },
-  headerBadge: {
-    backgroundColor: "rgba(255,255,255,0.2)",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 100,
+  headerTitle: {
+    // Clears the back button's 4px of padding so the title's left edge lines
+    // up with the arrow glyph rather than with its touch target.
+    marginLeft: 4,
   },
   scrollContent: {
     padding: 16,
     gap: 20,
     paddingBottom: 32,
-  },
-  heroImage: {
-    height: 192,
-    borderRadius: 16,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
   },
   metaBadge: {
     flexDirection: "row",
@@ -337,42 +481,55 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     paddingHorizontal: 16,
     paddingTop: 12,
-  },
-  footerContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  footerLeft: {
-    flexDirection: "row",
-    alignItems: "center",
     gap: 10,
-    flex: 1,
   },
-  emergencyIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  footerText: {
-    flex: 1,
-    lineHeight: 18,
-  },
-  callNowButton: {
+  footerLabelRow: {
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
+  },
+  footerLabel: {
+    letterSpacing: 0.8,
+  },
+  footerActions: {
+    flexDirection: "row",
+    alignItems: "stretch",
+    gap: 10,
+  },
+  callButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    minHeight: 56,
+    // 16, not 18: on a 320pt screen this button shares the row with the 192
+    // pill, and the longest number in the bundled table ("0302666576") plus
+    // its icon has to fit between these two edges.
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 14,
     backgroundColor: colors.brandPrimary,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 12,
     shadowColor: colors.brandPrimary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  callButtonText: {
+    flexShrink: 1,
+  },
+  /**
+   * Quiet, but a real target: 192 is the number a caller with no airtime
+   * needs, and they are reaching for it after the primary has already failed
+   * to connect. Same height as the button beside it.
+   */
+  freeButton: {
+    minWidth: 72,
+    minHeight: 56,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

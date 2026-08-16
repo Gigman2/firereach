@@ -250,6 +250,7 @@ export const SUBCATEGORY_TAB: Record<string, "hazard" | "first_aid"> = {
   home: "hazard",
   workplace: "hazard",
   seasonal: "hazard",
+  flames: "hazard",
   burns: "first_aid",
   smoke: "first_aid",
   evacuation: "first_aid",

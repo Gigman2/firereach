@@ -34,13 +34,14 @@ you didn't read.
 Until you sign off, every item below displays to the public as
 sourced-but-unreviewed. Your signature is what changes that.
 
-9 item(s) awaiting or holding review.
+10 item(s) awaiting or holding review.
 
 - [Electrical Fire Safety](hazard-electrical.md) — pending_review
 - [Cooking Fire Safety](hazard-cooking.md) — pending_review
 - [Home Fire Safety](hazard-home.md) — pending_review
 - [Workplace Fire Safety](hazard-workplace.md) — pending_review
 - [Dry Season and Bush Fire Safety](hazard-seasonal.md) — pending_review
+- [What a Flame Is Telling You](hazard-flames.md) — pending_review
 - [Burns](firstaid-burns.md) — pending_review
 - [Smoke Inhalation](firstaid-smoke-inhalation.md) — pending_review
 - [Getting Everyone Out](firstaid-evacuation.md) — pending_review
@@ -49,6 +50,9 @@ sourced-but-unreviewed. Your signature is what changes that.
 ## Unverified citations needing attention
 
 - hazard-seasonal: Control and Prevention of Bushfires Act, 1990 (P.N.D.C.L. 229) — sections 1, 2, 6, 8, 11 and 12
+- hazard-flames: Guidelines for indoor air quality: household fuel combustion
+- hazard-flames: Household air pollution and health
+- hazard-flames: Carbon monoxide public education material
 - firstaid-extinguisher-pass: NFPA 10, Standard for Portable Fire Extinguishers
 
 ## Open questions for the reviewer
@@ -63,6 +67,11 @@ Each is repeated in its item's own file, above the sign-off block.
 - **hazard-home** — The item states that most homes here have no smoke alarm, and treats that as a reason the one-to-two-minute figure understates the real risk. That is FireReach's statement of local conditions with no source behind it. Is it accurate, and is it the right thing to tell people?
 - **hazard-seasonal** — The statutory wording quoted in this item was read on GhanaLegal, a third-party legal portal, because the Parliament of Ghana repository returns HTTP 403 and both the Judicial Service e-library and lawsghana.com sit behind bot challenges. It was cross-checked against the FAO ECOLEX record but never against a government-published copy, and it has not been checked for later amendment. Please confirm the wording of sections 1, 2, 6(1)(b), 8, 11 and 12, and tell us whether the Act has been amended.
 - **hazard-seasonal** — Practical dry-season guidance is missing because no Ghanaian source could be reached: firebreaks and cleared strips around buildings and fuel stores, whether to burn on windy harmattan days, safer times of day to burn, and keeping water or sand to hand. Can GNFS supply this?
+- **hazard-flames** — EVERY SOURCE ON THIS ITEM IS FLAGGED UNVERIFIED. The prose was drafted from general fire-safety knowledge, not read out of the cited documents. Confirm or replace each citation before this item leaves pending_review. Nothing here should be treated as traceable until that is done.
+- **hazard-flames** — Confirm the blue-is-clean, yellow-is-carbon-monoxide rule holds for the appliances actually common in Ghanaian homes, in particular locally made kerosene stoves and wick lamps, and not only for piped gas appliances. If it does not hold for wick lamps, the second bullet under 'Blue means it is burning cleanly' must change.
+- **hazard-flames** — This item keeps apart two situations that are easy to conflate: the flame on an appliance you are using, where blue means complete combustion, and a fire you are deciding how to fight, where blue-white arcing means electricity is involved and water must not be used. Fire training the project owner attended teaches the second. Confirm the wording keeps them apart without reading as a contradiction of that training.
+- **hazard-flames** — The item states that you cannot smell carbon monoxide but can often smell the other gases beside it. Confirm this is accurate enough for a reader to act on, and that it does not leave anyone thinking a smell test is a substitute for an alarm.
+- **hazard-flames** — Charcoal, coalpot and generator carbon monoxide is repeated here and in hazard-cooking and hazard-electrical. The repetition is deliberate, so that a reader who opens only this guide is still safe. Confirm the three do not contradict one another.
 - **firstaid-burns** — COOLING DURATION for babies, small children, and large-area burns. The guide now tells the reader to cool for at least 20 minutes, keep every unburnt part covered, and watch that the person does not get cold — all of which the sources support. What it does not give is a shorter time, or an observable stop-signal, for the cases where the cooling itself can chill the person: an infant, a small child, or a burn over a large area. One source warns against prolonged cooling without defining it; two others give at least 20 minutes paired with keeping the person warm. For Ghanaian ambient conditions, should this guide name a shorter duration for these cases, or a stop-signal such as shivering or cold skin that a non-expert could act on? We have not chosen, because that is a clinical judgement.
 - **firstaid-burns** — WHO's "do not apply" list names haldi (turmeric), a South Asian remedy that means little to a Ghanaian reader. We dropped that example and instead named what people here actually reach for — palm oil, shea butter, butter, toothpaste, ash — on the basis that these fall inside the sourced categories "oil", "paste", and "lotions, ointments, creams or powders". Naming the specific instances is our step, not the sources'. Please confirm the list is right and complete for Ghana, add anything we have missed such as engine oil or crushed herbs, and tell us if any should be removed.
 - **firstaid-smoke-inhalation** — AIRWAY TECHNIQUE. Step 4 tells the reader to keep the airway open, check for normal breathing, and follow the 192 responder — which is as far as our source goes. An earlier draft added "tilt the head back gently"; we removed it because no source in our record states a specific manoeuvre and we will not author one. If a particular technique should be taught here — head-tilt/chin-lift, the recovery position, or nothing at all for an untrained bystander — please supply the wording you want.

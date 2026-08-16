@@ -191,7 +191,7 @@ describe("I2: the AI-generated label only marks genuine askAI output", () => {
     const rendered = textOf(tree);
     // Fallback text is present and still offers the call shortcut...
     expect(rendered).toContain(
-      "I couldn't reach the safety assistant. The written guides work offline — go back and open any topic."
+      "I couldn't reach the safety assistant. The written guides work offline, so go back and open any topic."
     );
     expect(flatTextOf(tree)).toContain(`Call ${NATIONAL_EMERGENCY_PHONE}`);
     // ...but the label count is unchanged: only the genuine askAI reply carries it.

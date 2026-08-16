@@ -3,13 +3,13 @@
 **Slug:** `hazard-cooking`  
 **Section:** Hazard — cooking  
 **Current state:** pending_review  
-**Content hash:** `ddacb06957201e6b3f0c410ef5670980f5c7b7064cf0a624ab7dfa5632a6f903`
+**Content hash:** `671b882ff47eb7f0e8f19b5f52ffa7d1b18d0d11cbcf67937afbc76a41d14f6a`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
 > reverts this item to "awaiting review".
 
-_Charcoal, firewood, and hot oil — and what to do when a pan catches fire._
+_Charcoal, firewood, and hot oil, plus what to do when a pan catches fire._
 
 ## Text as the user sees it
 
@@ -37,7 +37,7 @@ Charcoal, firewood, and kerosene give off carbon monoxide as they burn. You cann
 
 Never bring a coalpot or brazier into a closed room, not even to keep warm. Cook where the air moves freely.
 
-This guide does not cover gas cylinders — leaks, regulators, hoses, or storage.
+This guide does not cover gas cylinders: leaks, regulators, hoses, or storage.
 
 ## Sources cited
 

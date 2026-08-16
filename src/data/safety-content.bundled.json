@@ -5,7 +5,7 @@
     "subcategory": "electrical",
     "title": "Electrical Fire Safety",
     "summary": "Spot bad wiring, overloaded sockets, and generator danger before they start a fire.",
-    "body": "Faulty wiring, overloaded sockets, and damaged cords all start fires. Work through the checks below, and call an electrician for anything you are unsure about.\n\nIn the house, shop, or office:\n\n- Let a qualified electrician do all electrical work.\n- Plug only one heat-producing appliance into a socket at a time — a kettle, an iron, a heater.\n- Plug big appliances like fridges, washers, and stoves straight into a wall socket. Do not run them off an extension board or plug strip.\n- Extension cords are for temporary use only. Never run a cord across a doorway or under a carpet or mat.\n- Check your cords. Replace any cord that is damaged in any way.\n- Do not lay cords where people step on them. It wears away the outer covering.\n- Do not overload your circuits.\n- Switch appliances off at the end of the day, and whenever you are not using them.\n- Keep anything that gets hot away from things that burn.\n\nCall an electrician or your landlord if you notice any of these:\n\n- Fuses blowing or breakers tripping often.\n- A tingling feeling when you touch an appliance.\n- Wall sockets that are warm or discoloured.\n- A burning or rubbery smell from an appliance.\n- Lights that flicker or dim.\n- Sparks from a socket.\n\nA generator gives off carbon monoxide. You cannot see it, smell it, or taste it, and it builds up in a closed space until it kills. A generator that is barely smoking is still producing it.\n\nRun a generator in the open air. Never in a room, and never in a shut-in corner of a compound.\n\nIf a fire starts, get everyone out and call 192. Call for help before you try to deal with a serious fire yourself.",
+    "body": "Faulty wiring, overloaded sockets, and damaged cords all start fires. Work through the checks below, and call an electrician for anything you are unsure about.\n\nIn the house, shop, or office:\n\n- Let a qualified electrician do all electrical work.\n- Plug only one heat-producing appliance into a socket at a time: a kettle, an iron, a heater.\n- Plug big appliances like fridges, washers, and stoves straight into a wall socket. Do not run them off an extension board or plug strip.\n- Extension cords are for temporary use only. Never run a cord across a doorway or under a carpet or mat.\n- Check your cords. Replace any cord that is damaged in any way.\n- Do not lay cords where people step on them. It wears away the outer covering.\n- Do not overload your circuits.\n- Switch appliances off at the end of the day, and whenever you are not using them.\n- Keep anything that gets hot away from things that burn.\n\nCall an electrician or your landlord if you notice any of these:\n\n- Fuses blowing or breakers tripping often.\n- A tingling feeling when you touch an appliance.\n- Wall sockets that are warm or discoloured.\n- A burning or rubbery smell from an appliance.\n- Lights that flicker or dim.\n- Sparks from a socket.\n\nA generator gives off carbon monoxide. You cannot see it, smell it, or taste it, and it builds up in a closed space until it kills. A generator that is barely smoking is still producing it.\n\nRun a generator in the open air. Never in a room, and never in a shut-in corner of a compound.\n\nIf a fire starts, get everyone out and call 192. Call for help before you try to deal with a serious fire yourself.",
     "steps": [],
     "tags": [
       "electrical",
@@ -46,7 +46,7 @@
         "url": "https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php"
       }
     ],
-    "content_hash": "c2a9e57b67e3e5cccfe94541afc150c5c5a3f2cdeb1a30f141610756259295a6",
+    "content_hash": "ae82008a41e864517e3f4e99249045defc06b4461dfbbfcb238ec7c60f7253c4",
     "review": {
       "state": "pending_review"
     },
@@ -59,8 +59,8 @@
     "category": "hazard",
     "subcategory": "cooking",
     "title": "Cooking Fire Safety",
-    "summary": "Charcoal, firewood, and hot oil — and what to do when a pan catches fire.",
-    "body": "Cooking is a leading cause of home fires, injuries, and deaths. About one in four home cooking fires starts with food or equipment left unattended, and those fires cause half of the deaths.\n\nWhile you cook:\n\n- Stay in the kitchen while you fry, grill, boil, or roast.\n- If you are simmering or baking, check the food often and set a timer to remind you it is on.\n- Do not cook if you are sleepy or have been drinking.\n- Keep oven mitts, wooden spoons, food packaging, towels, and curtains away from the flame or hotplate.\n- Heat oil slowly. Add food gently so the oil does not splash.\n- If you see wisps of smoke, or the oil smells, turn the heat off at once and carefully move the pan off. Smoke means the oil is too hot.\n- Keep a lid beside the pan whenever you fry.\n\nIf a pan catches fire:\n\n- Turn off the heat and slide the lid over the pan to smother the flames.\n- Leave the lid on until the pan is completely cool. Taking it off too soon can restart the fire.\n- Never throw water on burning oil.\n- For an oven fire, turn off the heat and keep the door shut.\n- If the fire does not go out, or you are not confident, get everyone out, close the door behind you, and call 192 from outside.\n\nCharcoal, firewood, and kerosene give off carbon monoxide as they burn. You cannot see it, smell it, or taste it, and it can kill you in your sleep. Charcoal that has stopped flaming and is only glowing is still burning, and still giving it off.\n\nNever bring a coalpot or brazier into a closed room, not even to keep warm. Cook where the air moves freely.\n\nThis guide does not cover gas cylinders — leaks, regulators, hoses, or storage.",
+    "summary": "Charcoal, firewood, and hot oil, plus what to do when a pan catches fire.",
+    "body": "Cooking is a leading cause of home fires, injuries, and deaths. About one in four home cooking fires starts with food or equipment left unattended, and those fires cause half of the deaths.\n\nWhile you cook:\n\n- Stay in the kitchen while you fry, grill, boil, or roast.\n- If you are simmering or baking, check the food often and set a timer to remind you it is on.\n- Do not cook if you are sleepy or have been drinking.\n- Keep oven mitts, wooden spoons, food packaging, towels, and curtains away from the flame or hotplate.\n- Heat oil slowly. Add food gently so the oil does not splash.\n- If you see wisps of smoke, or the oil smells, turn the heat off at once and carefully move the pan off. Smoke means the oil is too hot.\n- Keep a lid beside the pan whenever you fry.\n\nIf a pan catches fire:\n\n- Turn off the heat and slide the lid over the pan to smother the flames.\n- Leave the lid on until the pan is completely cool. Taking it off too soon can restart the fire.\n- Never throw water on burning oil.\n- For an oven fire, turn off the heat and keep the door shut.\n- If the fire does not go out, or you are not confident, get everyone out, close the door behind you, and call 192 from outside.\n\nCharcoal, firewood, and kerosene give off carbon monoxide as they burn. You cannot see it, smell it, or taste it, and it can kill you in your sleep. Charcoal that has stopped flaming and is only glowing is still burning, and still giving it off.\n\nNever bring a coalpot or brazier into a closed room, not even to keep warm. Cook where the air moves freely.\n\nThis guide does not cover gas cylinders: leaks, regulators, hoses, or storage.",
     "steps": [],
     "tags": [
       "cooking",
@@ -95,7 +95,7 @@
         "url": "https://www.ncbi.nlm.nih.gov/books/NBK138710/"
       }
     ],
-    "content_hash": "ddacb06957201e6b3f0c410ef5670980f5c7b7064cf0a624ab7dfa5632a6f903",
+    "content_hash": "671b882ff47eb7f0e8f19b5f52ffa7d1b18d0d11cbcf67937afbc76a41d14f6a",
     "review": {
       "state": "pending_review"
     },
@@ -110,7 +110,7 @@
     "subcategory": "home",
     "title": "Home Fire Safety",
     "summary": "Cut the risk at home, and make sure everyone can get out in the minute or two a fire gives you.",
-    "body": "Fire spreads fast. Once it takes hold you may have only a minute or two to get out. Most homes here have no smoke alarm, so no one gets an early warning — the clock starts only when somebody notices.\n\nSmoke alarms:\n\n- Fit an alarm in every bedroom, outside each sleeping area, and on every floor.\n\nReduce the risk:\n\n- Keep your space clear of waste paper, rubbish, and anything else that catches easily.\n- Let a qualified electrician do all electrical work.\n- Plug only one heat-producing appliance into a socket at a time.\n- Switch appliances off when you are not using them.\n- Keep anything that burns well away from any open flame. Curtains, mats, and mattresses do not belong near a kerosene lamp, a candle, or a coalpot.\n\nBe ready to get out:\n\n- Walk through your home and find two ways out of every room. Count windows, not just doors.\n- Check that both ways out are clear, and that the doors and windows open easily.\n- Agree on a meeting place outside, a safe distance in front of the house, where everyone gathers.\n- Burglar bars need a release catch on the inside that opens immediately. A compound gate must open immediately too — never padlocked shut at night.\n- Make sure everyone knows to call 192, so anyone can call from a neighbour's phone once they are outside.\n- Decide now who helps the babies, the elderly, and anyone who cannot move quickly. Name a second person too, in case the first one is out.\n- Practise the plan twice a year.\n- Close doors behind you as you leave. A closed door slows the fire and buys you time.\n- Never block a door or window with furniture, stock, or goods.",
+    "body": "Fire spreads fast. Once it takes hold you may have only a minute or two to get out. Most homes here have no smoke alarm, so no one gets an early warning. The clock starts only when somebody notices.\n\nSmoke alarms:\n\n- Fit an alarm in every bedroom, outside each sleeping area, and on every floor.\n\nReduce the risk:\n\n- Keep your space clear of waste paper, rubbish, and anything else that catches easily.\n- Let a qualified electrician do all electrical work.\n- Plug only one heat-producing appliance into a socket at a time.\n- Switch appliances off when you are not using them.\n- Keep anything that burns well away from any open flame. Curtains, mats, and mattresses do not belong near a kerosene lamp, a candle, or a coalpot.\n\nBe ready to get out:\n\n- Walk through your home and find two ways out of every room. Count windows, not just doors.\n- Check that both ways out are clear, and that the doors and windows open easily.\n- Agree on a meeting place outside, a safe distance in front of the house, where everyone gathers.\n- Burglar bars need a release catch on the inside that opens immediately. A compound gate must open immediately too, and must never be padlocked shut at night.\n- Make sure everyone knows to call 192, so anyone can call from a neighbour's phone once they are outside.\n- Decide now who helps the babies, the elderly, and anyone who cannot move quickly. Name a second person too, in case the first one is out.\n- Practise the plan twice a year.\n- Close doors behind you as you leave. A closed door slows the fire and buys you time.\n- Never block a door or window with furniture, stock, or goods.",
     "steps": [],
     "tags": [
       "home",
@@ -151,7 +151,7 @@
         "url": "https://web.archive.org/web/20251107114316/https://www.gnfs.gov.gh/fire-safety-tips-workplace.php"
       }
     ],
-    "content_hash": "0e59a9d4e1322117f5d494f99223eea2afe270446a885c690322ff9046ffdd9c",
+    "content_hash": "dfefba4c33fd7b5f5dd95ea041c578df47ce3694a43cb7f18ed0d96143e1bd5a",
     "review": {
       "state": "pending_review"
     },
@@ -166,7 +166,7 @@
     "subcategory": "workplace",
     "title": "Workplace Fire Safety",
     "summary": "Fire prevention and evacuation for shops, offices, workshops, and market stalls.",
-    "body": "Fire safety keeps your staff alive and your business trading. Whatever work you do, treat it as a priority.\n\nPrevent it:\n\n- Keep work areas clear of waste paper, rubbish, and anything else that catches easily.\n- Check your cords. Replace any cord that is damaged in any way.\n- Do not run cords where people walk on them. It wears the covering away.\n- Do not overload your circuits.\n- Switch appliances off at the end of each day, and whenever they are not in use.\n- Keep anything that gets hot away from things that burn — copiers, water dispensers, computers.\n- Ask your local fire station for the right extinguisher. They will help you put it in the right place and show your staff how to use it.\n\nIf fire breaks out:\n\n- Call 192 straight away, and do not hang up until the responder tells you to. You can also reach the fire service on 0302 772 446, 0299 340 383, or 112.\n- Save your local fire station's number in your phone now.\n- Close doors as you leave, to hold back the smoke and fire.\n- Never use the lift.\n- Follow the escape plan you have practised. Gather at your assembly point, outside the building and away from danger.\n- Count everyone, so you know all your staff are out.\n\nOnly pick up an extinguisher if the fire is small and not spreading, everyone else is out, 192 has been called, and the room is not full of smoke.\n\nPreventing fires and preparing for them is the best way to keep your staff safe. Talk to your team about it, or ask your local fire station to come and teach them.",
+    "body": "Fire safety keeps your staff alive and your business trading. Whatever work you do, treat it as a priority.\n\nPrevent it:\n\n- Keep work areas clear of waste paper, rubbish, and anything else that catches easily.\n- Check your cords. Replace any cord that is damaged in any way.\n- Do not run cords where people walk on them. It wears the covering away.\n- Do not overload your circuits.\n- Switch appliances off at the end of each day, and whenever they are not in use.\n- Keep anything that gets hot away from things that burn: copiers, water dispensers, computers.\n- Ask your local fire station for the right extinguisher. They will help you put it in the right place and show your staff how to use it.\n\nIf fire breaks out:\n\n- Call 192 straight away, and do not hang up until the responder tells you to. You can also reach the fire service on 0302 772 446, 0299 340 383, or 112.\n- Save your local fire station's number in your phone now.\n- Close doors as you leave, to hold back the smoke and fire.\n- Never use the lift.\n- Follow the escape plan you have practised. Gather at your assembly point, outside the building and away from danger.\n- Count everyone, so you know all your staff are out.\n\nOnly pick up an extinguisher if the fire is small and not spreading, everyone else is out, 192 has been called, and the room is not full of smoke.\n\nPreventing fires and preparing for them is the best way to keep your staff safe. Talk to your team about it, or ask your local fire station to come and teach them.",
     "steps": [],
     "tags": [
       "workplace",
@@ -194,7 +194,7 @@
         "url": "https://www.nfpa.org/education-and-research/home-fire-safety/fire-extinguishers"
       }
     ],
-    "content_hash": "164d5d34235307802e66d24d3eba8c847679d5bf6f338d4fa35c0f7c0e9d2c13",
+    "content_hash": "6ab997c2309881a156de2c0d2d3e07337420dcb10eba5f6051b2e5f03022b6d9",
     "review": {
       "state": "pending_review"
     }
@@ -257,12 +257,71 @@
     ]
   },
   {
+    "slug": "hazard-flames",
+    "category": "hazard",
+    "subcategory": "flames",
+    "title": "What a Flame Is Telling You",
+    "summary": "A steady blue flame is burning cleanly. A lazy yellow one is making carbon monoxide, which you cannot see or smell.",
+    "body": "Every flame you cook or light with is telling you how completely it is burning. This guide is about the flame on an appliance you are using, not about a fire. A clean flame gives off mostly heat. A poor one gives off carbon monoxide, a gas with no colour, no smell, and no taste, which builds up in a closed room and kills people while they sleep.\n\nBlue means it is burning cleanly:\n\n- A gas burner should sit steady, quiet, and blue, with sharp cones and no flicker.\n- A kerosene stove or lamp with the wick set right burns low and blue at the base, with no smoke and no soot.\n- Blue is what you want. There is nothing to do.\n\nYellow, orange, or lazy means carbon monoxide:\n\n- A gas flame that has turned yellow or orange, gone floppy, or lifted away from the burner is not burning all its fuel.\n- Black soot on the pot, on the burner, or on the wall above it.\n- A wick turned up too high, so the lamp smokes and marks the ceiling.\n- Fumes you can smell while it is running, or eyes that sting. You cannot smell carbon monoxide itself, but you can often smell the other gases beside it.\n\nIf the flame has changed:\n\n- Turn the appliance off.\n- Open the windows and the door, and get everyone into fresh air.\n- Do not use it again until someone qualified has looked at it.\n- If anyone is drowsy, confused, or will not wake, get them outside and call 192.\n\nCharcoal and firewood give you no warning:\n\n- A coalpot burnt down to glowing embers has almost no flame left, and that is when it puts out the most carbon monoxide.\n- There is no colour to read, so the rule is the room, not the flame. Never bring one inside, and never into a closed room to keep warm.\n- The same goes for a generator. Barely smoking is not the same as safe.\n\nIf you are choosing how to put a fire out:\n\n- Blue-white sparks or flashes at a socket, a switch, or a cable mean electricity is involved. Switch the power off at the breaker if you can reach it safely.\n- Water never goes on burning oil, and never on anything electrical.\n\nCarbon monoxide poisoning is mistaken for something else more often than it is recognised. A headache that clears when you go outside and returns when you come back in is the one to watch, along with dizziness, feeling sick, and being tired for no reason.\n\nEveryone in the room tends to feel it at the same time, animals included. If that is happening, get out first and call 192 from outside.\n\nThis guide is about what a flame looks like. It does not cover gas cylinders, regulators, hoses, or storage.",
+    "steps": [],
+    "tags": [
+      "flame",
+      "flame colour",
+      "blue flame",
+      "yellow flame",
+      "carbon monoxide",
+      "co poisoning",
+      "gas",
+      "lpg",
+      "kerosene",
+      "wick",
+      "lamp",
+      "coalpot",
+      "charcoal",
+      "generator",
+      "soot",
+      "incomplete combustion"
+    ],
+    "contextual_trigger": null,
+    "sources": [
+      {
+        "title": "Guidelines for indoor air quality: household fuel combustion",
+        "publisher": "World Health Organization",
+        "year": "2014",
+        "unverified": true
+      },
+      {
+        "title": "Household air pollution and health",
+        "publisher": "World Health Organization",
+        "year": "",
+        "unverified": true
+      },
+      {
+        "title": "Carbon monoxide public education material",
+        "publisher": "National Fire Protection Association",
+        "year": "",
+        "unverified": true
+      }
+    ],
+    "content_hash": "359cd83df2d8340e826cf6e5dec312bd6de66f76fa89215c0922409c342465e3",
+    "review": {
+      "state": "pending_review"
+    },
+    "open_questions": [
+      "EVERY SOURCE ON THIS ITEM IS FLAGGED UNVERIFIED. The prose was drafted from general fire-safety knowledge, not read out of the cited documents. Confirm or replace each citation before this item leaves pending_review. Nothing here should be treated as traceable until that is done.",
+      "Confirm the blue-is-clean, yellow-is-carbon-monoxide rule holds for the appliances actually common in Ghanaian homes, in particular locally made kerosene stoves and wick lamps, and not only for piped gas appliances. If it does not hold for wick lamps, the second bullet under 'Blue means it is burning cleanly' must change.",
+      "This item keeps apart two situations that are easy to conflate: the flame on an appliance you are using, where blue means complete combustion, and a fire you are deciding how to fight, where blue-white arcing means electricity is involved and water must not be used. Fire training the project owner attended teaches the second. Confirm the wording keeps them apart without reading as a contradiction of that training.",
+      "The item states that you cannot smell carbon monoxide but can often smell the other gases beside it. Confirm this is accurate enough for a reader to act on, and that it does not leave anyone thinking a smell test is a substitute for an alarm.",
+      "Charcoal, coalpot and generator carbon monoxide is repeated here and in hazard-cooking and hazard-electrical. The repetition is deliberate, so that a reader who opens only this guide is still safe. Confirm the three do not contradict one another."
+    ]
+  },
+  {
     "slug": "firstaid-burns",
     "category": "first_aid",
     "subcategory": "burns",
     "title": "Burns",
     "summary": "Cool the burn, keep the person warm, and get medical help.",
-    "body": "This is first aid only, for while you wait for help. Work through the steps in order. The first three keep you and the injured person safe — treatment starts after that.",
+    "body": "This is first aid only, for while you wait for help. Work through the steps in order. The first three keep you and the injured person safe. Treatment starts after that.",
     "steps": [
       {
         "title": "Get safe, call 192",
@@ -270,11 +329,11 @@
       },
       {
         "title": "If clothes alight",
-        "body": "If the person's clothes are on fire, do not move them away — put the fire out. Get them to stop, drop to the ground, cover their face, and roll. Smother the flames with a blanket, or douse them with water if it is safe. Then move them away from the fire."
+        "body": "If the person's clothes are on fire, do not move them away. Put the fire out. Get them to stop, drop to the ground, cover their face, and roll. Smother the flames with a blanket, or douse them with water if it is safe. Then move them away from the fire."
       },
       {
         "title": "Electric shock first",
-        "body": "If electricity is involved, do not touch the person until the power is off. Switch it off at the mains or the breaker first, without touching them. If a power line has come down, call for help immediately and keep everyone at least 10 metres back from the person and the wires. Never try to move a wire with anything — not even a wooden stick or a broom, because wood still carries high voltage. Wait until someone authorised has turned the power off."
+        "body": "If electricity is involved, do not touch the person until the power is off. Switch it off at the mains or the breaker first, without touching them. If a power line has come down, call for help immediately and keep everyone at least 10 metres back from the person and the wires. Never try to move a wire with anything, not even a wooden stick or a broom, because wood still carries high voltage. Wait until someone authorised has turned the power off."
       },
       {
         "title": "Stop the burning",
@@ -286,7 +345,7 @@
       },
       {
         "title": "Keep them warm",
-        "body": "Do this while you are cooling, not afterwards. Cover every part of the body that is not burnt and keep the person warm. A baby, a small child, or anyone with a burn over a large area chills fastest — watch that they do not get cold. Keep cooling the burn itself."
+        "body": "Do this while you are cooling, not afterwards. Cover every part of the body that is not burnt and keep the person warm. A baby, a small child, or anyone with a burn over a large area chills fastest. Watch that they do not get cold. Keep cooling the burn itself."
       },
       {
         "title": "If you were delayed",
@@ -294,23 +353,23 @@
       },
       {
         "title": "Cover the person",
-        "body": "Wrap the person, not the wound. Put a clean cloth or sheet around them and get them to the nearest health facility. Do not rub any cream, ointment, oil, or home remedy into the burn. If you cover the burn itself, use only a loose non-stick dressing or clean cling film laid over it — never wrapped around an arm or leg, and never on the face."
+        "body": "Wrap the person, not the wound. Put a clean cloth or sheet around them and get them to the nearest health facility. Do not rub any cream, ointment, oil, or home remedy into the burn. If you cover the burn itself, use only a loose non-stick dressing or clean cling film laid over it, never wrapped around an arm or leg, and never on the face."
       },
       {
         "title": "Never do these",
-        "body": "Never put ice or iced water on a burn; it makes the injury deeper. Never break the blisters. Never rub anything into it — no palm oil, shea butter, butter, toothpaste, ash, ointment, cream, powder, or paste of any kind. Never put raw cotton wool on it."
+        "body": "Never put ice or iced water on a burn; it makes the injury deeper. Never break the blisters. Never rub anything into it: no palm oil, shea butter, butter, toothpaste, ash, ointment, cream, powder, or paste of any kind. Never put raw cotton wool on it."
       },
       {
         "title": "Chemical burns",
-        "body": "With a chemical burn the aim is to wash the chemical off, not to cool the skin. Keep the chemical off yourself. Take off any contaminated clothing and jewellery. If the chemical is a dry powder, brush it off the skin first, before you add any water. Then flush the area with running water for at least 20 minutes, and up to an hour, until the stinging stops — taking care not to wash it onto skin that is not affected. Never try to cancel out an acid with an alkali, or the other way round; that makes heat and more damage. Never lay cling film or a gel dressing over a chemical burn."
+        "body": "With a chemical burn the aim is to wash the chemical off, not to cool the skin. Keep the chemical off yourself. Take off any contaminated clothing and jewellery. If the chemical is a dry powder, brush it off the skin first, before you add any water. Then flush the area with running water for at least 20 minutes, and up to an hour, until the stinging stops, taking care not to wash it onto skin that is not affected. Never try to cancel out an acid with an alkali, or the other way round; that makes heat and more damage. Never lay cling film or a gel dressing over a chemical burn."
       },
       {
         "title": "Chemical in the eye",
-        "body": "Hold the eye open and flush it with water for as long as the person can bear. Getting water into the eye matters more than rushing them away — flush first, then go. If only one eye is affected, tilt the head so the injured eye is lower, so nothing runs into the good one. Then get urgent medical help, and call 192."
+        "body": "Hold the eye open and flush it with water for as long as the person can bear. Getting water into the eye matters more than rushing them away: flush first, then go. If only one eye is affected, tilt the head so the injured eye is lower, so nothing runs into the good one. Then get urgent medical help, and call 192."
       },
       {
         "title": "When it is serious",
-        "body": "Get medical help urgently for a burn covering more than about a tenth of the body — in an adult that is roughly a whole arm, or half a leg. The same goes for any burn to the face, hands, feet, groin, or across a joint, and for a deep burn, any electrical burn, any chemical burn, and any burn where the person has also breathed smoke."
+        "body": "Get medical help urgently for a burn covering more than about a tenth of the body, which in an adult is roughly a whole arm, or half a leg. The same goes for any burn to the face, hands, feet, groin, or across a joint, and for a deep burn, any electrical burn, any chemical burn, and any burn where the person has also breathed smoke."
       }
     ],
     "tags": [
@@ -360,7 +419,7 @@
         "url": "https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php"
       }
     ],
-    "content_hash": "d9a9d082067c2d83b7aa7d03c3091ba5fea512b3909978a0e3228643ee122d6f",
+    "content_hash": "f4835f4a4a341e6cc225ae5c6d53d998ff40fa584efb73111e09bb3e60ec8692",
     "review": {
       "state": "pending_review"
     },
@@ -379,7 +438,7 @@
     "steps": [
       {
         "title": "Get out, call 192",
-        "body": "Get out of the smoke and into fresh air, then call 192. Move the injured person into fresh air too, if it is safe for you to do it. Do not try to put out a fire that is giving off toxic smoke — if you think it is toxic, or you do not know, leave it to the professionals."
+        "body": "Get out of the smoke and into fresh air, then call 192. Move the injured person into fresh air too, if it is safe for you to do it. Do not try to put out a fire that is giving off toxic smoke. If you think it is toxic, or you do not know, leave it to the professionals."
       },
       {
         "title": "Keep low",
@@ -387,11 +446,11 @@
       },
       {
         "title": "Stay out",
-        "body": "Once you are out, stay out. Never go back into a burning building for any reason. If someone is missing, tell the firefighters when you call — they have the training and the equipment to go in. Close doors behind you as you leave, to hold the smoke and fire back."
+        "body": "Once you are out, stay out. Never go back into a burning building for any reason. If someone is missing, tell the firefighters when you call. They have the training and the equipment to go in. Close doors behind you as you leave, to hold the smoke and fire back."
       },
       {
         "title": "If not breathing",
-        "body": "Keep their airway open and check whether they are breathing normally. If they are not, they need resuscitation immediately. This guide does not teach it — stay on the line with 192 and do exactly what the responder tells you. They can talk you through it."
+        "body": "Keep their airway open and check whether they are breathing normally. If they are not, they need resuscitation immediately. This guide does not teach it. Stay on the line with 192 and do exactly what the responder tells you. They can talk you through it."
       },
       {
         "title": "Check for airway burns",
@@ -399,7 +458,7 @@
       },
       {
         "title": "Do not assume safe",
-        "body": "Someone who is breathing, talking, and walking around can still be badly injured inside. Some gases damage the lungs slowly, and that damage can develop up to 24 hours later. Anyone who has been shut in with smoke, hot gas, steam, or fumes needs to be checked — even fumes that were never hot can burn the airway."
+        "body": "Someone who is breathing, talking, and walking around can still be badly injured inside. Some gases damage the lungs slowly, and that damage can develop up to 24 hours later. Anyone who has been shut in with smoke, hot gas, steam, or fumes needs to be checked. Even fumes that were never hot can burn the airway."
       },
       {
         "title": "Carbon monoxide",
@@ -452,7 +511,7 @@
         "url": "https://web.archive.org/web/20251107114316/https://www.gnfs.gov.gh/fire-safety-tips-workplace.php"
       }
     ],
-    "content_hash": "031c203a8d9ed04a22fcd9ce2ad6bb7b27b5611ca3da07f65fcc5e4e6992d356",
+    "content_hash": "6fc664eae8207095258f7bf76cba37da54eb6848d06bf5227e8563a20df7445c",
     "review": {
       "state": "pending_review"
     },
@@ -466,7 +525,7 @@
     "subcategory": "evacuation",
     "title": "Getting Everyone Out",
     "summary": "Fire gives you a minute or two. Get out, call 192 from outside, and stay out.",
-    "body": "Getting everyone out comes first — before belongings, and before trying to put anything out. Once a fire takes hold you may have only a minute or two. If your way out is blocked, go to step 8.",
+    "body": "Getting everyone out comes first, before belongings, and before trying to put anything out. Once a fire takes hold you may have only a minute or two. If your way out is blocked, go to step 8.",
     "steps": [
       {
         "title": "Leave now",
@@ -490,7 +549,7 @@
       },
       {
         "title": "Meet at assembly point",
-        "body": "Go to the place you agreed in advance — outside the building, and well away from the danger."
+        "body": "Go to the place you agreed in advance, outside the building, and well away from the danger."
       },
       {
         "title": "Count everyone",
@@ -539,7 +598,7 @@
         "url": "https://web.archive.org/web/20251107120210/https://www.gnfs.gov.gh/how-to-use-fire-extinguisher.php"
       }
     ],
-    "content_hash": "d62b1aa191895d3a6209d3cb57e3adc1e22d67b74929240493e4ceb8bd10a4b1",
+    "content_hash": "668c87d03a5e7c6d75c85fb401261290bab94958eca1ec9dd222e69f1247b872",
     "review": {
       "state": "pending_review"
     },
@@ -565,11 +624,11 @@
       },
       {
         "title": "Only small fires",
-        "body": "Use it only if the fire is contained and small — something like a wastebasket — and is not growing. If the room is filling with smoke, leave instead. Never fight a fire that is giving off toxic smoke."
+        "body": "Use it only if the fire is contained and small, something like a wastebasket, and is not growing. If the room is filling with smoke, leave instead. Never fight a fire that is giving off toxic smoke."
       },
       {
         "title": "Match it first",
-        "body": "The wrong extinguisher makes things worse. Never put water on burning oil, and never on anything electrical. Water is only for ordinary burning materials such as paper, cloth, and wood. A multi-purpose extinguisher is the right one for a home — check the label says so. If you do not know what yours is for, do not use it; get out instead."
+        "body": "The wrong extinguisher makes things worse. Never put water on burning oil, and never on anything electrical. Water is only for ordinary burning materials such as paper, cloth, and wood. A multi-purpose extinguisher is the right one for a home. Check the label says so. If you do not know what yours is for, do not use it; get out instead."
       },
       {
         "title": "Keep your exit clear",
@@ -589,7 +648,7 @@
       },
       {
         "title": "Sweep across",
-        "body": "Sweep the nozzle from side to side across the base of the fire. Stand a few metres back — an extinguisher is made to be used from a distance. Stop once the fire is out, and watch in case it starts again."
+        "body": "Sweep the nozzle from side to side across the base of the fire. Stand a few metres back. An extinguisher is made to be used from a distance. Stop once the fire is out, and watch in case it starts again."
       },
       {
         "title": "Know when to go",
@@ -597,7 +656,7 @@
       },
       {
         "title": "After the fire",
-        "body": "Do not leave the area — a fire can start again without warning. Let the fire service check that it is properly out. Replace a used extinguisher straight away: an empty one left on the wall gives the false impression that it still works."
+        "body": "Do not leave the area. A fire can start again without warning. Let the fire service check that it is properly out. Replace a used extinguisher straight away: an empty one left on the wall gives the false impression that it still works."
       },
       {
         "title": "Keep children away",
@@ -635,7 +694,7 @@
         "unverified": true
       }
     ],
-    "content_hash": "5d97189bcab7e556b6d58d407daa00c36c2453158adb3cd2a81c64dfbe6f5d1b",
+    "content_hash": "355e9deabfbb528f613727294432d74f608166c05697967867e94e7e4070e6b4",
     "review": {
       "state": "pending_review"
     },

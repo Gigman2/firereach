@@ -3,7 +3,7 @@
 **Slug:** `firstaid-evacuation`  
 **Section:** First Aid — evacuation  
 **Current state:** pending_review  
-**Content hash:** `d62b1aa191895d3a6209d3cb57e3adc1e22d67b74929240493e4ceb8bd10a4b1`
+**Content hash:** `668c87d03a5e7c6d75c85fb401261290bab94958eca1ec9dd222e69f1247b872`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -13,7 +13,7 @@ _Fire gives you a minute or two. Get out, call 192 from outside, and stay out._
 
 ## Text as the user sees it
 
-Getting everyone out comes first — before belongings, and before trying to put anything out. Once a fire takes hold you may have only a minute or two. If your way out is blocked, go to step 8.
+Getting everyone out comes first, before belongings, and before trying to put anything out. Once a fire takes hold you may have only a minute or two. If your way out is blocked, go to step 8.
 
 ### Steps
 
@@ -22,7 +22,7 @@ Getting everyone out comes first — before belongings, and before trying to put
 3. **Call 192 outside** — Once you are outside, call 192. Do not hang up until the responder tells you to. If you have no phone on you, use a neighbour's.
 4. **Close doors** — Close each door behind you as you go. A closed door slows the smoke and fire, and buys everyone more time.
 5. **Never use lifts** — Use the stairs. Never take a lift during a fire.
-6. **Meet at assembly point** — Go to the place you agreed in advance — outside the building, and well away from the danger.
+6. **Meet at assembly point** — Go to the place you agreed in advance, outside the building, and well away from the danger.
 7. **Count everyone** — Count heads and make sure nobody is missing. If someone is, tell the firefighters immediately. Never go back inside to look for them yourself; they have the training and equipment for it.
 8. **If you are trapped** — If smoke or fire blocks your way out, shut yourself into a room away from the fire. Close every door between you and the fire. Seal the cracks around the doors with tape or towels, and cover any air vents, to keep the smoke out. Open the window at the top and the bottom if you can, for fresh air. Call 192 and say exactly which room and which floor you are on. Wave a torch or a light-coloured cloth at the window so they can see where you are.
 9. **Plan it beforehand** — Find two ways out of every room, counting windows as well as doors. Check they are clear and that the doors and windows open easily, and never block them with furniture or goods. Practise twice a year. Decide who helps the babies, the elderly, and anyone who cannot move fast, and name a backup in case that person is out.

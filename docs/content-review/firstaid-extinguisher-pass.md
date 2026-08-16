@@ -3,7 +3,7 @@
 **Slug:** `firstaid-extinguisher-pass`  
 **Section:** First Aid — extinguisher  
 **Current state:** pending_review  
-**Content hash:** `5d97189bcab7e556b6d58d407daa00c36c2453158adb3cd2a81c64dfbe6f5d1b`
+**Content hash:** `355e9deabfbb528f613727294432d74f608166c05697967867e94e7e4070e6b4`
 
 > Your sign-off binds to the exact text below. If any word changes
 > afterwards, the hash stops matching and the app automatically
@@ -19,15 +19,15 @@ Use an extinguisher only on a small fire that is not spreading. Call for help be
 
 1. **Call 192 first** — Call 192, or have someone else call, before you try to fight a serious fire. Give your address or a landmark, and say briefly what is burning.
 2. **Get everyone out** — Check that everyone else is out of the building and gathered at a safe meeting point. Only pick up an extinguisher once they are.
-3. **Only small fires** — Use it only if the fire is contained and small — something like a wastebasket — and is not growing. If the room is filling with smoke, leave instead. Never fight a fire that is giving off toxic smoke.
-4. **Match it first** — The wrong extinguisher makes things worse. Never put water on burning oil, and never on anything electrical. Water is only for ordinary burning materials such as paper, cloth, and wood. A multi-purpose extinguisher is the right one for a home — check the label says so. If you do not know what yours is for, do not use it; get out instead.
+3. **Only small fires** — Use it only if the fire is contained and small, something like a wastebasket, and is not growing. If the room is filling with smoke, leave instead. Never fight a fire that is giving off toxic smoke.
+4. **Match it first** — The wrong extinguisher makes things worse. Never put water on burning oil, and never on anything electrical. Water is only for ordinary burning materials such as paper, cloth, and wood. A multi-purpose extinguisher is the right one for a home. Check the label says so. If you do not know what yours is for, do not use it; get out instead.
 5. **Keep your exit clear** — Keep an extinguisher near the door, so you can stand with your back to your way out. Keep thinking about that escape the whole time you are using it. If it is ever cut off, leave at once.
 6. **Pull the pin** — Break the seal and pull the pin out of the handle. Hold the extinguisher with the nozzle pointing away from you.
 7. **Aim low** — Aim at the base of the flames, not at the flames themselves. Keep yourself low.
 8. **Squeeze the lever** — Squeeze the handle slowly and evenly. Letting go stops the spray, so keep it held down.
-9. **Sweep across** — Sweep the nozzle from side to side across the base of the fire. Stand a few metres back — an extinguisher is made to be used from a distance. Stop once the fire is out, and watch in case it starts again.
+9. **Sweep across** — Sweep the nozzle from side to side across the base of the fire. Stand a few metres back. An extinguisher is made to be used from a distance. Stop once the fire is out, and watch in case it starts again.
 10. **Know when to go** — An extinguisher holds only about ten seconds of spray. If the fire is still going once it is empty, get out fast. If the room fills with smoke, get out.
-11. **After the fire** — Do not leave the area — a fire can start again without warning. Let the fire service check that it is properly out. Replace a used extinguisher straight away: an empty one left on the wall gives the false impression that it still works.
+11. **After the fire** — Do not leave the area. A fire can start again without warning. Let the fire service check that it is properly out. Replace a used extinguisher straight away: an empty one left on the wall gives the false impression that it still works.
 12. **Keep children away** — Never let a child use an extinguisher or try to control a fire. Children should be taught to get out and stay out, not to fight fires.
 
 ## Sources cited

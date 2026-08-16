@@ -21,7 +21,7 @@ const HUB_SOURCE = "app/src/screens/guides/GuidesHubScreen.tsx (SUBCATEGORY_META
  * build-script (Node/.mjs) and app (React Native) boundary:
  *   - SCRIPT_SOURCE, consulted by the content build/validate pipeline.
  *   - LIB_SOURCE, consulted by isAcceptable() at the OTA boundary.
- *   - HUB_SOURCE, consulted for icon/label/accent metadata on the hub.
+ *   - HUB_SOURCE, consulted for icon/label metadata on the hub.
  *
  * Drift between them is silent and severe: a subcategory present in
  * SUBCATEGORIES but missing from SUBCATEGORY_TAB makes isAcceptable() false
