@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -87,7 +87,7 @@ type FormState =
   | { mode: "edit"; place: SavedPlace }
   | null;
 
-export const SavedPlacesScreen = ({ navigation }: Props) => {
+export const SavedPlacesScreen = ({ navigation, route }: Props) => {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
   const { position } = useNearestStation();
@@ -146,6 +146,36 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
   };
 
   const closeForm = () => setForm(null);
+
+  /**
+   * Opens the add form for someone routed here by Home's "Save this place"
+   * offer. They have already answered the question; landing them on a list
+   * with an Add button asks it a second time.
+   *
+   * The param is cleared as it is read, for two reasons. React Navigation only
+   * re-delivers params it considers changed, so an uncleared `true` would make
+   * a second tap from Home a no-op once the user had closed the form. And the
+   * Settings tab keeps its stack across tab switches, so an uncleared param
+   * would re-open the form every time they came back to this screen by any
+   * route at all.
+   *
+   * `atCap` is honoured, not overridden: the list is where the reason a place
+   * cannot be added is spelled out, so at ten places the caller stays there
+   * and reads it rather than filling in a form that would be refused on Save.
+   * `position` deliberately is not checked, because the offer that sends
+   * people here only exists when there is a fix, and gating on a provider
+   * still resolving would drop the request in silence.
+   */
+  const requestedAdd = route.params?.openAdd === true;
+  useEffect(() => {
+    if (!requestedAdd) return;
+    navigation.setParams({ openAdd: undefined });
+    if (atCap) return;
+    openAdd();
+    // openAdd only ever sets state, and re-running this on a changed `atCap`
+    // would re-open a form the user had just closed.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestedAdd]);
 
   const handleSave = async () => {
     if (!form) return;
@@ -231,7 +261,7 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
             if (!result.ok) {
               Alert.alert(
                 "Could not delete",
-                `"${place.label}" is still saved — this phone would not write the change. Try again.`
+                `"${place.label}" is still saved. This phone would not write the change. Try again.`
               );
             }
           },
@@ -495,7 +525,7 @@ export const SavedPlacesScreen = ({ navigation }: Props) => {
               >
                 Your saved places could not be read on this phone. They have
                 not been lost, and adding one will try reading them again
-                first — nothing will be written over them.
+                first, and nothing will be written over them.
               </Text>
             ) : places.length === 0 ? (
               <Text

@@ -187,3 +187,58 @@ export function whatToSay(
 
   return { kind: "derived", lines, coords };
 }
+
+/**
+ * Whether the caller is standing somewhere they have not saved, on a fix good
+ * enough to save from.
+ *
+ * A derived script is the honest answer to "no saved place matched here", and
+ * it is also the weakest answer this app can give: a district inferred from
+ * the nearest station, a bearing off that station, and a pair of coordinates.
+ * The operator covers a whole region, cannot see the caller, and dispatches on
+ * landmarks. None of those three is a landmark. Every one of them is true, and
+ * a truck still has to be talked the last kilometre.
+ *
+ * So wherever the script is derived, the card offers the one thing that would
+ * replace it with the caller's own words the next time they are here. The
+ * offer is not urgent and never displaces the script: the words to read out
+ * are still the words to read out, and someone reaching this card mid-fire
+ * needs them, not a form.
+ *
+ * `canAssertPosition` is the card's own judgement about the fix, passed in
+ * rather than re-derived here. It is what stops this offering to save a
+ * position that is stale or already rejected. A place saved from a three-day
+ * old fix puts its radius around somewhere the caller is not, so every later
+ * match of it — and every landmark read out on the strength of that match —
+ * describes the wrong street. That is the same failure `DISTRICT_CLAIM_MAX_METERS`
+ * exists to prevent, arriving by a slower route and lasting until someone
+ * deletes the place. Nothing downstream would ever flag it either: a place
+ * saved at the wrong coordinates looks exactly like one saved at the right
+ * ones.
+ *
+ * `hasRoomToSave` is the caller's `places.length < MAX_SAVED_PLACES`, and it
+ * is a boolean rather than a count so that this module keeps importing
+ * `savedPlaces` for its type alone. That file opens with AsyncStorage; this
+ * one is pure, is tested as pure, and is not worth coupling to storage for a
+ * comparison the caller can make. At the cap `addPlace` refuses anyway, and an
+ * invitation that ends in a refusal is worse than no invitation.
+ *
+ * The arguments are named rather than positional because two of the three are
+ * booleans. Transposed, they would still compile, still pass a shallow
+ * reading, and quietly disable the fix guard above.
+ *
+ * Says nothing about whether the card is rendered at all. A derived result
+ * with no lines in it produces no card, and the caller sees no offer either;
+ * that is the card's existing decision and this does not duplicate it.
+ */
+export function isUnsavedPlace(args: {
+  result: SpeakableLocation;
+  canAssertPosition: boolean;
+  hasRoomToSave: boolean;
+}): boolean {
+  return (
+    args.canAssertPosition &&
+    args.hasRoomToSave &&
+    args.result.kind === "derived"
+  );
+}

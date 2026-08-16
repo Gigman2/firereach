@@ -1,5 +1,6 @@
 import {
   whatToSay,
+  isUnsavedPlace,
   DISTRICT_CLAIM_MAX_METERS,
   NEAR_STATION_MAX_METERS,
 } from "../whatToSay";
@@ -274,5 +275,82 @@ describe("whatToSay", () => {
 
   it("says nothing when there is no position and no places either", () => {
     expect(whatToSay(null, [], null).kind).toBe("none");
+  });
+});
+
+describe("isUnsavedPlace", () => {
+  // Far enough from HOME to fall out of its 300 m radius, close enough to
+  // STATION to keep both derived lines.
+  const AWAY = { lat: 5.6837, lng: -0.1685 };
+  const derived = whatToSay(AWAY, [HOME], STATION);
+
+  it("offers to save a place the caller is standing in and has not saved", () => {
+    expect(derived.kind).toBe("derived");
+    expect(
+      isUnsavedPlace({
+        result: derived,
+        canAssertPosition: true,
+        hasRoomToSave: true,
+      }),
+    ).toBe(true);
+  });
+
+  it("does not offer for a place that is already saved", () => {
+    // The whole point of the offer is that a derived script is the weakest
+    // thing the app can say. A matched place is already the caller's own
+    // landmarks, which is the thing being offered.
+    const matched = whatToSay({ lat: 5.6091, lng: -0.2112 }, [HOME], STATION);
+    expect(matched.kind).toBe("savedPlace");
+    expect(
+      isUnsavedPlace({
+        result: matched,
+        canAssertPosition: true,
+        hasRoomToSave: true,
+      }),
+    ).toBe(false);
+  });
+
+  it("does not offer when there is nothing to derive from", () => {
+    expect(
+      isUnsavedPlace({
+        result: whatToSay(null, [HOME], STATION),
+        canAssertPosition: true,
+        hasRoomToSave: true,
+      }),
+    ).toBe(false);
+  });
+
+  it("does not offer on a fix the card may not assert", () => {
+    // The one that matters. A place saved from a stale or rejected fix puts
+    // its radius around somewhere the caller is not, and then reads landmarks
+    // out for that wrong spot on every later call that matches it. Nothing
+    // downstream would ever flag it: the place looks exactly like a good one.
+    expect(
+      isUnsavedPlace({
+        result: derived,
+        canAssertPosition: false,
+        hasRoomToSave: true,
+      }),
+    ).toBe(false);
+  });
+
+  it("does not offer with no room left, where addPlace would refuse", () => {
+    expect(
+      isUnsavedPlace({
+        result: derived,
+        canAssertPosition: true,
+        hasRoomToSave: false,
+      }),
+    ).toBe(false);
+  });
+
+  it("offers when nothing at all is saved yet", () => {
+    expect(
+      isUnsavedPlace({
+        result: whatToSay(AWAY, [], STATION),
+        canAssertPosition: true,
+        hasRoomToSave: true,
+      }),
+    ).toBe(true);
   });
 });

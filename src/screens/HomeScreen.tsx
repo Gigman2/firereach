@@ -122,7 +122,7 @@ export const HomeScreen = ({ navigation }: Props) => {
     : positionSource === "denied"
       ? "Turn on location to find your station"
       : positionSource === "unavailable"
-        ? "Can't get a location fix — showing the national number"
+        ? "Can't get a location fix. Showing the national number"
         : positionSource === "implausible"
           ? "Can't place your location in Ghana"
           : "Turn on location to find your station";
@@ -161,7 +161,7 @@ export const HomeScreen = ({ navigation }: Props) => {
     isFinding || !nearest
       ? null
       : stationOrigin === "snapshot" || positionSource === "lastKnownStale"
-        ? "Based on where your phone last had a location fix — if you have travelled, check the station name and distance before calling."
+        ? "Based on where your phone last had a location fix. If you have travelled, check the station name and distance before calling."
         : null;
 
   /**
@@ -238,7 +238,7 @@ export const HomeScreen = ({ navigation }: Props) => {
           >
             <WifiSlashIcon size={20} color={colors.warning} />
             <Text variant="caption" weight="medium" color={theme.warningText}>
-              No internet — using the saved station list
+              No internet. Using the saved station list
             </Text>
           </View>
         )}
@@ -326,7 +326,20 @@ export const HomeScreen = ({ navigation }: Props) => {
           )}
         </TouchableOpacity>
 
-        <WhatToSayCard />
+        {/*
+          The card decides whether to offer this at all; this only says where
+          it goes. Straight into the add form, not to the settings root: the
+          user has answered "would you like to save it" by tapping, and making
+          them find "Saved places" and then "Add place" is asking twice.
+        */}
+        <WhatToSayCard
+          onSavePlace={() =>
+            navigation.navigate("Settings", {
+              screen: "SavedPlaces",
+              params: { openAdd: true },
+            })
+          }
+        />
 
         {alternates.length > 0 && (
           <View style={styles.alternates}>

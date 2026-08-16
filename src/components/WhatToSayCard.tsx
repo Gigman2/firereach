@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { MapPinIcon } from "phosphor-react-native";
+import { MapPinIcon, MapPinPlusIcon } from "phosphor-react-native";
 import { Text } from "./ui/Text";
 import { colors } from "../theme/colors";
 import { useTheme } from "../theme/ThemeContext";
 import { useNearestStation } from "../hooks/useNearestStation";
 import { useSavedPlaces } from "../hooks/useSavedPlaces";
-import { whatToSay, savedPlaceLines } from "../lib/whatToSay";
+import { whatToSay, savedPlaceLines, isUnsavedPlace } from "../lib/whatToSay";
+import { MAX_SAVED_PLACES } from "../lib/savedPlaces";
 
 /**
  * Leads the script when the only position we have is an old one and there is
@@ -15,7 +16,22 @@ import { whatToSay, savedPlaceLines } from "../lib/whatToSay";
  * where the caller is.
  */
 const STALE_FIX_CAVEAT =
-  "This is where your phone last had a signal — say so if you have moved.";
+  "This is where your phone last had a signal, so say so if you have moved.";
+
+/**
+ * Shown under a derived script — see `isUnsavedPlace` for when, and why.
+ *
+ * It says what the derived lines above it cannot say for themselves: that they
+ * are the fallback, and that there is something better available for next
+ * time. A district, a bearing and a lat/long are all true, and none of them is
+ * the sentence that gets a truck to a gate. A landmark is.
+ *
+ * Phrased around the operator on purpose. "Save this place" on its own reads
+ * as app housekeeping, which is exactly what someone skips; the reason it
+ * matters is that a stranger on a phone line has to find them.
+ */
+const NEW_PLACE_PROMPT =
+  "This looks like a new place. Save it so you can give the operator a landmark next time.";
 
 /**
  * What a dispatcher asks for after the location, in the order they ask it.
@@ -89,8 +105,13 @@ const CALL_READY_PROMPTS: { ask: string; example: string }[] = [
  * as long as that condition, and it is always reversible: mis-taps happen on
  * 48 px targets with shaking hands, and a wrong address the caller cannot
  * clear is the same failure as a wrong address the app invented.
+ *
+ * `onSavePlace` is where the offer at the foot of the card leads. Optional, and
+ * omitting it removes the offer rather than rendering a dead one: the card has
+ * no navigator of its own, and every other screen in this app takes navigation
+ * as a prop rather than reaching for it.
  */
-export function WhatToSayCard() {
+export function WhatToSayCard({ onSavePlace }: { onSavePlace?: () => void }) {
   const { theme } = useTheme();
   const { position, positionSource, nearest } = useNearestStation();
   const { places } = useSavedPlaces();
@@ -181,6 +202,22 @@ export function WhatToSayCard() {
   const activeLabel = isPicker
     ? null
     : (picked?.label ?? (result.kind === "savedPlace" ? result.label : null));
+
+  /**
+   * `!cannotAssert` is the whole of the card's judgement about the fix, so the
+   * offer inherits it rather than testing `positionSource` a second time: one
+   * definition of "good enough to speak from" is one definition of "good
+   * enough to save from". It also settles the picker on its own — a pick only
+   * exists while `cannotAssert` holds, so a picked place can never reach here
+   * and be mistaken for an unsaved one.
+   */
+  const showSaveOffer =
+    !!onSavePlace &&
+    isUnsavedPlace({
+      result,
+      canAssertPosition: !cannotAssert,
+      hasRoomToSave: places.length < MAX_SAVED_PLACES,
+    });
 
   return (
     <View
@@ -337,6 +374,40 @@ export function WhatToSayCard() {
           ))}
         </View>
       ) : null}
+
+      {/*
+        Last on the card, behind its own rule, and quieter than everything
+        above it. Deliberately the lowest thing here: the words to read out
+        come first, the questions coming next come second, and an errand that
+        pays off on some later call comes after both. Someone who opened this
+        screen because something is burning must never have to scroll past a
+        form to reach the script.
+
+        Set in the same secondary grey as "Change" rather than in
+        `brandPrimary`. Red on this screen belongs to the call button sitting
+        directly above, and a second red control under it competes with the
+        one thing on the screen that is actually an emergency action.
+      */}
+      {showSaveOffer ? (
+        <TouchableOpacity
+          onPress={onSavePlace}
+          activeOpacity={0.7}
+          style={[styles.saveOffer, { borderTopColor: theme.divider }]}
+          accessibilityRole="button"
+          accessibilityLabel="Save this place"
+          accessibilityHint="Adds where you are now to your saved places"
+        >
+          <Text variant="caption" color={theme.textSecondary}>
+            {NEW_PLACE_PROMPT}
+          </Text>
+          <View style={styles.saveOfferAction}>
+            <MapPinPlusIcon size={16} color={theme.textSecondary} />
+            <Text variant="caption" weight="semiBold" color={theme.textPrimary}>
+              Save this place
+            </Text>
+          </View>
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 }
@@ -407,6 +478,23 @@ const styles = StyleSheet.create({
   },
   pickerList: {
     gap: 8,
+  },
+  /**
+   * The same rule and the same padding as `alsoAsk`, because it is the same
+   * kind of seam: everything past it belongs to a different half of the card.
+   * `minHeight` is what makes the whole two-line block one comfortable target
+   * rather than asking for a tap on a 20 px line of caption text.
+   */
+  saveOffer: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingTop: 10,
+    gap: 6,
+    minHeight: 44,
+  },
+  saveOfferAction: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
   },
   /**
    * 48 deliberately survives the tightening everywhere else on this card:
