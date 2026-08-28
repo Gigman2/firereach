@@ -130,9 +130,16 @@ This notice is regenerated on every run so it cannot drift from the data.
 - The ODbL requires **attribution** and is **share-alike**: databases
   produced by extracting/reshaping ODbL data are themselves derivative
   databases and inherit the share-alike obligation. This bundle is such a
-  derived database. Whether that obligation is satisfied for a shipped
-  product is a licensing decision for the product owner, not something this
-  generator resolves.
+  derived database.
+- **Resolved:** this file is licensed **ODbL v1.0**, separately from the rest
+  of the repository, which is AGPL-3.0-or-later. See \`LICENSE-DATA\` at the
+  repo root. The ODbL cannot be narrowed by the surrounding code license, so
+  this split is a requirement rather than a preference.
+- Required attribution, which must also be reachable from the shipped UI:
+
+      Contains information from OpenStreetMap, which is made available under
+      the Open Database License (ODbL) v1.0.
+      (c) OpenStreetMap contributors - https://www.openstreetmap.org/copyright
 
 ## Data-quality caveats (carried from the seed's own header)
 

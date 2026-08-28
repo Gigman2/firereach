@@ -178,7 +178,8 @@ parser uses.
 npm test
 ```
 
-28 test files under `src/lib/__tests__`. Jest is scoped to that directory, so
+322 tests across 28 files under `src/lib/__tests__`. Jest is scoped to that
+directory, so
 tests live there rather than beside components. Beyond ordinary unit tests, the
 suite includes structural guards: font consistency, onboarding navigation,
 content hash parity with the generated seed, subcategory map parity, and the
@@ -205,3 +206,48 @@ The app is the source of truth for safety content; the API is the source of
 truth for stations. `npm run build:content-seed` writes into the API repo's
 `seeds/`, and `npm run build:stations` reads from it. Both repos need to be
 checked out as siblings for those scripts to resolve their paths.
+
+## License
+
+FireReach is free software, licensed under the **GNU Affero General Public
+License v3.0 or later**. See [`LICENSE`](LICENSE).
+
+    Copyright (C) 2026 Eric Abbey
+
+    This program is free software: you can redistribute it and/or modify it
+    under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
+
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+    or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public
+    License for more details.
+
+Commercial use is permitted. The condition is reciprocity: a modified FireReach
+run as a network service has to offer its users the corresponding source.
+
+The authored safety guidance in `src/data/safety-content.bundled.json` is
+covered by the AGPL along with the rest of this repository, so a fork that
+edits the guides has to publish those edits. The `sources` entries in that file
+are citations to external publications, not reproductions of them.
+
+### Station data is licensed separately
+
+`src/data/stations.bundled.json` is **not** under the AGPL. It derives from
+OpenStreetMap and is offered under the **Open Database License (ODbL) v1.0**.
+See [`LICENSE-DATA`](LICENSE-DATA).
+
+    Contains information from OpenStreetMap, which is made available under
+    the Open Database License (ODbL) v1.0.
+    (c) OpenStreetMap contributors - https://www.openstreetmap.org/copyright
+
+This split is not optional. ODbL share-alike passes to derived databases, so
+that file has to stay ODbL regardless of how the surrounding code is licensed.
+Every one of the 57 station IDs is a UUIDv5 of an OpenStreetMap object URL, so
+the lineage is verifiable rather than merely asserted. The telephone numbers
+come from the GNFS published contact page rather than OpenStreetMap, and
+`response_rate` is FireReach's own derivation. Details are in `LICENSE-DATA`.
+
+If you ship a build of this app, the OpenStreetMap attribution above needs to
+be reachable from the UI, not only from this file.
