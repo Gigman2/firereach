@@ -55,7 +55,11 @@ function escapeLiteral(s) {
 
 
 const GO_IMPORT = /^\s*(?:import\s+)?(?:[A-Za-z_.][\w.]*\s+)?"([^"]+)"\s*$/;
-const TS_IMPORT = /(?:from|require\()\s*["']([^"']+)["']/;
+// `from "x"` covers a static import and a re-export; `require("x")` and
+// `import("x")` cover the two runtime forms. All three are how a module
+// actually reaches another module, so a forbidden-import rule that only knew
+// `from` could be walked around by writing `await import("...")` instead.
+const TS_IMPORT = /(?:from|require\(|import\()\s*["']([^"']+)["']/;
 
 /** Pulls import specifiers out of a source file, with their line numbers. */
 export function extractImports(filePath, contents) {
@@ -95,6 +99,14 @@ export function runRules(rules, { root, files, readFile, onlyLines } = {}) {
         const lines = onlyLines.get(file);
         found = lines ? found.filter((v) => lines.has(v.line)) : [];
       }
+      // Some rules are about the file, not the line: GR-APP-009 fires on a
+      // test file Jest never collects, where every line is equally guilty and
+      // the fix is to move the file. Reporting each line would put a 300-line
+      // offender past the ten annotations GitHub renders per step, burying
+      // every other guardrail result, and would make the per-line escape
+      // hatch unusable. Applied after the ratchet filter, so a mode: diff rule
+      // still reports a line the diff actually touched rather than line 1.
+      if (rule.once_per_file) found = found.slice(0, 1);
       violations.push(...found);
     }
   }
@@ -333,10 +345,11 @@ const RULES = [
   },
   {
     "id": "GR-APP-004",
-    "kind": "deny-pattern",
-    "scope": "src/**/*.{ts,tsx}",
-    "pattern": "api\\.anthropic\\.com|from [\\\"']@anthropic",
-    "message": "the app never calls Claude directly; route through POST /v1/ai/ask",
+    "kind": "forbidden-import",
+    "scope": "**/*.{ts,tsx}",
+    "deny": [
+      "@anthropic**"
+    ],
     "severity": "error",
     "mode": "repo",
     "title": "The app never calls Claude directly"
@@ -370,8 +383,8 @@ const RULES = [
   {
     "id": "GR-APP-007",
     "kind": "deny-pattern",
-    "scope": "src/**/*.{ts,tsx}",
-    "pattern": "(?<!\\w)fetch\\(",
+    "scope": "**/*.{ts,tsx}",
+    "pattern": "(?<![\\w.])fetch\\(",
     "allow_paths": [
       "src/lib/apiClient.ts"
     ],
@@ -385,27 +398,38 @@ const RULES = [
     "kind": "single-source-literal",
     "literal": "192",
     "owner": "src/lib/stationTypes.ts",
-    "scope": "src/**/*.{ts,tsx}",
+    "scope": "**/*.{ts,tsx}",
     "context": "(emergencyNumber|phone|number)\\s*[:=]",
     "allow_paths": [
       "src/lib/__tests__/**"
     ],
     "severity": "error",
-    "mode": "diff",
+    "mode": "repo",
     "title": "`192` has one home"
   },
   {
     "id": "GR-APP-009",
     "kind": "deny-pattern",
-    "scope": "src/**/*.test.{ts,tsx}",
+    "scope": "**/*.test.{ts,tsx}",
     "pattern": ".",
     "allow_paths": [
       "src/lib/__tests__/**"
     ],
     "message": "jest.config.js testMatch only picks up src/lib/__tests__; a test elsewhere never runs",
+    "once_per_file": true,
     "severity": "error",
     "mode": "repo",
     "title": "A test outside `src/lib/__tests__` never runs"
+  },
+  {
+    "id": "GR-APP-010",
+    "kind": "deny-pattern",
+    "scope": "**/*.{ts,tsx}",
+    "pattern": "api\\.anthropic\\.com",
+    "message": "the app never calls Claude directly; route through POST /v1/ai/ask",
+    "severity": "error",
+    "mode": "repo",
+    "title": "The Claude endpoint is not an app-side URL"
   }
 ];
 
@@ -430,12 +454,23 @@ if (i !== -1 && (argv[i + 1] === undefined || argv[i + 1].startsWith("--"))) {
 }
 const fromDiff = i === -1 ? null : argv[i + 1];
 
-const all = collectFiles(ROOT);
-const changed = fromDiff ? collectFiles(ROOT, { fromDiff }) : all;
-// Line-granular ratchet: only when a base ref was supplied do we narrow
-// mode: diff rules to the lines actually touched, so a full-repo run (no
-// --from-diff) is unchanged from before.
-const onlyLines = fromDiff ? changedLines(ROOT, fromDiff) : null;
+// Same handling as tools/check.mjs: a git failure here (an unknown base ref,
+// a shallow clone with no merge base) is a run that could not happen, not a
+// clean tree, so it exits 2 with the message rather than an uncaught stack
+// trace. CI is the only place this file runs, and a stack trace there reads
+// like a broken checker instead of a broken checkout.
+let all, changed, onlyLines;
+try {
+  all = collectFiles(ROOT);
+  changed = fromDiff ? collectFiles(ROOT, { fromDiff }) : all;
+  // Line-granular ratchet: only when a base ref was supplied do we narrow
+  // mode: diff rules to the lines actually touched, so a full-repo run (no
+  // --from-diff) is unchanged from before.
+  onlyLines = fromDiff ? changedLines(ROOT, fromDiff) : null;
+} catch (err) {
+  process.stderr.write(err.message + "\n");
+  process.exit(2);
+}
 
 const violations = [
   ...runRules(RULES.filter((r) => r.mode === "repo"), { root: ROOT, files: all }),
