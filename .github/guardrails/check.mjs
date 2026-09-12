@@ -316,17 +316,20 @@ const RULES = [
   {
     "id": "GR-APP-001",
     "kind": "existing-test",
-    "enforced_by": "src/lib/__tests__/fontConsistency.test.ts"
+    "enforced_by": "src/lib/__tests__/fontConsistency.test.ts",
+    "title": "Font consistency is a test, not a lint"
   },
   {
     "id": "GR-APP-002",
     "kind": "existing-test",
-    "enforced_by": "src/lib/__tests__/noEmDashes.test.ts"
+    "enforced_by": "src/lib/__tests__/noEmDashes.test.ts",
+    "title": "No em dash in anything a user reads"
   },
   {
     "id": "GR-APP-003",
     "kind": "existing-test",
-    "enforced_by": "src/lib/__tests__/noHardcodedNumbers.test.ts"
+    "enforced_by": "src/lib/__tests__/noHardcodedNumbers.test.ts",
+    "title": "Every dial site interpolates its number"
   },
   {
     "id": "GR-APP-004",
@@ -335,7 +338,8 @@ const RULES = [
     "pattern": "api\\.anthropic\\.com|from [\\\"']@anthropic",
     "message": "the app never calls Claude directly; route through POST /v1/ai/ask",
     "severity": "error",
-    "mode": "repo"
+    "mode": "repo",
+    "title": "The app never calls Claude directly"
   },
   {
     "id": "GR-APP-005",
@@ -349,7 +353,8 @@ const RULES = [
       "src/lib/__tests__/**"
     ],
     "severity": "error",
-    "mode": "repo"
+    "mode": "repo",
+    "title": "`lib/` is the pure layer"
   },
   {
     "id": "GR-APP-006",
@@ -359,7 +364,8 @@ const RULES = [
       "screens/**"
     ],
     "severity": "error",
-    "mode": "repo"
+    "mode": "repo",
+    "title": "Components do not know about screens"
   },
   {
     "id": "GR-APP-007",
@@ -371,7 +377,8 @@ const RULES = [
     ],
     "message": "all network access goes through src/lib/apiClient.ts",
     "severity": "error",
-    "mode": "repo"
+    "mode": "repo",
+    "title": "One network door"
   },
   {
     "id": "GR-APP-008",
@@ -384,7 +391,8 @@ const RULES = [
       "src/lib/__tests__/**"
     ],
     "severity": "error",
-    "mode": "diff"
+    "mode": "diff",
+    "title": "`192` has one home"
   },
   {
     "id": "GR-APP-009",
@@ -396,7 +404,8 @@ const RULES = [
     ],
     "message": "jest.config.js testMatch only picks up src/lib/__tests__; a test elsewhere never runs",
     "severity": "error",
-    "mode": "repo"
+    "mode": "repo",
+    "title": "A test outside `src/lib/__tests__` never runs"
   }
 ];
 
