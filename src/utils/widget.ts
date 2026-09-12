@@ -1,5 +1,6 @@
 import { createWidget } from "expo-widgets";
 import EmergencyWidget from "../../widgets/emergency";
+import { NATIONAL_EMERGENCY_PHONE } from "../lib/stationTypes";
 
 type EmergencyWidgetProps = {
   stationName: string;
@@ -24,7 +25,7 @@ export function updateEmergencyWidget(data: {
   emergencyWidget.updateSnapshot({
     stationName: data.stationName,
     stationDistance: data.stationDistance,
-    emergencyNumber: data.emergencyNumber ?? "192",
+    emergencyNumber: data.emergencyNumber ?? NATIONAL_EMERGENCY_PHONE,
   });
 }
 

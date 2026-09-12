@@ -15,6 +15,7 @@ import {
   padding,
 } from "@expo/ui/swift-ui/modifiers";
 import type { WidgetEnvironment } from "expo-widgets";
+import { NATIONAL_EMERGENCY_PHONE } from "../../src/lib/stationTypes";
 
 type WidgetProps = {
   stationName: string;
@@ -31,7 +32,7 @@ export default function EmergencyWidget(
   const {
     stationName = "Accra Central Fire Station",
     stationDistance = "approx. 2.4 km away",
-    emergencyNumber = "192",
+    emergencyNumber = NATIONAL_EMERGENCY_PHONE,
   } = props;
 
   const family = environment.widgetFamily;

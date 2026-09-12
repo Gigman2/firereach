@@ -91,6 +91,22 @@ function deferred<T>() {
   return { promise, resolve, reject };
 }
 
+// The first render of GuidesChatScreen is when react-native's lazily
+// required components load and, on a cold transform cache, compile. That
+// one-time cost is about 3s on a fast laptop with a cold cache and exceeds
+// Jest's default 5s per-test budget on a GitHub runner, where the cache is
+// always cold. Paying it here, under its own budget, keeps each test's 5s
+// timeout about that test's own behaviour, so a real hang still fails fast.
+beforeAll(() => {
+  jest.useFakeTimers();
+  const tree = renderScreen();
+  act(() => {
+    tree.unmount();
+    jest.runOnlyPendingTimers();
+  });
+  jest.useRealTimers();
+}, 30000);
+
 beforeEach(() => {
   mockAskAI.mockReset();
   // handleSend's `finally` schedules `flatListRef.current?.scrollToEnd(...)`

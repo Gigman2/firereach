@@ -1,0 +1,56 @@
+# CI for the FireReach app: architectural guardrails, type-check, and tests.
+#
+# The guardrail checker is committed at .github/guardrails/check.mjs and is
+# GENERATED from engineering/guardrails/app.md. It is self-contained and
+# dependency-free, so it runs before `npm ci` and needs no checkout of a second
+# repo.
+#
+# The three jest guards the guardrails cite (fontConsistency, noEmDashes,
+# noHardcodedNumbers) are only guards if something runs them: an `existing-test`
+# rule asserts the file is on disk, which a file full of `describe.skip` also
+# satisfies. `npx jest` here is what makes those three rules mean anything.
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # fetch-depth: 0 is the whole history, which is what `git diff
+      # origin/main...HEAD` needs to find a merge base. Do not add a second
+      # `git fetch --depth=N` after this: it converts the complete clone back
+      # into a shallow one, and a branch whose fork point is older than that
+      # window then fails with "fatal: no merge base", exit 128.
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Check architectural guardrails
+        run: node .github/guardrails/check.mjs --from-diff "origin/${{ github.base_ref }}"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Test
+        run: npx jest
