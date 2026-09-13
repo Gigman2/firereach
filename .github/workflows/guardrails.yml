@@ -1,9 +1,11 @@
-# CI for the FireReach app: architectural guardrails, type-check, and tests.
+# CI for the FireReach app: architectural guardrails, type-check, and tests,
+# with the results posted as one comment in the pull request's conversation.
 #
 # The guardrail checker is committed at .github/guardrails/check.mjs and is
 # GENERATED from engineering/guardrails/app.md. It is self-contained and
 # dependency-free, so it runs before `npm ci` and needs no checkout of a second
-# repo.
+# repo. The comment script beside it, .github/guardrails/comment.mjs, is
+# generated from engineering/tools/comment.mjs the same way.
 #
 # The three jest guards the guardrails cite (fontConsistency, noEmDashes,
 # noHardcodedNumbers) are only guards if something runs them: an `existing-test`
@@ -18,6 +20,8 @@ on:
 
 permissions:
   contents: read
+  # The last step posts the results as a comment in the PR conversation.
+  pull-requests: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,6 +32,13 @@ jobs:
     name: Checks
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # Each check saves its output for the PR comment. An explicit `shell: bash`
+    # makes GitHub run with `-o pipefail`, so piping through `tee` cannot hide
+    # a failure. Checks after a failed one still run (`!cancelled()`), so the
+    # comment's table is complete; the job still fails if any check failed.
+    defaults:
+      run:
+        shell: bash
     steps:
       # fetch-depth: 0 is the whole history, which is what `git diff
       # origin/main...HEAD` needs to find a merge base. Do not add a second
@@ -39,18 +50,52 @@ jobs:
           fetch-depth: 0
 
       - name: Check architectural guardrails
-        run: node .github/guardrails/check.mjs --from-diff "origin/${{ github.base_ref }}"
+        id: guardrails
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: >-
+          node .github/guardrails/check.mjs --from-diff "origin/$BASE_REF"
+          --json "$RUNNER_TEMP/guardrails.json" 2>&1 | tee "$RUNNER_TEMP/guardrails.log"
 
       - uses: actions/setup-node@v4
+        if: ${{ !cancelled() }}
         with:
           node-version: 20
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        id: install
+        if: ${{ !cancelled() }}
+        run: npm ci 2>&1 | tee "$RUNNER_TEMP/install.log"
 
       - name: Type-check
-        run: npx tsc --noEmit
+        id: typecheck
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npx tsc --noEmit 2>&1 | tee "$RUNNER_TEMP/typecheck.log"
 
       - name: Test
-        run: npx jest
+        id: tests
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+        run: npx jest 2>&1 | tee "$RUNNER_TEMP/tests.log"
+
+      # Posts one comment and edits it on every later push. Pull requests from
+      # forks get a read-only token and cannot comment, so this is skipped for
+      # them; their results stay in the Checks tab. A failure to post never
+      # turns the run red: the comment is a report, not a check.
+      - name: Post results to the PR
+        if: ${{ !cancelled() && github.event.pull_request.head.repo.full_name == github.repository }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          GUARDRAILS: ${{ steps.guardrails.outcome }}
+          INSTALL: ${{ steps.install.outcome }}
+          TYPECHECK: ${{ steps.typecheck.outcome }}
+          TESTS: ${{ steps.tests.outcome }}
+        run: >-
+          node .github/guardrails/comment.mjs
+          --guardrails "$GUARDRAILS|$RUNNER_TEMP/guardrails.json|$RUNNER_TEMP/guardrails.log"
+          --step "Install|$INSTALL|setup|$RUNNER_TEMP/install.log"
+          --step "Type-check|$TYPECHECK|tsc|$RUNNER_TEMP/typecheck.log"
+          --step "Tests|$TESTS|jest|$RUNNER_TEMP/tests.log"
