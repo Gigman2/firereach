@@ -1,4 +1,4 @@
-import { apiPost } from "./apiClient";
+import { ApiError, apiPost } from "./apiClient";
 import { getDeviceHash } from "./deviceHash";
 
 /**
@@ -48,6 +48,61 @@ export interface AskTurn {
   content: string;
 }
 
+/**
+ * Limits the API enforces (api/internal/usecase/ai/ask.go). It counts
+ * characters rather than bytes, so these are the same numbers on both sides
+ * and a question written in Twi gets the same room as one in English.
+ */
+export const MAX_QUESTION_CHARACTERS = 1000;
+export const MAX_TURN_CHARACTERS = 2000;
+
+/**
+ * The API accepts a longer history, but its gateway shows the model only the
+ * most recent turns (api/internal/infra/claude/gateway.go), so older ones cost
+ * request size and are then dropped.
+ */
+export const MAX_HISTORY_TURNS = 12;
+
+/**
+ * The part of a conversation worth sending: the most recent turns, each clipped
+ * to what the API accepts.
+ *
+ * The chat used to send everything it had, so a conversation past about 26
+ * questions, or a single answer longer than a turn's limit, was refused with a
+ * 400, and every later question in that chat failed the same way.
+ */
+export function historyForRequest(history: AskTurn[]): AskTurn[] {
+  return history.slice(-MAX_HISTORY_TURNS).map((turn) => ({
+    role: turn.role,
+    content: clip(turn.content, MAX_TURN_CHARACTERS),
+  }));
+}
+
+/** Clips by character, so a clip never splits an emoji into half a pair. */
+function clip(text: string, limit: number): string {
+  const characters = Array.from(text);
+  return characters.length <= limit ? text : characters.slice(0, limit).join("");
+}
+
+/**
+ * What to show when a question fails.
+ *
+ * One message used to cover every failure, so a rate limit or a question the
+ * server refused told the user the assistant was unreachable and sent them to
+ * the offline guides, which answers neither.
+ */
+export function askFailureMessage(err: unknown): string {
+  if (err instanceof ApiError) {
+    if (err.status === 429) {
+      return "That's a lot of questions in a short time. Wait a minute, then ask again.";
+    }
+    if (err.status >= 400 && err.status < 500) {
+      return "I couldn't use that question. Try asking it again in fewer words.";
+    }
+  }
+  return "I couldn't reach the safety assistant. The written guides work offline, so go back and open any topic.";
+}
+
 export async function askAI(
   question: string,
   topic?: string,
@@ -57,7 +112,8 @@ export async function askAI(
     question,
   };
   if (topic) body.topic = topic;
-  if (history && history.length > 0) body.history = history;
+  const recent = historyForRequest(history ?? []);
+  if (recent.length > 0) body.history = recent;
 
   // /v1/ai/ask is rate-limited per device hash, falling back to client IP.
   // Without this header everyone behind one carrier NAT shares a single

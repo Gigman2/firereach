@@ -48,6 +48,19 @@ export function fieldsFor(type: SubmissionType): {
   }
 }
 
+/**
+ * Caps for what the report form collects. The API refuses a suggested value or
+ * a note over 1,000 characters, and for "missing" and "closed" reports the note
+ * IS the suggested value, so one limit covers both.
+ */
+export const MAX_NOTE_CHARACTERS = 1000;
+
+/** Room for "+233 (0)30 266 6576". The format itself stays unchecked. */
+export const MAX_PHONE_CHARACTERS = 24;
+
+/** Room for "-0.123456789" and then some. */
+export const MAX_COORDINATE_CHARACTERS = 16;
+
 const COORD_PATTERN = /^-?\d+(\.\d+)?$/;
 
 function coordinate(raw: string, limit: number): number | null {

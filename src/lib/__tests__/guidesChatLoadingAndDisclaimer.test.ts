@@ -7,6 +7,10 @@
  *     genuinely came back from askAI — not the static welcome message and
  *     not the client-side offline fallback.
  *
+ * I3: A question the server refused must not be reported as a dead network.
+ *     The screen showed one offline message for every failure, so a rate limit
+ *     or a refused question told the user to go read the offline guides.
+ *
  * Written with React.createElement (no JSX) so the file can stay a plain
  * .test.ts and run under the existing `testMatch` in jest.config.js, which
  * — like every other test in this suite — only picks up .test.ts files.
@@ -16,6 +20,8 @@ import { act, create, type ReactTestInstance } from "react-test-renderer";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NATIONAL_EMERGENCY_PHONE } from "../stationTypes";
 import { GuidesChatScreen } from "../../screens/guides/GuidesChatScreen";
+import { ApiError } from "../apiClient";
+import { MAX_QUESTION_CHARACTERS } from "../aiApi";
 
 jest.mock("@react-native-async-storage/async-storage", () =>
   require("@react-native-async-storage/async-storage/jest/async-storage-mock")
@@ -23,6 +29,9 @@ jest.mock("@react-native-async-storage/async-storage", () =>
 
 const mockAskAI = jest.fn();
 jest.mock("../aiApi", () => ({
+  // Only askAI is faked: the screen also reads the real limits and the real
+  // failure copy from this module.
+  ...jest.requireActual("../aiApi"),
   askAI: (...args: unknown[]) => mockAskAI(...args),
 }));
 
@@ -222,5 +231,54 @@ describe("I2: the AI-generated label only marks genuine askAI output", () => {
     const labelCountAfterFailure = (rendered.match(/AI-generated · Not medical advice/g) || [])
       .length;
     expect(labelCountAfterFailure).toBe(1);
+  });
+});
+
+describe("I3: a refused question does not read as a dead network", () => {
+  async function ask(tree: ReturnType<typeof create>, question: string) {
+    act(() => {
+      getByTestId(tree, "guidesChatInput").props.onChangeText(question);
+    });
+    await act(async () => {
+      getByTestId(tree, "guidesChatSendButton").props.onPress();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+  }
+
+  it("says to wait when the server rate limits", async () => {
+    mockAskAI.mockRejectedValueOnce(new ApiError(429, "rate limit exceeded"));
+    const tree = renderScreen();
+
+    await ask(tree, "How do I treat a burn?");
+
+    expect(textOf(tree)).toMatch(/wait a minute/i);
+    expect(textOf(tree)).not.toContain("work offline");
+  });
+
+  it("says the question was refused when the server refuses it", async () => {
+    mockAskAI.mockRejectedValueOnce(new ApiError(400, "ask ai: invalid input"));
+    const tree = renderScreen();
+
+    await ask(tree, "How do I treat a burn?");
+
+    expect(textOf(tree)).toMatch(/fewer words/i);
+  });
+
+  it("keeps the offline message when the network is the problem", async () => {
+    mockAskAI.mockRejectedValueOnce(new Error("Network request failed"));
+    const tree = renderScreen();
+
+    await ask(tree, "How do I treat a burn?");
+
+    expect(textOf(tree)).toContain("work offline");
+  });
+
+  it("caps the question box at the length the API accepts", () => {
+    const tree = renderScreen();
+    // Asserted against the number too: before the constant existed, both sides
+    // of the comparison were undefined and this passed while nothing was capped.
+    expect(MAX_QUESTION_CHARACTERS).toBe(1000);
+    expect(getByTestId(tree, "guidesChatInput").props.maxLength).toBe(MAX_QUESTION_CHARACTERS);
   });
 });
