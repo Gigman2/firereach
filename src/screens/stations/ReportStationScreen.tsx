@@ -32,6 +32,9 @@ import {
   submitStationReport,
   suggestedValueFor,
   type SubmissionType,
+  MAX_COORDINATE_CHARACTERS,
+  MAX_NOTE_CHARACTERS,
+  MAX_PHONE_CHARACTERS,
 } from "../../lib/submissionsApi";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { StationsStackParamList } from "../../navigation/types";
@@ -251,6 +254,7 @@ export const ReportStationScreen = ({ navigation, route }: Props) => {
               keyboardType="phone-pad"
               value={phone}
               onChangeText={setPhone}
+              maxLength={MAX_PHONE_CHARACTERS}
             />
           </View>
         )}
@@ -268,6 +272,7 @@ export const ReportStationScreen = ({ navigation, route }: Props) => {
                 keyboardType="numeric"
                 value={latitude}
                 onChangeText={setLatitude}
+                maxLength={MAX_COORDINATE_CHARACTERS}
               />
               <TextInput
                 style={[styles.input, styles.coordInput, { borderColor: theme.border, color: theme.textPrimary, backgroundColor: theme.background }]}
@@ -276,6 +281,7 @@ export const ReportStationScreen = ({ navigation, route }: Props) => {
                 keyboardType="numeric"
                 value={longitude}
                 onChangeText={setLongitude}
+                maxLength={MAX_COORDINATE_CHARACTERS}
               />
             </View>
             {/* Had no onPress at all — it was a button that did nothing. */}
@@ -319,6 +325,7 @@ export const ReportStationScreen = ({ navigation, route }: Props) => {
             textAlignVertical="top"
             value={context}
             onChangeText={setContext}
+            maxLength={MAX_NOTE_CHARACTERS}
           />
         </View>
 

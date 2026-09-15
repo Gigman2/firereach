@@ -21,7 +21,7 @@ import { colors } from "../../theme/colors";
 import { useTheme } from "../../theme/ThemeContext";
 import { typography } from "../../theme/typography";
 import { NATIONAL_EMERGENCY_PHONE } from "../../lib/stationTypes";
-import { askAI } from "../../lib/aiApi";
+import { askAI, askFailureMessage, MAX_QUESTION_CHARACTERS } from "../../lib/aiApi";
 import type { AIResponse } from "../../lib/aiApi";
 import { AIResponseContent } from "../../components/AIResponseContent";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -137,8 +137,7 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
           id: `${Date.now() + 1}`,
           role: "assistant",
           type: "warning",
-          content:
-            "I couldn't reach the safety assistant. The written guides work offline, so go back and open any topic.",
+          content: askFailureMessage(err),
         },
       ]);
     } finally {
@@ -364,6 +363,7 @@ export const GuidesChatScreen = ({ navigation }: Props) => {
             placeholderTextColor={theme.textTertiary}
             value={input}
             onChangeText={setInput}
+            maxLength={MAX_QUESTION_CHARACTERS}
             onSubmitEditing={() => handleSend()}
             returnKeyType="send"
           />
